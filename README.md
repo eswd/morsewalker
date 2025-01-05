@@ -64,7 +64,7 @@ The build files will be located in the `dist` directory.
 Morse Walker is currently in beta, and your feedback is invaluable!
 
 If you encounter any bugs or have feature requests,
-[submit a GitHub issue](https://github.com/sc0tfree/morsewalker/issues/new),
+[submit a GitHub issue](https://github.com/sc0tfree/morsewalker/issues/new/choose),
 or email me at [henry@w6nyc.com](mailto:henry@w6nyc.com).
 
 Or, if you're feeling adventurous, fork the repository and submit a pull request!
