@@ -1,0 +1,19 @@
+{
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "source": {
+    "include": [
+      "src/js"
+    ],
+    "includePattern": ".js$"
+  },
+  "opts": {
+    "destination": "./dist/docs",
+    "recurse": true,
+    "verbose": true
+  }
+}

@@ -1,0 +1,4 @@
+input[type="text"]::placeholder {
+  color: #aaa; /* Lighter gray or your preferred color */
+  opacity: 1; /* Ensures uniform appearance across different browsers */
+}
