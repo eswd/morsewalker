@@ -615,19 +615,29 @@ function tu() {
  */
 function compareExtraInfo(fieldKey, userInput, callingStation) {
   if (!fieldKey) return "";
-  let expectedValue = callingStation[fieldKey];
-  userInput = userInput.toUpperCase();
 
-  if (fieldKey === "name" || fieldKey === "state") {
-    let correct = expectedValue && userInput === expectedValue.toUpperCase();
-    return correct ? userInput : `WRONG (${expectedValue})`;
-  } else if (fieldKey === "serialNumber" || fieldKey === "cwopsNumber") {
+  // Grab the raw expected value
+  let expectedValue = callingStation[fieldKey];
+
+  // Handle numeric fields separately:
+  if (fieldKey === "serialNumber" || fieldKey === "cwopsNumber") {
     let userValInt = parseInt(userInput, 10);
-    let correct = (userValInt === expectedValue);
+    let correct = (userValInt === Number(expectedValue));
     return correct ? `${userValInt}` : `WRONG (${expectedValue})`;
-  } else {
-    return `WRONG (${expectedValue})`;
   }
+
+  // For string-based fields (e.g. name, state), force them to string
+  let upperExpectedValue = String(expectedValue).toUpperCase();
+  userInput = (userInput || "").toUpperCase();
+
+  // Special rule: if both are empty => "N/A"
+  if (upperExpectedValue === "") {
+    return "N/A";
+  }
+
+  // Normal string comparison
+  let correct = (userInput === upperExpectedValue);
+  return correct ? userInput : `WRONG (${expectedValue})`;
 }
 
 /**
