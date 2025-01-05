@@ -71,7 +71,7 @@ export function getCallingStation() {
   if (inputs === null) return;
 
   // determine if it's a US station
-  let isUS = usOnly ? true : Math.random() < 0.4;
+  let isUS = inputs.usOnly ? true : Math.random() < 0.4;
 
   return {
     callsign: isUS ? getRandomUSCallsign(inputs.formats) : getRandomNonUSCallsign(inputs.formats),
