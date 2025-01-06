@@ -47,7 +47,9 @@ function getDOMInputs() {
     maxVolume: parseFloat(document.getElementById('maxVolume').value) / 100,
 
     // Checkboxes & Radio
-    usOnly: document.getElementById('usOnly').checked,
+    usOnly: document.getElementById('usOnly')
+    ? document.getElementById('usOnly').checked
+    : false,
     qrn: document.querySelector('input[name="qrn"]:checked').value,
     qsb: document.getElementById('qsb').checked,
     qsbPercentage: parseInt(document.getElementById('qsbPercentage').value, 10),

@@ -71,7 +71,7 @@ export function getCallingStation() {
   if (inputs === null) return;
 
   // determine if it's a US station
-  let isUS = usOnly ? true : Math.random() < 0.4;
+  let isUS = inputs.usOnly ? true : Math.random() < 0.4;
 
   return {
     callsign: isUS ? getRandomUSCallsign(inputs.formats) : getRandomNonUSCallsign(inputs.formats),
@@ -79,7 +79,7 @@ export function getCallingStation() {
     volume: Math.random() * (inputs.maxVolume - inputs.minVolume) + inputs.minVolume,
     frequency: Math.floor(Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone),
     name: randomElement(names),
-    state: isUS ? randomElement(stateAbbreviations) : null,
+    state: isUS ? randomElement(stateAbbreviations) : "",
     serialNumber: Math.floor(Math.random() * 30) + 1,
     cwopsNumber: Math.floor(Math.random() * 4000) + 1,
     player: null,

@@ -426,7 +426,7 @@ export function normalizeStationGain(stations) {
  * @param {number} audioLock - Base time offset for playback start.
  */
 export function respondWithAllStations(stations, audioLock) {
-  console.log("Responding with stations: " + stations.map(station => station.callsign));
+  console.log("<-- Responding with stations: " + stations.map(station => station.callsign));
   stations = normalizeStationGain(stations);
   for (let i = 0; i < stations.length; i++) {
     let responseTimer = stations[i].player.playSentence(stations[i].callsign, audioLock + Math.random() + 0.5);
@@ -450,16 +450,10 @@ export function addStations(stations, inputs) {
   if (stations.length < inputs.maxStations) {
     // Use weightedRandom to determine the number of stations to add
     let numStations = weightedRandom(inputs.maxStations - stations.length);
-    console.log(`Adding ${numStations} stations...`);
+    console.log(`+ Adding ${numStations} stations...`);
     for (let i = 0; i < numStations; i++) {
       let callingStation = getCallingStation();
-      console.log("********************************")
-      console.log(`Adding station: ${callingStation.callsign}`);
-      console.log("********************************")
-      for (const key of Object.keys(callingStation)) {
-        console.log(`  ${key}: ${JSON.stringify(callingStation[key], null, 2)},`);
-      }
-      console.log("================================")
+      printStation(callingStation);
       stations.push(callingStation);
     }
   }
@@ -467,6 +461,21 @@ export function addStations(stations, inputs) {
   updateActiveStations(stations.length);
 
   return stations;
+}
+
+/**
+ * Prints out a station's information in a formatted manner.
+ *
+ * @param {Object} station - The station object to display.
+ */
+export function printStation(station) {
+    console.log("********************************")
+    console.log(`Station: ${station.callsign}`);
+    console.log("********************************")
+    for (const key of Object.keys(station)) {
+        console.log(` - ${key}: ${JSON.stringify(station[key], null, 2)},`);
+    }
+    console.log("================================")
 }
 
 /**
