@@ -24,7 +24,7 @@ export function createMorsePlayer(station, volumeOverride = null) {
   const farnsworthSpeed = inputs.farnsworthSpeed || station.wpm; // fallback if not set
 
   let qsbInfo = station.qsb ? ` (QSB:${station.qsbDepth.toFixed(2)}A@${station.qsbFrequency.toFixed(2)}Hz)` : '';
-  console.log(`Creating ${station.callsign}: ${station.frequency}Hz@${station.wpm}wpm - Normalized Vol: ${volume.toFixed(2)}${qsbInfo}`);
+  console.log(`/ Initializing ${station.callsign}: ${station.frequency}Hz@${station.wpm}wpm - Normalized Vol: ${volume.toFixed(2)}${qsbInfo}`);
 
   let context = audioContext;
 
@@ -378,7 +378,7 @@ export function createBackgroundStatic() {
     heavy: 3.0,
   };
 
-  console.log(`Creating background static for QRN level: ${selectedQRN}`);
+  console.log(`/ Initializing background static for QRN level ${selectedQRN}`);
 
   const context = backgroundStaticContext;
   const staticUrl = '../audio/static.mp3';
