@@ -48,6 +48,7 @@ export function getYourStation() {
     volume: inputs.yourVolume,
     frequency: inputs.yourSidetone,
     name: inputs.yourName,
+    state: inputs.yourState,
     player: null,
     qsb: false
   }
