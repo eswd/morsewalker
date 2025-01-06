@@ -386,7 +386,7 @@ function send() {
     return;
   }
 
-  responseField.value = responseFieldText;
+  console.log(`--> Sending "${responseFieldText}"`);
 
   if (modeConfig.showTuStep) {
     // Multi-station scenario
