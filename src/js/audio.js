@@ -306,6 +306,9 @@ export function createMorsePlayer(station, volumeOverride = null) {
    * @returns {number} The final time after the sentence is played.
    */
   function playSentence(sentence, startTime = context.currentTime) {
+    // Uncomment the following line to log the sentence being played (for debugging)
+    // console.log(`/ Playing sentence: ${sentence}`);
+
     let time = startTime;
     const tokens = tokenize(sentence);
     for (let i = 0; i < tokens.length; i++) {
