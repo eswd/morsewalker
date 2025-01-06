@@ -26,7 +26,8 @@ import {
   addStations,
   addTableRow,
   clearTable,
-  updateActiveStations
+  updateActiveStations,
+  printStation
 } from "./util.js";
 import {getYourStation, getCallingStation} from "./stationGenerator.js";
 import {updateStaticIntensity} from "./audio.js";
@@ -654,6 +655,7 @@ function nextSingleStation(responseStartTime) {
   const cqButton = document.getElementById('cqButton');
 
   let callingStation = getCallingStation();
+  printStation(callingStation);
   currentStation = callingStation;
   currentStationAttempts = 0;
   updateActiveStations(1);
