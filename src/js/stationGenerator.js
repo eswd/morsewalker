@@ -177,6 +177,47 @@ function randomElement(array) {
 }
 
 /**
+ * Selects a random element from an array using weighted values.
+ *
+ * Each object in the array should have:
+ *   - value:  the item you want to pick
+ *   - weight: the numeric weight (or percentage) of that item
+ *
+ * Example usage:
+ * ```js
+ * const fruits = [
+ *   { value: 'apple',  weight: 50 }, // 50% chance
+ *   { value: 'banana', weight: 30 }, // 30% chance
+ *   { value: 'mango',  weight: 20 }, // 20% chance
+ * ];
+ *
+ * const pickedFruit = weightedRandomElement(fruits);
+ * console.log(pickedFruit); // Logs 'apple', 'banana', or 'mango' based on weights
+ * ```
+ *
+ * @param {Array} weightedArray - The array of objects to select from.
+ * @returns {*} A random element's `value` from the array, based on the weights.
+ */
+function weightedRandomElement(weightedArray) {
+  // Sum all weights
+  const totalWeight = weightedArray.reduce((sum, item) => sum + item.weight, 0);
+
+  // Pick a random number between 0 and totalWeight
+  let randomValue = Math.random() * totalWeight;
+
+  // Determine which item is 'hit' by randomValue
+  for (const item of weightedArray) {
+    randomValue -= item.weight;
+    if (randomValue <= 0) {
+      return item.value;
+    }
+  }
+
+  // Fallback (should not happen if weights are set up correctly)
+  return null;
+}
+
+/**
  * Generates a random single-digit number.
  *
  * Returns a random integer between 0 and 9 inclusive.
