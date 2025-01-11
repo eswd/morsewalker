@@ -500,7 +500,7 @@ export function addTableRow(tableName, index, callsign, attempts, totalTime, ext
   newRow.insertCell(2).textContent = attempts;
   newRow.insertCell(3).textContent = totalTime.toFixed(2);
   if (extra) {
-    newRow.insertCell(4).textContent = extra;
+    newRow.insertCell(4).innerHTML = extra;
   }
 }
 
