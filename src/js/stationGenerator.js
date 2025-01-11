@@ -1,6 +1,28 @@
 import {getInputs} from "./inputs.js";
 
-const US_CALLSIGN_PREFIXES = ['A', 'K', 'N', 'W'];
+// Percentage weights based on rough analysis found here:
+// https://github.com/sc0tfree/morsewalker/issues/8#issuecomment-2585349244
+const US_CALLSIGN_PREFIXES_WEIGHTED = [
+    // Large items
+  { value: 'K', weight: 730 },  // ~73.0%
+  { value: 'W', weight: 138 },  // ~13.8%
+  { value: 'N', weight: 106 },  // ~10.6%
+
+  // Smaller items
+  { value: 'AA', weight: 4 },   // ~0.4%
+  { value: 'AB', weight: 4 },   // ~0.4%
+  { value: 'AC', weight: 4 },   // ~0.4%
+  { value: 'AD', weight: 3 },   // ~0.3%
+  { value: 'AE', weight: 2 },   // ~0.2%
+  { value: 'AF', weight: 2 },   // ~0.2%
+  { value: 'AG', weight: 2 },   // ~0.2%
+  { value: 'AH', weight: 1 },   // ~0.1%
+  { value: 'AI', weight: 2 },   // ~0.2%
+  { value: 'AJ', weight: 1 },   // ~0.1%
+  { value: 'AK', weight: 1 },   // ~0.1%
+  { value: 'AL', weight: 0 },   //  0.0% (won’t ever be chosen)
+]
+
 const NON_US_CALLSIGN_PREFIXES = [
   '9A', 'CT', 'DL', 'E', 'EA', 'EI', 'ES', 'EU', 'F', 'G',
   'GM', 'GW', 'HA', 'HB', 'I', 'JA', 'LA', 'LU', 'LY', 'LZ',
@@ -103,7 +125,7 @@ export function getCallingStation() {
  * @returns {string} A randomly generated US callsign.
  */
 function getRandomUSCallsign(formats) {
-  const prefix = randomElement(US_CALLSIGN_PREFIXES);
+  const prefix = weightedRandomElement(US_CALLSIGN_PREFIXES_WEIGHTED);
   const number = randomDigit();
   const format = randomElement(formats);
 
