@@ -623,13 +623,27 @@ function compareExtraInfo(fieldKey, userInput, callingStation) {
   // Handle numeric fields separately:
   if (fieldKey === "serialNumber" || fieldKey === "cwopsNumber") {
     let userValInt = parseInt(userInput, 10);
+
+    // Handle NaN (i.e., empty or non-numeric input)
+    if (isNaN(userValInt)) {
+      return `<span class="text-warning">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i>
+              </span> (${expectedValue})`;
+    }
+
     let correct = (userValInt === Number(expectedValue));
-    return correct ? `${userValInt}` : `WRONG (${expectedValue})`;
+    return correct
+      ? `<span class="text-success">
+           <i class="fa-solid fa-check me-1"></i><strong>${userValInt}</strong>
+         </span>`
+      : `<span class="text-warning">
+           <i class="fa-solid fa-triangle-exclamation me-1"></i>${userValInt}
+         </span> (${expectedValue})`;
   }
 
   // For string-based fields (e.g. name, state), force them to string
   let upperExpectedValue = String(expectedValue).toUpperCase();
-  userInput = (userInput || "").toUpperCase();
+  userInput = (userInput || "").toUpperCase().trim();
 
   // Special rule: if both are empty => "N/A"
   if (upperExpectedValue === "") {
@@ -638,7 +652,13 @@ function compareExtraInfo(fieldKey, userInput, callingStation) {
 
   // Normal string comparison
   let correct = (userInput === upperExpectedValue);
-  return correct ? userInput : `WRONG (${expectedValue})`;
+  return correct
+    ? `<span class="text-success">
+         <i class="fa-solid fa-check me-1"></i><strong>${userInput}</strong>
+       </span>`
+    : `<span class="text-warning">
+         <i class="fa-solid fa-triangle-exclamation me-1"></i>${userInput}
+       </span> (${upperExpectedValue})`;
 }
 
 /**
