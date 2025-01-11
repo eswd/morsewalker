@@ -426,6 +426,7 @@ export function stopBackgroundStatic(noFade = false) {
       const currentTime = backgroundStaticContext.currentTime;
       staticGain.gain.setValueAtTime(staticGain.gain.value, currentTime);
       staticGain.gain.linearRampToValueAtTime(0, currentTime + fadeTime);
+      updateAudioLock(audioContext.currentTime + fadeTime);
     }
 
     if (noFade) {
