@@ -1,6 +1,28 @@
 import {getInputs} from "./inputs.js";
 
-const US_CALLSIGN_PREFIXES = ['A', 'K', 'N', 'W'];
+// Percentage weights based on rough analysis found here:
+// https://github.com/sc0tfree/morsewalker/issues/8#issuecomment-2585349244
+const US_CALLSIGN_PREFIXES_WEIGHTED = [
+    // Large items
+  { value: 'K', weight: 730 },  // ~73.0%
+  { value: 'W', weight: 138 },  // ~13.8%
+  { value: 'N', weight: 106 },  // ~10.6%
+
+  // Smaller items
+  { value: 'AA', weight: 4 },   // ~0.4%
+  { value: 'AB', weight: 4 },   // ~0.4%
+  { value: 'AC', weight: 4 },   // ~0.4%
+  { value: 'AD', weight: 3 },   // ~0.3%
+  { value: 'AE', weight: 2 },   // ~0.2%
+  { value: 'AF', weight: 2 },   // ~0.2%
+  { value: 'AG', weight: 2 },   // ~0.2%
+  { value: 'AH', weight: 1 },   // ~0.1%
+  { value: 'AI', weight: 2 },   // ~0.2%
+  { value: 'AJ', weight: 1 },   // ~0.1%
+  { value: 'AK', weight: 1 },   // ~0.1%
+  { value: 'AL', weight: 0 },   //  0.0% (won’t ever be chosen)
+]
+
 const NON_US_CALLSIGN_PREFIXES = [
   '9A', 'CT', 'DL', 'E', 'EA', 'EI', 'ES', 'EU', 'F', 'G',
   'GM', 'GW', 'HA', 'HB', 'I', 'JA', 'LA', 'LU', 'LY', 'LZ',
@@ -103,9 +125,18 @@ export function getCallingStation() {
  * @returns {string} A randomly generated US callsign.
  */
 function getRandomUSCallsign(formats) {
-  const prefix = randomElement(US_CALLSIGN_PREFIXES);
-  const number = randomDigit();
   const format = randomElement(formats);
+  const number = randomDigit();
+
+  // If it’s a 1× format (1x1, 1x2, 1x3), we only want one-letter prefixes
+  let possiblePrefixes;
+  if (format.startsWith('1x')) {
+    possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED.filter(item => item.value.length === 1);
+  } else {
+    possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED;
+  }
+
+  const prefix = weightedRandomElement(possiblePrefixes);
 
   switch (format) {
     case '1x1':
@@ -174,6 +205,47 @@ function generateRandomLetters(length) {
  */
 function randomElement(array) {
   return array[Math.floor(Math.random() * array.length)];
+}
+
+/**
+ * Selects a random element from an array using weighted values.
+ *
+ * Each object in the array should have:
+ *   - value:  the item you want to pick
+ *   - weight: the numeric weight (or percentage) of that item
+ *
+ * Example usage:
+ * ```js
+ * const fruits = [
+ *   { value: 'apple',  weight: 50 }, // 50% chance
+ *   { value: 'banana', weight: 30 }, // 30% chance
+ *   { value: 'mango',  weight: 20 }, // 20% chance
+ * ];
+ *
+ * const pickedFruit = weightedRandomElement(fruits);
+ * console.log(pickedFruit); // Logs 'apple', 'banana', or 'mango' based on weights
+ * ```
+ *
+ * @param {Array} weightedArray - The array of objects to select from.
+ * @returns {*} A random element's `value` from the array, based on the weights.
+ */
+function weightedRandomElement(weightedArray) {
+  // Sum all weights
+  const totalWeight = weightedArray.reduce((sum, item) => sum + item.weight, 0);
+
+  // Pick a random number between 0 and totalWeight
+  let randomValue = Math.random() * totalWeight;
+
+  // Determine which item is 'hit' by randomValue
+  for (const item of weightedArray) {
+    randomValue -= item.weight;
+    if (randomValue <= 0) {
+      return item.value;
+    }
+  }
+
+  // Fallback (should not happen if weights are set up correctly)
+  return null;
 }
 
 /**
