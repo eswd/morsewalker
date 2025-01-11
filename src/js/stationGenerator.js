@@ -125,9 +125,18 @@ export function getCallingStation() {
  * @returns {string} A randomly generated US callsign.
  */
 function getRandomUSCallsign(formats) {
-  const prefix = weightedRandomElement(US_CALLSIGN_PREFIXES_WEIGHTED);
-  const number = randomDigit();
   const format = randomElement(formats);
+  const number = randomDigit();
+
+  // If it’s a 1× format (1x1, 1x2, 1x3), we only want one-letter prefixes
+  let possiblePrefixes;
+  if (format.startsWith('1x')) {
+    possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED.filter(item => item.value.length === 1);
+  } else {
+    possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED;
+  }
+
+  const prefix = weightedRandomElement(possiblePrefixes);
 
   switch (format) {
     case '1x1':
