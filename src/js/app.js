@@ -384,6 +384,10 @@ function send() {
 
   // Prevent sending if responseField text box is empty
   if (responseFieldText === "") {
+    // If the response field is empty and there are no active stations, call CQ
+    if (currentStations.length === 0) {
+      cq();
+    }
     return;
   }
 
