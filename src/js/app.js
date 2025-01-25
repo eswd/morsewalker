@@ -52,11 +52,12 @@ let inputs = null;
 let currentStations = [];
 let currentStation = null;
 let activeStationIndex = null;
-let readyForTU = false;
+let readyForTU = false; // This means that the last send was a perfect match
 let currentStationAttempts = 0;
 let currentStationStartTime = null;
 let totalContacts = 0;
 let yourStation = null;
+let lastRespondingStations = null;
 
 /**
  * Event listener setup.
@@ -359,6 +360,7 @@ function cq() {
     // Contest-like modes: CQ adds more stations
     addStations(currentStations, inputs);
     respondWithAllStations(currentStations, yourResponseTimer);
+    lastRespondingStations = currentStations;
   } else {
     // Single mode: Just get one station
     cqButton.disabled = true;
@@ -399,6 +401,27 @@ function send() {
     // Handling repeats
     if (responseFieldText === '?' || responseFieldText === 'AGN' || responseFieldText === 'AGN?') {
       respondWithAllStations(currentStations, yourResponseTimer);
+      lastRespondingStations = currentStations;
+      currentStationAttempts++;
+      return;
+    }
+
+    // Handle QRS
+    if (responseFieldText === 'QRS') {
+      // If Farensworth is already enabled, lower it by lowerBy, but not less than 5
+      const lowerBy = 4;
+
+      // For each lastRespondingStations, lower the Farnsworth speed by lowerBy
+      lastRespondingStations.forEach(stn => {
+        if (stn.enableFarnsworth) {
+          stn.farnsworthSpeed = Math.max(5, stn.farnsworthSpeed - lowerBy);
+        } else {
+          stn.enableFarnsworth = true;
+          stn.farnsworthSpeed = stn.wpm - lowerBy;
+        }
+      });
+
+      respondWithAllStations(lastRespondingStations, yourResponseTimer);
       currentStationAttempts++;
       return;
     }
@@ -444,6 +467,7 @@ function send() {
       // Partial matches: repeat them
       let partialMatchStations = currentStations.filter((_, index) => results[index] === "partial");
       respondWithAllStations(partialMatchStations, yourResponseTimer);
+      lastRespondingStations = partialMatchStations;
       currentStationAttempts++;
       return;
     }
@@ -618,6 +642,7 @@ function tu() {
   }
 
   respondWithAllStations(currentStations, responseTimerToUse);
+  lastRespondingStations = currentStations;
   currentStationStartTime = audioContext.currentTime;
 }
 
