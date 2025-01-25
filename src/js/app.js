@@ -31,7 +31,7 @@ import {
 } from "./util.js";
 import {getYourStation, getCallingStation} from "./stationGenerator.js";
 import {updateStaticIntensity} from "./audio.js";
-import {modeLogicConfig, modeUIConfig} from "./modes";
+import {modeLogicConfig, modeUIConfig} from "./modes.js";
 
 /**
  * Application state variables.
