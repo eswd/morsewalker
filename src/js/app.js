@@ -112,6 +112,19 @@ document.addEventListener('DOMContentLoaded', () => {
     farnsworthSpeedInput.disabled = !enableFarnsworthCheckbox.checked;
   });
 
+  // Add hotkey for CQ (shift + c)
+  // Add an event listener for keydown events
+document.addEventListener('keydown', (event) => {
+  // Check if Shift is pressed and the key is 'C'
+  if (event.shiftKey && event.key === 'C') {
+    // Prevent default behavior if necessary
+    event.preventDefault();
+
+    // Call the CQ function
+    cq();
+  }
+});
+
   responseField.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
