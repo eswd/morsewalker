@@ -464,6 +464,25 @@ function send() {
       return;
     }
 
+    if (responseFieldText === 'QRS') {
+      // If Farensworth is already enabled, lower it by lowerBy, but not less than 5
+      const lowerBy = 4;
+
+      if (currentStation.enableFarnsworth) {
+        currentStation.farnsworthSpeed = Math.max(5, currentStation.farnsworthSpeed - lowerBy);
+      }
+      else {
+        currentStation.enableFarnsworth = true;
+        currentStation.farnsworthSpeed = currentStation.wpm - lowerBy;
+      }
+      // Create a new player
+      currentStation.player = createMorsePlayer(currentStation)
+      let theirResponseTimer = currentStation.player.playSentence(currentStation.callsign, yourResponseTimer + Math.random() + 0.25);
+      updateAudioLock(theirResponseTimer);
+      currentStationAttempts++;
+      return;
+    }
+
     let compareResult = compareStrings(currentStation.callsign, responseFieldText.replace('?', ''));
 
     if (compareResult === "perfect") {
