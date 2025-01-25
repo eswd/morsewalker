@@ -99,6 +99,8 @@ export function getCallingStation() {
   return {
     callsign: isUS ? getRandomUSCallsign(inputs.formats) : getRandomNonUSCallsign(inputs.formats),
     wpm: Math.floor(Math.random() * (inputs.maxSpeed - inputs.minSpeed + 1)) + inputs.minSpeed,
+    enableFarnsworth: inputs.enableFarnsworth,
+    farnsworthSpeed: inputs.farnsworthSpeed || null,
     volume: Math.random() * (inputs.maxVolume - inputs.minVolume) + inputs.minVolume,
     frequency: Math.floor(Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone),
     name: randomElement(names),
