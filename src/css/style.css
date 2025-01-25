@@ -1,5 +1,16 @@
-input[type="text"]::placeholder {
-  color: #aaa; /* Lighter gray or your preferred color */
-  opacity: 1; /* Ensures uniform appearance across different browsers */
+/* Default: do NOT transform text */
+input[type="text"] {
   text-transform: none;
+}
+
+/* Once the placeholder is not shown (i.e., user has typed something),
+   we apply uppercase to user-entered text. */
+input[type="text"]:not(:placeholder-shown) {
+  text-transform: uppercase;
+}
+
+/* Override the placeholder color or styling as needed */
+input[type="text"]::placeholder {
+  color: #aaa;
+  text-transform: none; /* Usually doesn't matter, but good to keep. */
 }
