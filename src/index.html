@@ -375,18 +375,42 @@
     <div class="col-12 col-lg-9 d-flex flex-wrap align-items-center">
       <!-- First row on small: CQ, Response Text Box, Send -->
       <button id="cqButton" class="btn btn-success me-2 mb-2">CQ</button>
-      <input type="text" id="responseField" class="form-control me-2 mb-2" style="max-width:150px;"
-             placeholder="Response">
+      <input type="text"
+             id="responseField"
+             class="form-control me-2 mb-2"
+             style="max-width:150px; text-transform: uppercase;"
+             placeholder="Response"
+             autocomplete="off"
+             autocapitalize="characters"
+             spellcheck="false"
+             autocorrect="off"
+      >
       <button id="sendButton" class="btn btn-primary me-2 mb-2">Send</button>
 
       <!-- Force a new line after sendButton on small screens -->
       <div class="w-100 d-sm-block d-md-none"></div>
 
       <!-- Second row on small: infoField, infoField2, TU -->
-      <input type="text" id="infoField" class="form-control me-2 mb-2" style="display:none; max-width:150px;"
-             placeholder="">
-      <input type="text" id="infoField2" class="form-control me-2 mb-2" style="display:none; max-width:150px;"
-             placeholder="">
+      <input type="text"
+             id="infoField"
+             class="form-control me-2 mb-2"
+             style="display:none; max-width:150px; text-transform: uppercase;"
+             placeholder=""
+             autocomplete="off"
+             autocapitalize="characters"
+             spellcheck="false"
+             autocorrect="off"
+      >
+      <input type="text"
+             id="infoField2"
+             class="form-control me-2 mb-2"
+             style="display:none; max-width:150px; text-transform: uppercase;"
+             placeholder=""
+             autocomplete="off"
+             autocapitalize="characters"
+             spellcheck="false"
+             autocorrect="off"
+      >
       <button id="tuButton" class="btn btn-info mb-2" style="display:none;">TU</button>
     </div>
 
