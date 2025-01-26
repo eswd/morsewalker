@@ -484,11 +484,12 @@ export function printStation(station) {
  * @param {string} tableName - The ID of the HTML table element.
  * @param {number} index - A numeric index or sequence number.
  * @param {string} callsign - The callsign or identifier to display.
+ * @param {string} wpm - The words per minute speed (and Farnsworth spacing) to display.
  * @param {number} attempts - The number of attempts to record.
  * @param {number} totalTime - The total time taken, displayed to two decimal places.
  * @param {string|null} [extra=null] - Optional additional information to include in a fifth cell.
  */
-export function addTableRow(tableName, index, callsign, attempts, totalTime, extra = null) {
+export function addTableRow(tableName, index, callsign, wpm, attempts, totalTime, extra = null) {
   const table = document.getElementById(tableName).getElementsByTagName('tbody')[0];
 
   // Create a new row at the top
@@ -497,10 +498,11 @@ export function addTableRow(tableName, index, callsign, attempts, totalTime, ext
   // Add cells and populate them
   newRow.insertCell(0).textContent = index;
   newRow.insertCell(1).textContent = callsign;
-  newRow.insertCell(2).textContent = attempts;
-  newRow.insertCell(3).textContent = totalTime.toFixed(2);
+  newRow.insertCell(2).textContent = wpm;
+  newRow.insertCell(3).textContent = attempts;
+  newRow.insertCell(4).textContent = totalTime.toFixed(2);
   if (extra) {
-    newRow.insertCell(4).innerHTML = extra;
+    newRow.insertCell(5).innerHTML = extra;
   }
 }
 
