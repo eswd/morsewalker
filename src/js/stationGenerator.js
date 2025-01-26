@@ -143,7 +143,15 @@ function getRandomUSCallsign(formats) {
     possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED;
   }
 
+  console.log("Chosen format: ", format);
+
+  console.log("Possible prefixes: ", possiblePrefixes);
+
   const prefix = weightedRandomElement(possiblePrefixes);
+
+  console.log("Prefix: ", prefix);
+
+  let prefixLettersToGenerate = parseInt(format.slice(0, 1)) - prefix.length;
 
   switch (format) {
     case '1x1':
@@ -153,11 +161,11 @@ function getRandomUSCallsign(formats) {
     case '1x3':
       return `${prefix}${number}${generateRandomLetters(3)}`;
     case '2x1':
-      return `${prefix}${generateRandomLetters(1)}${number}${generateRandomLetters(1)}`;
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(1)}`;
     case '2x2':
-      return `${prefix}${generateRandomLetters(1)}${number}${generateRandomLetters(2)}`;
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(2)}`;
     case '2x3':
-      return `${prefix}${generateRandomLetters(1)}${number}${generateRandomLetters(3)}`;
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(3)}`;
     default:
       return `${prefix}${number}${generateRandomLetters(3)}`; // Default to '1x3'
   }
