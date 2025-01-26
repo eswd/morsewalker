@@ -551,8 +551,8 @@ function send() {
       updateAudioLock(theirResponseTimer2);
 
       totalContacts++;
-      const wpmString = `${currentStation.wpm}wpm` +
-          (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}wpm` : '');
+      const wpmString = `${currentStation.wpm}` +
+          (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
       addTableRow(
         "resultsTable",
         totalContacts,
@@ -632,8 +632,8 @@ function tu() {
     // The QSO ends here after yourSignoff.
   }
 
-  const wpmString = `${currentStation.wpm}wpm` +
-      (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}wpm` : '');
+  const wpmString = `${currentStation.wpm}` +
+      (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
 
   // Add the QSO result to the table
   addTableRow(
