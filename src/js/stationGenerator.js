@@ -1,26 +1,31 @@
 import {getInputs} from "./inputs.js";
 
-// Percentage weights based on rough analysis found here:
+// Weighting these callsign prefixes has been a journey...
+// Originally, I weighted them based on rough analysis found here:
 // https://github.com/sc0tfree/morsewalker/issues/8#issuecomment-2585349244
+// However, as Mike N4FFF pointed out, this doesn't feel right, nor does it match
+// the actual distribution of callsign prefixes in our logs.
+// So, Mike suggested a much better approach, documented here:
+// https://github.com/sc0tfree/morsewalker/issues/29
 const US_CALLSIGN_PREFIXES_WEIGHTED = [
     // Large items
-  { value: 'K', weight: 730 },  // ~73.0%
-  { value: 'W', weight: 138 },  // ~13.8%
-  { value: 'N', weight: 106 },  // ~10.6%
+  { value: 'K', weight: 40 },  // 40%
+  { value: 'W', weight: 25 },  // 25%
+  { value: 'N', weight: 20 },  // 20%
 
   // Smaller items
-  { value: 'AA', weight: 4 },   // ~0.4%
-  { value: 'AB', weight: 4 },   // ~0.4%
-  { value: 'AC', weight: 4 },   // ~0.4%
-  { value: 'AD', weight: 3 },   // ~0.3%
-  { value: 'AE', weight: 2 },   // ~0.2%
-  { value: 'AF', weight: 2 },   // ~0.2%
-  { value: 'AG', weight: 2 },   // ~0.2%
-  { value: 'AH', weight: 1 },   // ~0.1%
-  { value: 'AI', weight: 2 },   // ~0.2%
-  { value: 'AJ', weight: 1 },   // ~0.1%
-  { value: 'AK', weight: 1 },   // ~0.1%
-  { value: 'AL', weight: 0 },   //  0.0% (won’t ever be chosen)
+  { value: 'AA', weight: 2 },   // 2%
+  { value: 'AB', weight: 2 },   // 2%
+  { value: 'AC', weight: 2 },   // 2%
+  { value: 'AD', weight: 1 },   // 1%
+  { value: 'AE', weight: 1 },   // 1%
+  { value: 'AF', weight: 1 },   // 1%
+  { value: 'AG', weight: 1 },   // 1%
+  { value: 'AH', weight: 1 },   // 1%
+  { value: 'AI', weight: 1 },   // 1%
+  { value: 'AJ', weight: 1 },   // 1%
+  { value: 'AK', weight: 1 },   // 1%
+  { value: 'AL', weight: 1 },   // 1%
 ]
 
 const NON_US_CALLSIGN_PREFIXES = [
