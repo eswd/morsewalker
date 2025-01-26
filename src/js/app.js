@@ -551,10 +551,13 @@ function send() {
       updateAudioLock(theirResponseTimer2);
 
       totalContacts++;
+      const wpmString = `${currentStation.wpm}` +
+          (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
       addTableRow(
         "resultsTable",
         totalContacts,
         currentStation.callsign,
+        wpmString,
         currentStationAttempts,
         (audioContext.currentTime - currentStationStartTime),
         "" // No additional info in single mode
@@ -629,12 +632,15 @@ function tu() {
     // The QSO ends here after yourSignoff.
   }
 
+  const wpmString = `${currentStation.wpm}` +
+      (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
 
   // Add the QSO result to the table
   addTableRow(
     'resultsTable',
     totalContacts,
     currentStation.callsign,
+    wpmString,
     currentStationAttempts,
     (audioContext.currentTime - currentStationStartTime),
     extraInfo
