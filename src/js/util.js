@@ -1,5 +1,6 @@
 import {createMorsePlayer, updateAudioLock} from "./audio.js";
 import {getCallingStation} from "./stationGenerator.js";
+import {getInputs} from "./inputs.js";
 
 /**
  * Compares the source and query strings based on specific fuzzy match criteria.
@@ -426,14 +427,16 @@ export function normalizeStationGain(stations) {
  * @param {number} audioLock - Base time offset for playback start.
  */
 export function respondWithAllStations(stations, audioLock) {
-  const MINIMUM_DELAY = 0.25; // Minimum offset after audioLock
-  const RANDOM_RANGE  = 1.75; // How much additional delay to randomize
+
+  let inputs = getInputs();
+
+  let minDelay = inputs.minWait;
+  let maxDelay = inputs.maxWait;
 
   console.log("<-- Responding with stations: " + stations.map(station => station.callsign));
   stations = normalizeStationGain(stations);
   for (let i = 0; i < stations.length; i++) {
-    const randomDelay = MINIMUM_DELAY + (Math.random() * RANDOM_RANGE);
-    console.log(`Playing ${stations[i].callsign} after delay of ${randomDelay} seconds`);
+    const randomDelay = minDelay + (Math.random() * maxDelay);
 
     let responseTimer = stations[i].player.playSentence(stations[i].callsign, audioLock + randomDelay);
     updateAudioLock(responseTimer);
