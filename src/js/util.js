@@ -430,8 +430,9 @@ export function respondWithAllStations(stations, audioLock) {
 
   let inputs = getInputs();
 
-  let minDelay = inputs.minWait;
-  let maxDelay = inputs.maxWait;
+  // Ensure minWait is between 0 and 2, and maxWait is between 0 and 5
+  const minDelay = Math.max(0, Math.min(inputs.minWait, 2));
+  const maxDelay = Math.max(0, Math.min(inputs.maxWait, 5));
 
   console.log("<-- Responding with stations: " + stations.map(station => station.callsign));
   stations = normalizeStationGain(stations);
