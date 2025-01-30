@@ -143,13 +143,7 @@ function getRandomUSCallsign(formats) {
     possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED;
   }
 
-  console.log("Chosen format: ", format);
-
-  console.log("Possible prefixes: ", possiblePrefixes);
-
   const prefix = weightedRandomElement(possiblePrefixes);
-
-  console.log("Prefix: ", prefix);
 
   let prefixLettersToGenerate = parseInt(format.slice(0, 1)) - prefix.length;
 
