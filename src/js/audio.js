@@ -26,7 +26,7 @@ export function createMorsePlayer(station, volumeOverride = null) {
   console.log(
     `/ Initializing ${station.callsign}: ${station.frequency}Hz@${station.wpm}wpm` +
     `${enableFarnsworth ? `/${station.farnsworthSpeed}wpm` : ''}` +
-    ` - Normalized Vol: ${volume.toFixed(2)}` +
+    ` vol: ${volume.toFixed(2)}` +
     `${station.qsb ? ` (QSB:${station.qsbDepth.toFixed(2)}A@${station.qsbFrequency.toFixed(2)}Hz)` : ''}`
   );
 
