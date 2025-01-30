@@ -46,6 +46,8 @@ import {modeLogicConfig, modeUIConfig} from "./modes.js";
  * - `currentStationStartTime`: Timestamp for when the current station interaction started.
  * - `totalContacts`: Counter for the total number of completed contacts.
  * - `yourStation`: Stores the user's station configuration.
+ * - `lastRespondingStations`: An array of stations that last responded to the user's call.
+ * - `farnsworthLowerBy`: The amount to increase the Farnsworth spacing when using QRS.
  */
 let currentMode;
 let inputs = null;
@@ -58,6 +60,7 @@ let currentStationStartTime = null;
 let totalContacts = 0;
 let yourStation = null;
 let lastRespondingStations = null;
+const farnsworthLowerBy = 6;
 
 /**
  * Event listener setup.
@@ -425,16 +428,14 @@ function send() {
 
     // Handle QRS
     if (responseFieldText === 'QRS') {
-      // If Farensworth is already enabled, lower it by lowerBy, but not less than 5
-      const lowerBy = 4;
-
-      // For each lastRespondingStations, lower the Farnsworth speed by lowerBy
+      // For each lastRespondingStations,
+      // if Farensworth is already enabled, lower it by farnsworthLowerBy, but not less than 5
       lastRespondingStations.forEach(stn => {
         if (stn.enableFarnsworth) {
-          stn.farnsworthSpeed = Math.max(5, stn.farnsworthSpeed - lowerBy);
+          stn.farnsworthSpeed = Math.max(5, stn.farnsworthSpeed - farnsworthLowerBy);
         } else {
           stn.enableFarnsworth = true;
-          stn.farnsworthSpeed = stn.wpm - lowerBy;
+          stn.farnsworthSpeed = stn.wpm - farnsworthLowerBy;
         }
       });
 
@@ -506,15 +507,13 @@ function send() {
     }
 
     if (responseFieldText === 'QRS') {
-      // If Farensworth is already enabled, lower it by lowerBy, but not less than 5
-      const lowerBy = 4;
-
+      // If Farensworth is already enabled, lower it by farnsworthLowerBy, but not less than 5
       if (currentStation.enableFarnsworth) {
-        currentStation.farnsworthSpeed = Math.max(5, currentStation.farnsworthSpeed - lowerBy);
+        currentStation.farnsworthSpeed = Math.max(5, currentStation.farnsworthSpeed - farnsworthLowerBy);
       }
       else {
         currentStation.enableFarnsworth = true;
-        currentStation.farnsworthSpeed = currentStation.wpm - lowerBy;
+        currentStation.farnsworthSpeed = currentStation.wpm - farnsworthLowerBy;
       }
       // Create a new player
       currentStation.player = createMorsePlayer(currentStation)
