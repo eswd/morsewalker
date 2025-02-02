@@ -314,6 +314,63 @@
             </div>
           </div>
 
+            <!-- Cut Numbers Row -->
+            <div class="row g-3 mt-3 align-items-end">
+                <!-- Enable Cut Numbers -->
+                <div class="col-12 col-md-4">
+                    <label class="form-label"><span class="badge bg-success me-2">NEW!</span></label>
+                    <input
+                            type="checkbox"
+                            class="btn-check"
+                            autocomplete="off"
+                            id="enableCutNumbers"
+                            onchange="document.getElementById('enableCutNumbersLabel').innerHTML =
+                            `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Enable Cut Numbers`;
+                            ">
+                    <label class="btn btn-outline-primary w-100" for="enableCutNumbers" id="enableCutNumbersLabel">
+                        <i class="fa-regular fa-circle-xmark me-2"></i>Enable Cut Numbers
+                    </label>
+                </div>
+
+                <!-- Individual Cut Number Options -->
+                <div class="col-12 col-md-8">
+                    <label class="form-label">Cut Number Options</label>
+                    <div class="btn-group w-100 flex-wrap" role="group" aria-label="Cut Numbers">
+                        <!-- T(0) checked by default -->
+                        <input type="checkbox" class="btn-check" id="cutT" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="cutT">T/0</label>
+
+                        <!-- A(1) -->
+                        <input type="checkbox" class="btn-check" id="cutA" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="cutA">A/1</label>
+
+                        <!-- U(2) -->
+                        <input type="checkbox" class="btn-check" id="cutU" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="cutU">U/2</label>
+
+                        <!-- V(3) -->
+                        <input type="checkbox" class="btn-check" id="cutV" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="cutV">V/3</label>
+
+                        <!-- E(5) -->
+                        <input type="checkbox" class="btn-check" id="cutE" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="cutE">E/5</label>
+
+                        <!-- G(7) -->
+                        <input type="checkbox" class="btn-check" id="cutG" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="cutG">G/7</label>
+
+                        <!-- D(8) -->
+                        <input type="checkbox" class="btn-check" id="cutD" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="cutD">D/8</label>
+
+                        <!-- N(9) checked by default -->
+                        <input type="checkbox" class="btn-check" id="cutN" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="cutN">N/9</label>
+                    </div>
+                </div>
+            </div>
+
         </div>
       </div>
     </div>
