@@ -116,6 +116,26 @@ document.addEventListener('DOMContentLoaded', () => {
     farnsworthSpeedInput.disabled = !enableFarnsworthCheckbox.checked;
   });
 
+  // Cut Number elements
+  const enableCutNumbersCheckbox = document.getElementById('enableCutNumbers');
+  const cutNumberIds = ['cutT', 'cutA', 'cutU', 'cutV', 'cutE', 'cutG', 'cutD', 'cutN'];
+
+// Set initial state based on whether Cut Numbers is enabled
+  cutNumberIds.forEach((id) => {
+    const checkbox = document.getElementById(id);
+    checkbox.disabled = !enableCutNumbersCheckbox.checked;
+  });
+
+// Toggle the cut-number checkboxes when "Enable Cut Numbers" changes
+  enableCutNumbersCheckbox.addEventListener('change', () => {
+    cutNumberIds.forEach((id) => {
+      const checkbox = document.getElementById(id);
+      checkbox.disabled = !enableCutNumbersCheckbox.checked;
+    });
+  });
+
+
+
 // Add hotkey for CQ (Ctrl + Shift + C)
 // Add an event listener for keydown events
 document.addEventListener('keydown', (event) => {
@@ -462,6 +482,17 @@ function send() {
         let yourExchange, theirExchange;
         yourExchange = " " + modeConfig.yourExchange(yourStation, currentStations[matchIndex], null);
         theirExchange = modeConfig.theirExchange(yourStation, currentStations[matchIndex], null);
+
+        if (inputs.enableCutNumbers) {
+          // inputs.cutNumbers is the object returned by getSelectedCutNumbers()
+          // e.g. { '0': 'T', '9': 'N' } if T/0 and N/9 are selected
+          const cutMap = inputs.cutNumbers;
+
+          // Convert any digits in yourExchange and theirExchange
+          // to their cut-letter equivalent, if found in cutMap
+          yourExchange = yourExchange.replace(/\d/g, digit => cutMap[digit] || digit);
+          theirExchange = theirExchange.replace(/\d/g, digit => cutMap[digit] || digit);
+        }
 
         let yourResponseTimer2 = yourStation.player.playSentence(yourExchange, yourResponseTimer);
         updateAudioLock(yourResponseTimer2);

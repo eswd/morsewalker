@@ -66,6 +66,13 @@ function getDOMInputs() {
 
     // Formats (callsign formats are gathered dynamically)
     formats: getSelectedFormats(),
+
+    // Cut number inputs
+    enableCutNumbers: document.getElementById('enableCutNumbers')
+      ? document.getElementById('enableCutNumbers').checked
+      : false,
+    cutNumbers: getSelectedCutNumbers(),
+
   };
 }
 
@@ -220,4 +227,55 @@ function getSelectedFormats() {
   if (document.getElementById('2x2').checked) formats.push('2x2');
   if (document.getElementById('2x3').checked) formats.push('2x3');
   return formats;
+}
+
+/**
+ * Collects the selected cut-number mappings from the form.
+ *
+ * For each digit the user has chosen to "cut," we store an entry in the returned
+ * object that maps that digit to the corresponding letter. For example, if the user
+ * checked "T/0" in the UI, then the returned object might include { '0': 'T' }.
+ *
+ * @example
+ * // Suppose checkboxes for T/0 and N/9 are selected.
+ * const cutMap = getSelectedCutNumbers();
+ * // cutMap -> { '0': 'T', '9': 'N' }
+ *
+ * // You can then easily replace digits in a string:
+ * const original = '80091';
+ * const replaced = original.replace(/\d/g, digit => cutMap[digit] || digit);
+ * // replaced -> '8TTN1'
+ *
+ * @returns {Object<string, string>} A dictionary mapping each selected digit
+ * to its cut letter. Digits not selected are omitted.
+ */
+function getSelectedCutNumbers() {
+  const cutMap = {};
+
+  if (document.getElementById('cutT')?.checked) {
+    cutMap['0'] = 'T';
+  }
+  if (document.getElementById('cutA')?.checked) {
+    cutMap['1'] = 'A';
+  }
+  if (document.getElementById('cutU')?.checked) {
+    cutMap['2'] = 'U';
+  }
+  if (document.getElementById('cutV')?.checked) {
+    cutMap['3'] = 'V';
+  }
+  if (document.getElementById('cutE')?.checked) {
+    cutMap['5'] = 'E';
+  }
+  if (document.getElementById('cutG')?.checked) {
+    cutMap['7'] = 'G';
+  }
+  if (document.getElementById('cutD')?.checked) {
+    cutMap['8'] = 'D';
+  }
+  if (document.getElementById('cutN')?.checked) {
+    cutMap['9'] = 'N';
+  }
+
+  return cutMap;
 }
