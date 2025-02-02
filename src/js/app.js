@@ -116,6 +116,26 @@ document.addEventListener('DOMContentLoaded', () => {
     farnsworthSpeedInput.disabled = !enableFarnsworthCheckbox.checked;
   });
 
+  // Cut Number elements
+  const enableCutNumbersCheckbox = document.getElementById('enableCutNumbers');
+  const cutNumberIds = ['cutT', 'cutA', 'cutU', 'cutV', 'cutE', 'cutG', 'cutD', 'cutN'];
+
+// Set initial state based on whether Cut Numbers is enabled
+  cutNumberIds.forEach((id) => {
+    const checkbox = document.getElementById(id);
+    checkbox.disabled = !enableCutNumbersCheckbox.checked;
+  });
+
+// Toggle the cut-number checkboxes when "Enable Cut Numbers" changes
+  enableCutNumbersCheckbox.addEventListener('change', () => {
+    cutNumberIds.forEach((id) => {
+      const checkbox = document.getElementById(id);
+      checkbox.disabled = !enableCutNumbersCheckbox.checked;
+    });
+  });
+
+
+
 // Add hotkey for CQ (Ctrl + Shift + C)
 // Add an event listener for keydown events
 document.addEventListener('keydown', (event) => {
