@@ -135,6 +135,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
+  function updateResponsiveButtons() {
+    const responsiveButtons = document.querySelectorAll('.btn-responsive');
+    responsiveButtons.forEach(button => {
+      if (window.innerWidth < 576) {
+        button.classList.add('btn-sm');
+      } else {
+        button.classList.remove('btn-sm');
+      }
+    });
+  }
+
+  // Run on initial load
+  updateResponsiveButtons();
+  // Run on every window resize
+  window.addEventListener("resize", updateResponsiveButtons);
+
+
 
 // Add hotkey for CQ (Ctrl + Shift + C)
 // Add an event listener for keydown events
