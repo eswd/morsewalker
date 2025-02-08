@@ -97,7 +97,7 @@ export const modeLogicConfig = {
   contest: {
     cqMessage: (yourStation, theirStation, arbitrary) => `CQ TEST DE ${yourStation.callsign}`,
     yourExchange: (yourStation, theirStation, arbitrary) => `5NN`,
-    theirExchange: (yourStation, theirStation, arbitrary) => `R 5NN ${theirStation.serialNumber} TU`,
+    theirExchange: (yourStation, theirStation, arbitrary) => `5NN ${theirStation.serialNumber} TU`,
     yourSignoff: (yourStation, theirStation, arbitrary) => `TU ${yourStation.callsign}`,
     theirSignoff: null,
     requiresInfoField: true,
