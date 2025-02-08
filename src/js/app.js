@@ -152,19 +152,18 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener("resize", updateResponsiveButtons);
 
 
-
 // Add hotkey for CQ (Ctrl + Shift + C)
 // Add an event listener for keydown events
-document.addEventListener('keydown', (event) => {
-  // Check if Ctrl and Shift are pressed and the key is 'C'
-  if (event.ctrlKey && event.shiftKey && event.key === 'C') {
-    // Prevent default behavior to avoid browser conflicts
-    event.preventDefault();
+  document.addEventListener('keydown', (event) => {
+    // Check if Ctrl and Shift are pressed and the key is 'C'
+    if (event.ctrlKey && event.shiftKey && event.key === 'C') {
+      // Prevent default behavior to avoid browser conflicts
+      event.preventDefault();
 
-    // Call the CQ function
-    cq();
-  }
-});
+      // Call the CQ function
+      cq();
+    }
+  });
 
   responseField.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -558,8 +557,7 @@ function send() {
       // If Farensworth is already enabled, lower it by farnsworthLowerBy, but not less than 5
       if (currentStation.enableFarnsworth) {
         currentStation.farnsworthSpeed = Math.max(5, currentStation.farnsworthSpeed - farnsworthLowerBy);
-      }
-      else {
+      } else {
         currentStation.enableFarnsworth = true;
         currentStation.farnsworthSpeed = currentStation.wpm - farnsworthLowerBy;
       }
@@ -599,7 +597,7 @@ function send() {
 
       totalContacts++;
       const wpmString = `${currentStation.wpm}` +
-          (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
+        (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
       addTableRow(
         "resultsTable",
         totalContacts,
@@ -680,7 +678,7 @@ function tu() {
   }
 
   const wpmString = `${currentStation.wpm}` +
-      (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
+    (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
 
   // Add the QSO result to the table
   addTableRow(

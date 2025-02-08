@@ -50,8 +50,8 @@ function getDOMInputs() {
 
     // Checkboxes & Radio
     usOnly: document.getElementById('usOnly')
-    ? document.getElementById('usOnly').checked
-    : false,
+      ? document.getElementById('usOnly').checked
+      : false,
     qrn: document.querySelector('input[name="qrn"]:checked').value,
     qsb: document.getElementById('qsb').checked,
     qsbPercentage: parseInt(document.getElementById('qsbPercentage').value, 10),

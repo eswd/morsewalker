@@ -479,13 +479,13 @@ export function addStations(stations, inputs) {
  * @param {Object} station - The station object to display.
  */
 export function printStation(station) {
-    console.log("********************************")
-    console.log(`Station: ${station.callsign}`);
-    console.log("********************************")
-    for (const key of Object.keys(station)) {
-        console.log(` - ${key}: ${JSON.stringify(station[key], null, 2)},`);
-    }
-    console.log("================================")
+  console.log("********************************")
+  console.log(`Station: ${station.callsign}`);
+  console.log("********************************")
+  for (const key of Object.keys(station)) {
+    console.log(` - ${key}: ${JSON.stringify(station[key], null, 2)},`);
+  }
+  console.log("================================")
 }
 
 /**
@@ -560,15 +560,15 @@ function updateSummaryRow(tableName, extra = null) {
     return;
   }
 
-  const wpmValues  = [];    // Will store WPM strings
+  const wpmValues = [];    // Will store WPM strings
   const attemptsList = [];  // Will store numeric attempts
-  const timeList   = [];    // Will store total times
+  const timeList = [];    // Will store total times
 
   for (const row of rows) {
     // WPM in cell[2], Attempts in cell[3], Time in cell[4]
-    const wpmVal      = row.cells[2].textContent;
+    const wpmVal = row.cells[2].textContent;
     const attemptsVal = parseInt(row.cells[3].textContent, 10);
-    const timeVal     = parseFloat(row.cells[4].textContent);
+    const timeVal = parseFloat(row.cells[4].textContent);
 
     wpmValues.push(wpmVal);
     attemptsList.push(attemptsVal);
