@@ -2,7 +2,7 @@
 import 'bootswatch/dist/cerulean/bootstrap.min.css';
 
 // Import custom styles
-import '../css/style.css'
+import '../css/style.css';
 
 // Import Bootstrap JavaScript
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -17,9 +17,9 @@ import {
   updateAudioLock,
   isBackgroundStaticPlaying,
   createBackgroundStatic,
-  stopAllAudio
-} from "./audio.js";
-import {clearAllInvalidStates, getInputs} from "./inputs.js";
+  stopAllAudio,
+} from './audio.js';
+import { clearAllInvalidStates, getInputs } from './inputs.js';
 import {
   compareStrings,
   respondWithAllStations,
@@ -27,11 +27,11 @@ import {
   addTableRow,
   clearTable,
   updateActiveStations,
-  printStation
-} from "./util.js";
-import {getYourStation, getCallingStation} from "./stationGenerator.js";
-import {updateStaticIntensity} from "./audio.js";
-import {modeLogicConfig, modeUIConfig} from "./modes.js";
+  printStation,
+} from './util.js';
+import { getYourStation, getCallingStation } from './stationGenerator.js';
+import { updateStaticIntensity } from './audio.js';
+import { modeLogicConfig, modeUIConfig } from './modes.js';
 
 /**
  * Application state variables.
@@ -78,21 +78,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendButton = document.getElementById('sendButton');
   const tuButton = document.getElementById('tuButton');
   const resetButton = document.getElementById('resetButton');
-  const stopButton = document.getElementById("stopButton");
+  const stopButton = document.getElementById('stopButton');
   const modeRadios = document.querySelectorAll('input[name="mode"]');
-  const yourCallsign = document.getElementById("yourCallsign");
-  const yourName = document.getElementById("yourName");
-  const yourSpeed = document.getElementById("yourSpeed");
-  const yourSidetone = document.getElementById("yourSidetone");
-  const yourVolume = document.getElementById("yourVolume");
+  const yourCallsign = document.getElementById('yourCallsign');
+  const yourName = document.getElementById('yourName');
+  const yourSpeed = document.getElementById('yourSpeed');
+  const yourSidetone = document.getElementById('yourSidetone');
+  const yourVolume = document.getElementById('yourVolume');
 
   // Event Listeners
   cqButton.addEventListener('click', cq);
   sendButton.addEventListener('click', send);
   tuButton.addEventListener('click', tu);
   resetButton.addEventListener('click', reset);
-  stopButton.addEventListener("click", stop);
-  modeRadios.forEach(radio => {
+  stopButton.addEventListener('click', stop);
+  modeRadios.forEach((radio) => {
     radio.addEventListener('change', changeMode);
   });
 
@@ -109,24 +109,33 @@ document.addEventListener('DOMContentLoaded', () => {
   // Farnsworth elements
   const enableFarnsworthCheckbox = document.getElementById('enableFarnsworth');
   const farnsworthSpeedInput = document.getElementById('farnsworthSpeed');
-// Set initial state based on whether Farnsworth is enabled
+  // Set initial state based on whether Farnsworth is enabled
   farnsworthSpeedInput.disabled = !enableFarnsworthCheckbox.checked;
-// Toggle the Farnsworth speed input when the checkbox changes
+  // Toggle the Farnsworth speed input when the checkbox changes
   enableFarnsworthCheckbox.addEventListener('change', () => {
     farnsworthSpeedInput.disabled = !enableFarnsworthCheckbox.checked;
   });
 
   // Cut Number elements
   const enableCutNumbersCheckbox = document.getElementById('enableCutNumbers');
-  const cutNumberIds = ['cutT', 'cutA', 'cutU', 'cutV', 'cutE', 'cutG', 'cutD', 'cutN'];
+  const cutNumberIds = [
+    'cutT',
+    'cutA',
+    'cutU',
+    'cutV',
+    'cutE',
+    'cutG',
+    'cutD',
+    'cutN',
+  ];
 
-// Set initial state based on whether Cut Numbers is enabled
+  // Set initial state based on whether Cut Numbers is enabled
   cutNumberIds.forEach((id) => {
     const checkbox = document.getElementById(id);
     checkbox.disabled = !enableCutNumbersCheckbox.checked;
   });
 
-// Toggle the cut-number checkboxes when "Enable Cut Numbers" changes
+  // Toggle the cut-number checkboxes when "Enable Cut Numbers" changes
   enableCutNumbersCheckbox.addEventListener('change', () => {
     cutNumberIds.forEach((id) => {
       const checkbox = document.getElementById(id);
@@ -134,10 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-
   function updateResponsiveButtons() {
     const responsiveButtons = document.querySelectorAll('.btn-responsive');
-    responsiveButtons.forEach(button => {
+    responsiveButtons.forEach((button) => {
       if (window.innerWidth < 576) {
         button.classList.add('btn-sm');
       } else {
@@ -149,11 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Run on initial load
   updateResponsiveButtons();
   // Run on every window resize
-  window.addEventListener("resize", updateResponsiveButtons);
+  window.addEventListener('resize', updateResponsiveButtons);
 
-
-// Add hotkey for CQ (Ctrl + Shift + C)
-// Add an event listener for keydown events
+  // Add hotkey for CQ (Ctrl + Shift + C)
+  // Add an event listener for keydown events
   document.addEventListener('keydown', (event) => {
     // Check if Ctrl and Shift are pressed and the key is 'C'
     if (event.ctrlKey && event.shiftKey && event.key === 'C') {
@@ -165,39 +172,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  responseField.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
+  responseField.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
       event.preventDefault();
       sendButton.click();
     }
   });
 
-  infoField.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && tuButton.style.display !== 'none') {
+  infoField.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && tuButton.style.display !== 'none') {
       event.preventDefault();
       tuButton.click();
     }
   });
 
-  infoField2.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && tuButton.style.display !== 'none') {
+  infoField2.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && tuButton.style.display !== 'none') {
       event.preventDefault();
       tuButton.click();
     }
   });
 
-  cqButton.addEventListener("click", () => {
+  cqButton.addEventListener('click', () => {
     responseField.focus();
   });
 
   // Local Storage keys for user settings
   const keys = {
-    yourCallsign: "yourCallsign",
-    yourName: "yourName",
-    yourState: "yourState", // Added yourState
-    yourSpeed: "yourSpeed",
-    yourSidetone: "yourSidetone",
-    yourVolume: "yourVolume"
+    yourCallsign: 'yourCallsign',
+    yourName: 'yourName',
+    yourState: 'yourState', // Added yourState
+    yourSpeed: 'yourSpeed',
+    yourSidetone: 'yourSidetone',
+    yourVolume: 'yourVolume',
   };
 
   /**
@@ -207,43 +214,48 @@ document.addEventListener('DOMContentLoaded', () => {
    * - Saves updated input field values to local storage whenever they change.
    * - Ensures persistence of user preferences across sessions.
    */
-  yourCallsign.value = localStorage.getItem(keys.yourCallsign) || yourCallsign.value;
+  yourCallsign.value =
+    localStorage.getItem(keys.yourCallsign) || yourCallsign.value;
   yourName.value = localStorage.getItem(keys.yourName) || yourName.value;
   yourState.value = localStorage.getItem(keys.yourState) || yourState.value; // Load yourState
   yourSpeed.value = localStorage.getItem(keys.yourSpeed) || yourSpeed.value;
-  yourSidetone.value = localStorage.getItem(keys.yourSidetone) || yourSidetone.value;
+  yourSidetone.value =
+    localStorage.getItem(keys.yourSidetone) || yourSidetone.value;
   yourVolume.value = localStorage.getItem(keys.yourVolume) || yourVolume.value;
 
   // Save user settings to localStorage on input change
-  yourCallsign.addEventListener("input", () => {
+  yourCallsign.addEventListener('input', () => {
     localStorage.setItem(keys.yourCallsign, yourCallsign.value);
   });
-  yourName.addEventListener("input", () => {
+  yourName.addEventListener('input', () => {
     localStorage.setItem(keys.yourName, yourName.value);
   });
-  yourState.addEventListener("input", () => { // Save yourState
+  yourState.addEventListener('input', () => {
+    // Save yourState
     localStorage.setItem(keys.yourState, yourState.value);
   });
-  yourSpeed.addEventListener("input", () => {
+  yourSpeed.addEventListener('input', () => {
     localStorage.setItem(keys.yourSpeed, yourSpeed.value);
   });
-  yourSidetone.addEventListener("input", () => {
+  yourSidetone.addEventListener('input', () => {
     localStorage.setItem(keys.yourSidetone, yourSidetone.value);
   });
-  yourVolume.addEventListener("input", () => {
+  yourVolume.addEventListener('input', () => {
     localStorage.setItem(keys.yourVolume, yourVolume.value);
   });
 
   // Handle QRN intensity changes
   const qrnRadioButtons = document.querySelectorAll('input[name="qrn"]');
-  qrnRadioButtons.forEach(radio => {
-    radio.addEventListener("change", updateStaticIntensity);
+  qrnRadioButtons.forEach((radio) => {
+    radio.addEventListener('change', updateStaticIntensity);
   });
 
   // Determine mode from local storage or default to single
   const savedMode = localStorage.getItem('mode') || 'single';
   // Check the corresponding radio button based on savedMode
-  const savedModeRadio = document.querySelector(`input[name="mode"][value="${savedMode}"]`);
+  const savedModeRadio = document.querySelector(
+    `input[name="mode"][value="${savedMode}"]`
+  );
   if (savedModeRadio) {
     savedModeRadio.checked = true;
   }
@@ -251,13 +263,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set currentMode to the saved or default mode
   currentMode = savedMode;
 
-// Update basic stats on page load
-  if (yourCallsign.value !== "") {
+  // Update basic stats on page load
+  if (yourCallsign.value !== '') {
     fetch(`https://stats.${window.location.hostname}/api/submit`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({mode: currentMode, callsign: yourCallsign.value})
-    }).catch(error => {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: currentMode, callsign: yourCallsign.value }),
+    }).catch((error) => {
       console.error('Failed to send CloudFlare stats.');
     });
   }
@@ -324,14 +336,16 @@ function applyModeSettings(mode) {
 
   // Show/hide the extra column in the results table
   const extraColumns = resultsTable.querySelectorAll('.mode-specific-column');
-  extraColumns.forEach(col => {
+  extraColumns.forEach((col) => {
     col.style.display = config.tableExtraColumn ? 'table-cell' : 'none';
   });
 
   // Update extra column header text
-  const extraColumnHeaders = resultsTable.querySelectorAll('thead .mode-specific-column');
-  extraColumnHeaders.forEach(header => {
-    header.textContent = config.extraColumnHeader || "Additional Info";
+  const extraColumnHeaders = resultsTable.querySelectorAll(
+    'thead .mode-specific-column'
+  );
+  extraColumnHeaders.forEach((header) => {
+    header.textContent = config.extraColumnHeader || 'Additional Info';
   });
 }
 
@@ -352,9 +366,9 @@ function resetGameState() {
 
   updateActiveStations(0);
   clearTable('resultsTable');
-  document.getElementById('responseField').value = "";
-  document.getElementById('infoField').value = "";
-  document.getElementById('infoField2').value = "";
+  document.getElementById('responseField').value = '';
+  document.getElementById('infoField').value = '';
+  document.getElementById('infoField2').value = '';
   document.getElementById('cqButton').disabled = false;
   stopAllAudio();
   updateAudioLock(0);
@@ -367,7 +381,9 @@ function resetGameState() {
  * resets the game state, clears invalid states, and applies the new mode's settings.
  */
 function changeMode() {
-  const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+  const selectedMode = document.querySelector(
+    'input[name="mode"]:checked'
+  ).value;
   currentMode = selectedMode;
   localStorage.setItem('mode', currentMode);
   resetGameState();
@@ -405,7 +421,10 @@ function cq() {
   yourStation.player = createMorsePlayer(yourStation);
 
   let cqMsg = modeConfig.cqMessage(yourStation, null, null);
-  let yourResponseTimer = yourStation.player.playSentence(cqMsg, audioContext.currentTime + backgroundStaticDelay);
+  let yourResponseTimer = yourStation.player.playSentence(
+    cqMsg,
+    audioContext.currentTime + backgroundStaticDelay
+  );
   updateAudioLock(yourResponseTimer);
 
   if (modeConfig.showTuStep) {
@@ -437,7 +456,7 @@ function send() {
   let responseFieldText = responseField.value.trim().toUpperCase();
 
   // Prevent sending if responseField text box is empty
-  if (responseFieldText === "") {
+  if (responseFieldText === '') {
     // If the response field is empty and there are no active stations, call CQ
     if (currentStations.length === 0) {
       cq();
@@ -455,7 +474,11 @@ function send() {
     updateAudioLock(yourResponseTimer);
 
     // Handling repeats
-    if (responseFieldText === '?' || responseFieldText === 'AGN' || responseFieldText === 'AGN?') {
+    if (
+      responseFieldText === '?' ||
+      responseFieldText === 'AGN' ||
+      responseFieldText === 'AGN?'
+    ) {
       respondWithAllStations(currentStations, yourResponseTimer);
       lastRespondingStations = currentStations;
       currentStationAttempts++;
@@ -466,9 +489,12 @@ function send() {
     if (responseFieldText === 'QRS') {
       // For each lastRespondingStations,
       // if Farensworth is already enabled, lower it by farnsworthLowerBy, but not less than 5
-      lastRespondingStations.forEach(stn => {
+      lastRespondingStations.forEach((stn) => {
         if (stn.enableFarnsworth) {
-          stn.farnsworthSpeed = Math.max(5, stn.farnsworthSpeed - farnsworthLowerBy);
+          stn.farnsworthSpeed = Math.max(
+            5,
+            stn.farnsworthSpeed - farnsworthLowerBy
+          );
         } else {
           stn.enableFarnsworth = true;
           stn.farnsworthSpeed = stn.wpm - farnsworthLowerBy;
@@ -480,24 +506,36 @@ function send() {
       return;
     }
 
-    let results = currentStations.map(stn =>
+    let results = currentStations.map((stn) =>
       compareStrings(stn.callsign, responseFieldText.replace('?', ''))
     );
     let hasQuestionMark = responseFieldText.includes('?');
 
-    if (results.includes("perfect")) {
-      let matchIndex = results.indexOf("perfect");
+    if (results.includes('perfect')) {
+      let matchIndex = results.indexOf('perfect');
       if (hasQuestionMark) {
         // Perfect match but user unsure
-        let theirResponseTimer = currentStations[matchIndex].player.playSentence("RR", yourResponseTimer + 0.25);
+        let theirResponseTimer = currentStations[
+          matchIndex
+        ].player.playSentence('RR', yourResponseTimer + 0.25);
         updateAudioLock(theirResponseTimer);
         currentStationAttempts++;
         return;
       } else {
         // Perfect confirmed match
         let yourExchange, theirExchange;
-        yourExchange = " " + modeConfig.yourExchange(yourStation, currentStations[matchIndex], null);
-        theirExchange = modeConfig.theirExchange(yourStation, currentStations[matchIndex], null);
+        yourExchange =
+          ' ' +
+          modeConfig.yourExchange(
+            yourStation,
+            currentStations[matchIndex],
+            null
+          );
+        theirExchange = modeConfig.theirExchange(
+          yourStation,
+          currentStations[matchIndex],
+          null
+        );
 
         if (inputs.enableCutNumbers) {
           // inputs.cutNumbers is the object returned by getSelectedCutNumbers()
@@ -506,16 +544,24 @@ function send() {
 
           // Convert any digits in yourExchange and theirExchange
           // to their cut-letter equivalent, if found in cutMap
-          yourExchange = yourExchange.replace(/\d/g, digit => cutMap[digit] || digit);
-          theirExchange = theirExchange.replace(/\d/g, digit => cutMap[digit] || digit);
+          yourExchange = yourExchange.replace(
+            /\d/g,
+            (digit) => cutMap[digit] || digit
+          );
+          theirExchange = theirExchange.replace(
+            /\d/g,
+            (digit) => cutMap[digit] || digit
+          );
         }
 
-        let yourResponseTimer2 = yourStation.player.playSentence(yourExchange, yourResponseTimer);
-        updateAudioLock(yourResponseTimer2);
-        let theirResponseTimer = currentStations[matchIndex].player.playSentence(
-          theirExchange,
-          yourResponseTimer2 + 0.5
+        let yourResponseTimer2 = yourStation.player.playSentence(
+          yourExchange,
+          yourResponseTimer
         );
+        updateAudioLock(yourResponseTimer2);
+        let theirResponseTimer = currentStations[
+          matchIndex
+        ].player.playSentence(theirExchange, yourResponseTimer2 + 0.5);
         updateAudioLock(theirResponseTimer);
         currentStationAttempts++;
 
@@ -528,9 +574,11 @@ function send() {
       }
     }
 
-    if (results.includes("partial")) {
+    if (results.includes('partial')) {
       // Partial matches: repeat them
-      let partialMatchStations = currentStations.filter((_, index) => results[index] === "partial");
+      let partialMatchStations = currentStations.filter(
+        (_, index) => results[index] === 'partial'
+      );
       respondWithAllStations(partialMatchStations, yourResponseTimer);
       lastRespondingStations = partialMatchStations;
       currentStationAttempts++;
@@ -546,8 +594,15 @@ function send() {
     let yourResponseTimer = yourStation.player.playSentence(responseFieldText);
     updateAudioLock(yourResponseTimer);
 
-    if (responseFieldText === '?' || responseFieldText === 'AGN' || responseFieldText === 'AGN?') {
-      let theirResponseTimer = currentStation.player.playSentence(currentStation.callsign, yourResponseTimer + Math.random() + 0.25);
+    if (
+      responseFieldText === '?' ||
+      responseFieldText === 'AGN' ||
+      responseFieldText === 'AGN?'
+    ) {
+      let theirResponseTimer = currentStation.player.playSentence(
+        currentStation.callsign,
+        yourResponseTimer + Math.random() + 0.25
+      );
       updateAudioLock(theirResponseTimer);
       currentStationAttempts++;
       return;
@@ -556,70 +611,116 @@ function send() {
     if (responseFieldText === 'QRS') {
       // If Farensworth is already enabled, lower it by farnsworthLowerBy, but not less than 5
       if (currentStation.enableFarnsworth) {
-        currentStation.farnsworthSpeed = Math.max(5, currentStation.farnsworthSpeed - farnsworthLowerBy);
+        currentStation.farnsworthSpeed = Math.max(
+          5,
+          currentStation.farnsworthSpeed - farnsworthLowerBy
+        );
       } else {
         currentStation.enableFarnsworth = true;
         currentStation.farnsworthSpeed = currentStation.wpm - farnsworthLowerBy;
       }
       // Create a new player
-      currentStation.player = createMorsePlayer(currentStation)
-      let theirResponseTimer = currentStation.player.playSentence(currentStation.callsign, yourResponseTimer + Math.random() + 0.25);
+      currentStation.player = createMorsePlayer(currentStation);
+      let theirResponseTimer = currentStation.player.playSentence(
+        currentStation.callsign,
+        yourResponseTimer + Math.random() + 0.25
+      );
       updateAudioLock(theirResponseTimer);
       currentStationAttempts++;
       return;
     }
 
-    let compareResult = compareStrings(currentStation.callsign, responseFieldText.replace('?', ''));
+    let compareResult = compareStrings(
+      currentStation.callsign,
+      responseFieldText.replace('?', '')
+    );
 
-    if (compareResult === "perfect") {
+    if (compareResult === 'perfect') {
       currentStationAttempts++;
 
       if (responseFieldText.includes('?')) {
-        let theirResponseTimer = currentStation.player.playSentence("RR", yourResponseTimer + 1);
+        let theirResponseTimer = currentStation.player.playSentence(
+          'RR',
+          yourResponseTimer + 1
+        );
         updateAudioLock(theirResponseTimer);
         return;
       }
 
       // Perfect match confirmed in single mode
-      let yourExchange = " " + modeConfig.yourExchange(yourStation, currentStation, null);
-      let theirExchange = modeConfig.theirExchange(yourStation, currentStation, null);
+      let yourExchange =
+        ' ' + modeConfig.yourExchange(yourStation, currentStation, null);
+      let theirExchange = modeConfig.theirExchange(
+        yourStation,
+        currentStation,
+        null
+      );
 
-      let yourResponseTimer2 = yourStation.player.playSentence(yourExchange, yourResponseTimer);
+      let yourResponseTimer2 = yourStation.player.playSentence(
+        yourExchange,
+        yourResponseTimer
+      );
       updateAudioLock(yourResponseTimer2);
-      let theirResponseTimer = currentStation.player.playSentence(theirExchange, yourResponseTimer2 + 0.5);
+      let theirResponseTimer = currentStation.player.playSentence(
+        theirExchange,
+        yourResponseTimer2 + 0.5
+      );
       updateAudioLock(theirResponseTimer);
-      let yourSignoff = modeConfig.yourSignoff(yourStation, currentStation, null);
-      let yourResponseTimer3 = yourStation.player.playSentence(yourSignoff, theirResponseTimer + 0.5);
+      let yourSignoff = modeConfig.yourSignoff(
+        yourStation,
+        currentStation,
+        null
+      );
+      let yourResponseTimer3 = yourStation.player.playSentence(
+        yourSignoff,
+        theirResponseTimer + 0.5
+      );
       updateAudioLock(yourResponseTimer3);
-      let theirSignoff = modeConfig.theirSignoff(yourStation, currentStation, null);
-      let theirResponseTimer2 = currentStation.player.playSentence(theirSignoff, yourResponseTimer3 + 0.5);
+      let theirSignoff = modeConfig.theirSignoff(
+        yourStation,
+        currentStation,
+        null
+      );
+      let theirResponseTimer2 = currentStation.player.playSentence(
+        theirSignoff,
+        yourResponseTimer3 + 0.5
+      );
       updateAudioLock(theirResponseTimer2);
 
       totalContacts++;
-      const wpmString = `${currentStation.wpm}` +
-        (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
+      const wpmString =
+        `${currentStation.wpm}` +
+        (currentStation.enableFarnsworth
+          ? ` / ${currentStation.farnsworthSpeed}`
+          : '');
       addTableRow(
-        "resultsTable",
+        'resultsTable',
         totalContacts,
         currentStation.callsign,
         wpmString,
         currentStationAttempts,
-        (audioContext.currentTime - currentStationStartTime),
-        "" // No additional info in single mode
+        audioContext.currentTime - currentStationStartTime,
+        '' // No additional info in single mode
       );
 
       nextSingleStation(theirResponseTimer2);
       return;
-    } else if (compareResult === "partial") {
+    } else if (compareResult === 'partial') {
       currentStationAttempts++;
-      let theirResponseTimer = currentStation.player.playSentence(currentStation.callsign, yourResponseTimer + Math.random() + 0.25);
+      let theirResponseTimer = currentStation.player.playSentence(
+        currentStation.callsign,
+        yourResponseTimer + Math.random() + 0.25
+      );
       updateAudioLock(theirResponseTimer);
       return;
     }
 
     // No match in single mode
     currentStationAttempts++;
-    let theirResponseTimer = currentStation.player.playSentence(currentStation.callsign, yourResponseTimer + Math.random() + 0.25);
+    let theirResponseTimer = currentStation.player.playSentence(
+      currentStation.callsign,
+      yourResponseTimer + Math.random() + 0.25
+    );
     updateAudioLock(theirResponseTimer);
   }
 }
@@ -645,11 +746,19 @@ function tu() {
   totalContacts++;
 
   // Compare both fields if required
-  let extraInfo = "";
-  extraInfo += compareExtraInfo(modeConfig.extraInfoFieldKey, infoValue1, currentStation);
+  let extraInfo = '';
+  extraInfo += compareExtraInfo(
+    modeConfig.extraInfoFieldKey,
+    infoValue1,
+    currentStation
+  );
   if (modeConfig.requiresInfoField2 && modeConfig.extraInfoFieldKey2) {
-    if (extraInfo.length > 0) extraInfo += " / ";
-    extraInfo += compareExtraInfo(modeConfig.extraInfoFieldKey2, infoValue2, currentStation);
+    if (extraInfo.length > 0) extraInfo += ' / ';
+    extraInfo += compareExtraInfo(
+      modeConfig.extraInfoFieldKey2,
+      infoValue2,
+      currentStation
+    );
   }
 
   let arbitrary = null;
@@ -659,17 +768,31 @@ function tu() {
     arbitrary = infoValue1; //state
   }
 
-  let yourSignoffMessage = modeConfig.yourSignoff(yourStation, currentStation, arbitrary);
+  let yourSignoffMessage = modeConfig.yourSignoff(
+    yourStation,
+    currentStation,
+    arbitrary
+  );
 
-  let yourResponseTimer = yourStation.player.playSentence(yourSignoffMessage, audioContext.currentTime + 0.5);
+  let yourResponseTimer = yourStation.player.playSentence(
+    yourSignoffMessage,
+    audioContext.currentTime + 0.5
+  );
   updateAudioLock(yourResponseTimer);
 
   let responseTimerToUse = yourResponseTimer; // fallback timer
 
   if (typeof modeConfig.theirSignoff === 'function') {
     // Call theirSignoff only if it returns a non-empty string
-    let theirSignoffMessage = modeConfig.theirSignoff(yourStation, currentStation, null);
-    let theirResponseTimer = currentStation.player.playSentence(theirSignoffMessage, yourResponseTimer + 0.5);
+    let theirSignoffMessage = modeConfig.theirSignoff(
+      yourStation,
+      currentStation,
+      null
+    );
+    let theirResponseTimer = currentStation.player.playSentence(
+      theirSignoffMessage,
+      yourResponseTimer + 0.5
+    );
     updateAudioLock(theirResponseTimer);
     responseTimerToUse = theirResponseTimer;
   } else {
@@ -677,8 +800,11 @@ function tu() {
     // The QSO ends here after yourSignoff.
   }
 
-  const wpmString = `${currentStation.wpm}` +
-    (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
+  const wpmString =
+    `${currentStation.wpm}` +
+    (currentStation.enableFarnsworth
+      ? ` / ${currentStation.farnsworthSpeed}`
+      : '');
 
   // Add the QSO result to the table
   addTableRow(
@@ -687,7 +813,7 @@ function tu() {
     currentStation.callsign,
     wpmString,
     currentStationAttempts,
-    (audioContext.currentTime - currentStationStartTime),
+    audioContext.currentTime - currentStationStartTime,
     extraInfo
   );
 
@@ -699,13 +825,13 @@ function tu() {
   updateActiveStations(currentStations.length);
 
   const responseField = document.getElementById('responseField');
-  responseField.value = "";
-  infoField.value = "";
-  infoField2.value = "";
+  responseField.value = '';
+  infoField.value = '';
+  infoField2.value = '';
   responseField.focus();
 
   // Chance of a new station joining
-  if (Math.random() < 0.40) {
+  if (Math.random() < 0.4) {
     addStations(currentStations, inputs);
   }
 
@@ -727,13 +853,13 @@ function tu() {
  * @returns {string} A string indicating correctness or showing the expected value.
  */
 function compareExtraInfo(fieldKey, userInput, callingStation) {
-  if (!fieldKey) return "";
+  if (!fieldKey) return '';
 
   // Grab the raw expected value
   let expectedValue = callingStation[fieldKey];
 
   // Handle numeric fields separately:
-  if (fieldKey === "serialNumber" || fieldKey === "cwopsNumber") {
+  if (fieldKey === 'serialNumber' || fieldKey === 'cwopsNumber') {
     let userValInt = parseInt(userInput, 10);
 
     // Handle NaN (i.e., empty or non-numeric input)
@@ -743,7 +869,7 @@ function compareExtraInfo(fieldKey, userInput, callingStation) {
               </span> (${expectedValue})`;
     }
 
-    let correct = (userValInt === Number(expectedValue));
+    let correct = userValInt === Number(expectedValue);
     return correct
       ? `<span class="text-success">
            <i class="fa-solid fa-check me-1"></i><strong>${userValInt}</strong>
@@ -755,15 +881,15 @@ function compareExtraInfo(fieldKey, userInput, callingStation) {
 
   // For string-based fields (e.g. name, state), force them to string
   let upperExpectedValue = String(expectedValue).toUpperCase();
-  userInput = (userInput || "").toUpperCase().trim();
+  userInput = (userInput || '').toUpperCase().trim();
 
   // Special rule: if both are empty => "N/A"
-  if (upperExpectedValue === "") {
-    return "N/A";
+  if (upperExpectedValue === '') {
+    return 'N/A';
   }
 
   // Normal string comparison
-  let correct = (userInput === upperExpectedValue);
+  let correct = userInput === upperExpectedValue;
   return correct
     ? `<span class="text-success">
          <i class="fa-solid fa-check me-1"></i><strong>${userInput}</strong>
@@ -793,16 +919,18 @@ function nextSingleStation(responseStartTime) {
   updateActiveStations(1);
 
   callingStation.player = createMorsePlayer(callingStation);
-  let theirResponseTimer = callingStation.player.playSentence(callingStation.callsign, responseStartTime + Math.random() + 1);
+  let theirResponseTimer = callingStation.player.playSentence(
+    callingStation.callsign,
+    responseStartTime + Math.random() + 1
+  );
   updateAudioLock(theirResponseTimer);
 
   currentStationStartTime = theirResponseTimer;
-  responseField.value = "";
+  responseField.value = '';
   responseField.focus();
 
-  cqButton.disabled = (!modeConfig.showTuStep && currentStation !== null);
+  cqButton.disabled = !modeConfig.showTuStep && currentStation !== null;
 }
-
 
 /**
  * Stops all audio playback and resets the CQ button.
@@ -848,9 +976,9 @@ function reset() {
   const responseField = document.getElementById('responseField');
   const infoField = document.getElementById('infoField');
   const infoField2 = document.getElementById('infoField2');
-  responseField.value = "";
-  infoField.value = "";
-  infoField2.value = "";
+  responseField.value = '';
+  infoField.value = '';
+  infoField2.value = '';
   responseField.focus();
 
   const modeConfig = getModeConfig();

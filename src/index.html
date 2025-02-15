@@ -1,715 +1,1238 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Morse Walker</title>
-    <meta name="description"
-          content="Morse Walker is a CW pileup trainer with modes such as POTA, SST, and CWT, plus beginner-friendly features, including adjustable speeds and Farnsworth spacing.">
+    <meta
+      name="description"
+      content="Morse Walker is a CW pileup trainer with modes such as POTA, SST, and CWT, plus beginner-friendly features, including adjustable speeds and Farnsworth spacing."
+    />
 
     <!-- Favicon -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
     <!-- Web Manifest -->
-    <link rel="manifest" href="site.webmanifest">
+    <link rel="manifest" href="site.webmanifest" />
 
     <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="48x48" href="img/morsewalker-48px.png">
-    <link rel="icon" type="image/png" sizes="72x72" href="img/morsewalker-72px.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="img/morsewalker-96px.png">
-    <link rel="icon" type="image/png" sizes="144x144" href="img/morsewalker-144px.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="img/morsewalker-192px.png">
-    <link rel="icon" type="image/png" sizes="256x256" href="img/morsewalker-256px.png">
-    <link rel="icon" type="image/png" sizes="384x384" href="img/morsewalker-384px.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="img/morsewalker-512px.png">
-    <link rel="icon" type="image/svg+xml" href="img/morsewalker-logo.svg">
-    <link rel="apple-touch-icon" sizes="256x256" href="img/morsewalker-256px.png">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="48x48"
+      href="img/morsewalker-48px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="72x72"
+      href="img/morsewalker-72px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="img/morsewalker-96px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="144x144"
+      href="img/morsewalker-144px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="img/morsewalker-192px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="img/morsewalker-256px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="384x384"
+      href="img/morsewalker-384px.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="img/morsewalker-512px.png"
+    />
+    <link rel="icon" type="image/svg+xml" href="img/morsewalker-logo.svg" />
+    <link
+      rel="apple-touch-icon"
+      sizes="256x256"
+      href="img/morsewalker-256px.png"
+    />
 
     <!-- Theme Colors -->
-    <meta name="theme-color" content="#fafafa">
-    <meta name="msapplication-TileColor" content="#fafafa">
-</head>
+    <meta name="theme-color" content="#fafafa" />
+    <meta name="msapplication-TileColor" content="#fafafa" />
+  </head>
 
-
-<body class="container py-4">
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="mb-0" style="display: inline-block; line-height: 1;">
-            Morse Walker
-            <img src="img/morsewalker-logo.png" alt="Morse Walker Logo"
-                 style="height: 1em; vertical-align: bottom;">
+  <body class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="mb-0" style="display: inline-block; line-height: 1">
+          Morse Walker
+          <img
+            src="img/morsewalker-logo.png"
+            alt="Morse Walker Logo"
+            style="height: 1em; vertical-align: bottom"
+          />
         </h1>
         <p class="fw-bold fst-italic">Walk before you run!</p>
+      </div>
+      <div class="alert alert-dismissible alert-danger" style="max-width: 35em">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+        Morse Walker is currently in <strong>beta</strong> and
+        <i>your feedback is invaluable!</i><br />
+        <a
+          href="https://github.com/sc0tfree/morsewalker/issues/new/choose"
+          class="alert-link"
+          >Submit an issue</a
+        >
+        for bugs or feature requests, or
+        <a href="mailto:henry@w6nyc.com" class="alert-link">email me</a>.
+      </div>
     </div>
-    <div class="alert alert-dismissible alert-danger" style="max-width: 35em">
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        Morse Walker is currently in <strong>beta</strong> and <i>your feedback is invaluable!</i><br>
-        <a href="https://github.com/sc0tfree/morsewalker/issues/new/choose" class="alert-link">Submit an issue</a>
-        for bugs or feature requests, or <a href="mailto:henry@w6nyc.com" class="alert-link">email me</a>.
-    </div>
-</div>
 
-<hr>
+    <hr />
 
-<!-- Mode Section -->
-<div class="d-flex flex-column flex-sm-row align-items-center mb-3">
-    <!-- On extra-small screens, this will be centered and above the buttons.
+    <!-- Mode Section -->
+    <div class="d-flex flex-column flex-sm-row align-items-center mb-3">
+      <!-- On extra-small screens, this will be centered and above the buttons.
          From 'sm' breakpoint and up, it aligns to the start (left) and sits inline. -->
-    <h3 class="mb-2 mb-sm-0 text-center text-sm-start me-sm-3">Mode</h3>
+      <h3 class="mb-2 mb-sm-0 text-center text-sm-start me-sm-3">Mode</h3>
 
-    <div class="flex-grow-1 d-flex justify-content-center flex-column align-items-center">
+      <div
+        class="flex-grow-1 d-flex justify-content-center flex-column align-items-center"
+      >
         <div class="btn-group" role="group" aria-label="Mode selection">
-            <input type="radio" class="btn-check" name="mode" id="modeSingle" value="single" autocomplete="off" checked>
-            <label class="btn btn-outline-primary d-flex align-items-center justify-content-center" for="modeSingle">Single
-                Caller</label>
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
+            id="modeSingle"
+            value="single"
+            autocomplete="off"
+            checked
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modeSingle"
+            >Single Caller</label
+          >
 
-            <input type="radio" class="btn-check" name="mode" id="modeContest" value="contest" autocomplete="off">
-            <label class="btn btn-outline-primary d-flex align-items-center justify-content-center" for="modeContest">Basic
-                Contest</label>
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
+            id="modeContest"
+            value="contest"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modeContest"
+            >Basic Contest</label
+          >
 
-            <input type="radio" class="btn-check" name="mode" id="modePota" value="pota" autocomplete="off">
-            <label class="btn btn-outline-primary d-flex align-items-center justify-content-center" for="modePota">POTA
-                Activator</label>
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
+            id="modePota"
+            value="pota"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modePota"
+            >POTA Activator</label
+          >
 
-            <input type="radio" class="btn-check" name="mode" id="modeCwt" value="cwt" autocomplete="off">
-            <label class="btn btn-outline-primary d-flex align-items-center justify-content-center"
-                   for="modeCwt">CWT</label>
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
+            id="modeCwt"
+            value="cwt"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modeCwt"
+            >CWT</label
+          >
 
-            <input type="radio" class="btn-check" name="mode" id="modeSst" value="sst" autocomplete="off">
-            <label class="btn btn-outline-primary d-flex align-items-center justify-content-center" for="modeSst">K1USN
-                SST</label>
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
+            id="modeSst"
+            value="sst"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modeSst"
+            >K1USN SST</label
+          >
         </div>
+      </div>
     </div>
-</div>
 
+    <hr />
 
-<hr>
-
-<!-- Unified Accordion Stack -->
-<div class="accordion" id="accordionExample">
-
-    <!-- Your Station -->
-    <div class="accordion-item">
+    <!-- Unified Accordion Stack -->
+    <div class="accordion" id="accordionExample">
+      <!-- Your Station -->
+      <div class="accordion-item">
         <h2 class="accordion-header" id="headingYourStation">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseYourStationSettings" aria-expanded="true"
-                    aria-controls="collapseYourStationSettings">
-                <h5>Your Station Settings</h5>
-            </button>
+          <button
+            class="accordion-button"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseYourStationSettings"
+            aria-expanded="true"
+            aria-controls="collapseYourStationSettings"
+          >
+            <h5>Your Station Settings</h5>
+          </button>
         </h2>
-        <div id="collapseYourStationSettings" class="accordion-collapse collapse show"
-             aria-labelledby="headingYourStation"
-             data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-                <div class="container">
-                    <div class="row g-3">
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <label for="yourCallsign" class="form-label">Callsign</label>
-                            <input type="text"
-                                   id="yourCallsign"
-                                   name="callsign"
-                                   class="form-control"
-                                   required
-                                   autocomplete="off"
-                                   autocapitalize="characters"
-                                   spellcheck="false"
-                                   autocorrect="off"
-                            >
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <label for="yourName" class="form-label">First Name</label>
-                            <input type="text"
-                                   id="yourName"
-                                   name="name"
-                                   class="form-control"
-                                   required
-                                   autocomplete="off"
-                                   autocapitalize="characters"
-                                   spellcheck="false"
-                                   autocorrect="off"
-                            >
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <label for="yourState" class="form-label">State</label>
-                            <input type="text"
-                                   id="yourState"
-                                   name="state"
-                                   class="form-control"
-                                   maxlength="2"
-                                   placeholder="(e.g., CA, TX)"
-                                   autocomplete="off"
-                                   autocapitalize="characters"
-                                   spellcheck="false"
-                                   autocorrect="off"
-                            >
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <label for="yourSpeed" class="form-label">Speed (WPM)</label>
-                            <input type="number" id="yourSpeed" name="yourSpeed" class="form-control" value="20" min="1"
-                                   max="100" step="1" required>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <label for="yourSidetone" class="form-label">Sidetone (Hz)</label>
-                            <input type="number" id="yourSidetone" name="yourSidetone" class="form-control" value="600"
-                                   min="50" max="9999" step="1" required>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <label for="yourVolume" class="form-label">Sidetone Volume</label>
-                            <input type="number" id="yourVolume" name="yourVolume" class="form-control" value="70"
-                                   min="0"
-                                   max="100" step="1" required>
-                        </div>
-                    </div>
+        <div
+          id="collapseYourStationSettings"
+          class="accordion-collapse collapse show"
+          aria-labelledby="headingYourStation"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <div class="container">
+              <div class="row g-3">
+                <div class="col-6 col-md-4 col-lg-2">
+                  <label for="yourCallsign" class="form-label">Callsign</label>
+                  <input
+                    type="text"
+                    id="yourCallsign"
+                    name="callsign"
+                    class="form-control"
+                    required
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    autocorrect="off"
+                  />
+                  <div class="invalid-feedback"></div>
                 </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <label for="yourName" class="form-label">First Name</label>
+                  <input
+                    type="text"
+                    id="yourName"
+                    name="name"
+                    class="form-control"
+                    required
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    autocorrect="off"
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <label for="yourState" class="form-label">State</label>
+                  <input
+                    type="text"
+                    id="yourState"
+                    name="state"
+                    class="form-control"
+                    maxlength="2"
+                    placeholder="(e.g., CA, TX)"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    autocorrect="off"
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+
+                <div class="col-6 col-md-4 col-lg-2">
+                  <label for="yourSpeed" class="form-label">Speed (WPM)</label>
+                  <input
+                    type="number"
+                    id="yourSpeed"
+                    name="yourSpeed"
+                    class="form-control"
+                    value="20"
+                    min="1"
+                    max="100"
+                    step="1"
+                    required
+                  />
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <label for="yourSidetone" class="form-label"
+                    >Sidetone (Hz)</label
+                  >
+                  <input
+                    type="number"
+                    id="yourSidetone"
+                    name="yourSidetone"
+                    class="form-control"
+                    value="600"
+                    min="50"
+                    max="9999"
+                    step="1"
+                    required
+                  />
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <label for="yourVolume" class="form-label"
+                    >Sidetone Volume</label
+                  >
+                  <input
+                    type="number"
+                    id="yourVolume"
+                    name="yourVolume"
+                    class="form-control"
+                    value="70"
+                    min="0"
+                    max="100"
+                    step="1"
+                    required
+                  />
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-
-    <!-- Responding Station Settings -->
-    <div class="accordion-item">
+      <!-- Responding Station Settings -->
+      <div class="accordion-item">
         <h2 class="accordion-header" id="headingRespondingStationSettings">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseRespondingStationSettings" aria-expanded="false"
-                    aria-controls="collapseRespondingStationSettings">
-                <h5>Responding Station Settings</h5>
-            </button>
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseRespondingStationSettings"
+            aria-expanded="false"
+            aria-controls="collapseRespondingStationSettings"
+          >
+            <h5>Responding Station Settings</h5>
+          </button>
         </h2>
-        <div id="collapseRespondingStationSettings" class="accordion-collapse collapse"
-             aria-labelledby="headingRespondingStationSettings"
-             data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-                <div class="container">
+        <div
+          id="collapseRespondingStationSettings"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingRespondingStationSettings"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <div class="container">
+              <!-- Farnsworth Row -->
+              <div class="row g-3 align-items-end">
+                <!-- Max Stations -->
+                <div class="col-12 col-md-4 col-lg">
+                  <label for="maxStations" class="form-label"
+                    >Maximum Stations</label
+                  >
+                  <input
+                    type="number"
+                    id="maxStations"
+                    name="maxStations"
+                    class="form-control"
+                    value="3"
+                    min="1"
+                    max="100"
+                    step="1"
+                    required
+                  />
+                </div>
 
-                    <!-- Farnsworth Row -->
-                    <div class="row g-3 align-items-end">
-                        <!-- Max Stations -->
-                        <div class="col-12 col-md-4 col-lg">
-                            <label for="maxStations" class="form-label">Maximum Stations</label>
-                            <input type="number" id="maxStations" name="maxStations" class="form-control"
-                                   value="3" min="1" max="100" step="1" required>
-                        </div>
+                <!-- Min Speed -->
+                <div class="col-12 col-md-4 col-lg">
+                  <label for="minSpeed" class="form-label">Min Speed</label>
+                  <input
+                    type="number"
+                    id="minSpeed"
+                    name="minSpeed"
+                    class="form-control"
+                    value="18"
+                    min="1"
+                    max="100"
+                    step="1"
+                    required
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
 
-                        <!-- Min Speed -->
-                        <div class="col-12 col-md-4 col-lg">
-                            <label for="minSpeed" class="form-label">Min Speed</label>
-                            <input type="number" id="minSpeed" name="minSpeed" class="form-control"
-                                   value="18" min="1" max="100" step="1" required>
-                            <div class="invalid-feedback"></div>
-                        </div>
+                <!-- Max Speed -->
+                <div class="col-12 col-md-4 col-lg">
+                  <label for="maxSpeed" class="form-label">Max Speed</label>
+                  <input
+                    type="number"
+                    id="maxSpeed"
+                    name="maxSpeed"
+                    class="form-control"
+                    value="25"
+                    min="1"
+                    max="100"
+                    step="1"
+                    required
+                  />
+                </div>
 
-                        <!-- Max Speed -->
-                        <div class="col-12 col-md-4 col-lg">
-                            <label for="maxSpeed" class="form-label">Max Speed</label>
-                            <input type="number" id="maxSpeed" name="maxSpeed" class="form-control"
-                                   value="25" min="1" max="100" step="1" required>
-                        </div>
-
-                        <!-- Enable Farnsworth -->
-                        <div class="col-12 col-md-6 col-lg">
-                            <input type="checkbox" class="btn-check" id="enableFarnsworth" autocomplete="off"
-                                   onchange="
+                <!-- Enable Farnsworth -->
+                <div class="col-12 col-md-6 col-lg">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    id="enableFarnsworth"
+                    autocomplete="off"
+                    onchange="
                    document.getElementById('enableFarnsworthLabel').innerHTML =
                      `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Farnsworth`;
                    document.getElementById('farnsworthSpeed').disabled = !this.checked;
-                 ">
-                            <label class="btn btn-outline-primary w-100" for="enableFarnsworth"
-                                   id="enableFarnsworthLabel">
-                                <i class="fa-regular fa-circle-xmark me-2"></i>Farnsworth
-                            </label>
-                        </div>
+                 "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="enableFarnsworth"
+                    id="enableFarnsworthLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Farnsworth
+                  </label>
+                </div>
 
-                        <!-- Farnsworth Speed -->
-                        <div class="col-12 col-md-6 col-lg">
-                            <label for="farnsworthSpeed" class="form-label">Effective Speed (WPM)</label>
-                            <input type="number" id="farnsworthSpeed" name="farnsworthSpeed" class="form-control"
-                                   value="10" min="1" max="100" step="1" required disabled>
-                        </div>
-                    </div>
+                <!-- Farnsworth Speed -->
+                <div class="col-12 col-md-6 col-lg">
+                  <label for="farnsworthSpeed" class="form-label"
+                    >Effective Speed (WPM)</label
+                  >
+                  <input
+                    type="number"
+                    id="farnsworthSpeed"
+                    name="farnsworthSpeed"
+                    class="form-control"
+                    value="10"
+                    min="1"
+                    max="100"
+                    step="1"
+                    required
+                    disabled
+                  />
+                </div>
+              </div>
 
-                    <!-- Tone and Volume Row -->
-                    <div class="row g-3 mt-3 align-items-end">
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="minTone" class="form-label">Min Tone (Hz)</label>
-                            <input type="number" id="minTone" name="minTone" class="form-control"
-                                   value="400" min="1" max="9999" step="1" required>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="maxTone" class="form-label">Max Tone (Hz)</label>
-                            <input type="number" id="maxTone" name="maxTone" class="form-control"
-                                   value="900" min="1" max="9999" step="1" required>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="minVolume" class="form-label">Min Volume</label>
-                            <input type="number" id="minVolume" name="minVolume" class="form-control"
-                                   value="30" min="0" max="100" step="1" required>
-                            <div class="invalid-feedback"></div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="maxVolume" class="form-label">Max Volume</label>
-                            <input type="number" id="maxVolume" name="maxVolume" class="form-control"
-                                   value="100" min="0" max="100" step="1" required>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="minWait" class="form-label">
-                                <span class="badge bg-success me-2">NEW!</span>
-                                <br class="d-none d-lg-block d-xl-none"/>
-                                Min Wait (s)</label>
-                            <input type="number" id="minWait" name="minWait" class="form-control"
-                                   value="0.25" min="0" max="2" step="0.25" required>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-2">
-                            <label for="maxWait" class="form-label">
-                                <span class="badge bg-success me-2">NEW!</span>
-                                <br class="d-none d-lg-block d-xl-none"/>
-                                Max Wait (s)</label>
-                            <input type="number" id="maxWait" name="maxWait" class="form-control"
-                                   value="1.75" min="0" max="5" step="0.25" required>
-                        </div>
-                    </div>
+              <!-- Tone and Volume Row -->
+              <div class="row g-3 mt-3 align-items-end">
+                <div class="col-12 col-md-6 col-lg-2">
+                  <label for="minTone" class="form-label">Min Tone (Hz)</label>
+                  <input
+                    type="number"
+                    id="minTone"
+                    name="minTone"
+                    class="form-control"
+                    value="400"
+                    min="1"
+                    max="9999"
+                    step="1"
+                    required
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                  <label for="maxTone" class="form-label">Max Tone (Hz)</label>
+                  <input
+                    type="number"
+                    id="maxTone"
+                    name="maxTone"
+                    class="form-control"
+                    value="900"
+                    min="1"
+                    max="9999"
+                    step="1"
+                    required
+                  />
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                  <label for="minVolume" class="form-label">Min Volume</label>
+                  <input
+                    type="number"
+                    id="minVolume"
+                    name="minVolume"
+                    class="form-control"
+                    value="30"
+                    min="0"
+                    max="100"
+                    step="1"
+                    required
+                  />
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                  <label for="maxVolume" class="form-label">Max Volume</label>
+                  <input
+                    type="number"
+                    id="maxVolume"
+                    name="maxVolume"
+                    class="form-control"
+                    value="100"
+                    min="0"
+                    max="100"
+                    step="1"
+                    required
+                  />
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                  <label for="minWait" class="form-label">
+                    <span class="badge bg-success me-2">NEW!</span>
+                    <br class="d-none d-lg-block d-xl-none" />
+                    Min Wait (s)</label
+                  >
+                  <input
+                    type="number"
+                    id="minWait"
+                    name="minWait"
+                    class="form-control"
+                    value="0.25"
+                    min="0"
+                    max="2"
+                    step="0.25"
+                    required
+                  />
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                  <label for="maxWait" class="form-label">
+                    <span class="badge bg-success me-2">NEW!</span>
+                    <br class="d-none d-lg-block d-xl-none" />
+                    Max Wait (s)</label
+                  >
+                  <input
+                    type="number"
+                    id="maxWait"
+                    name="maxWait"
+                    class="form-control"
+                    value="1.75"
+                    min="0"
+                    max="5"
+                    step="0.25"
+                    required
+                  />
+                </div>
+              </div>
 
-
-                    <!-- US Only and Callsign Format Row -->
-                    <div class="row g-3 mt-3 align-items-end">
-                        <!-- US Only Callsigns -->
-                        <div class="col-12 col-md-4">
-                            <input type="checkbox" class="btn-check" autocomplete="off" id="usOnly" checked
-                                   onchange="
+              <!-- US Only and Callsign Format Row -->
+              <div class="row g-3 mt-3 align-items-end">
+                <!-- US Only Callsigns -->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="usOnly"
+                    checked
+                    onchange="
                    document.getElementById('usOnlyLabel').innerHTML =
                      `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>US Only Callsigns`;
-                 ">
-                            <label class="btn btn-outline-primary w-100" for="usOnly" id="usOnlyLabel">
-                                <i class="fa-solid fa-circle-check me-2"></i>US Only Callsigns
-                            </label>
-                        </div>
-
-                        <!-- Callsign Format Options -->
-                        <div class="col-12 col-md-8">
-                            <label class="form-label">Callsign Format Options</label>
-                            <div class="btn-group w-100 flex-wrap" role="group" aria-label="Callsign Type">
-                                <input type="checkbox" class="btn-check" id="1x1" autocomplete="off">
-                                <label class="btn btn-outline-primary" for="1x1">1x1</label>
-
-                                <input type="checkbox" class="btn-check" id="1x2" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary" for="1x2">1x2</label>
-
-                                <input type="checkbox" class="btn-check" id="2x1" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary" for="2x1">2x1</label>
-
-                                <input type="checkbox" class="btn-check" id="2x2" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary" for="2x2">2x2</label>
-
-                                <input type="checkbox" class="btn-check" id="1x3" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary" for="1x3">1x3</label>
-
-                                <input type="checkbox" class="btn-check" id="2x3" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary" for="2x3">2x3</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cut Numbers Row -->
-                    <div class="row g-3 mt-3 align-items-end">
-                        <!-- Enable Cut Numbers -->
-                        <div class="col-12 col-md-4">
-                            <label class="form-label"><span class="badge bg-success me-2">NEW!</span></label>
-                            <input
-                                    type="checkbox"
-                                    class="btn-check"
-                                    autocomplete="off"
-                                    id="enableCutNumbers"
-                                    onchange="document.getElementById('enableCutNumbersLabel').innerHTML =
-                            `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Enable Cut Numbers`;
-                            ">
-                            <label class="btn btn-outline-primary w-100" for="enableCutNumbers"
-                                   id="enableCutNumbersLabel">
-                                <i class="fa-regular fa-circle-xmark me-2"></i>Enable Cut Numbers
-                            </label>
-                        </div>
-
-                        <!-- Individual Cut Number Options -->
-                        <div class="col-12 col-md-8">
-                            <label class="form-label">Cut Number Options</label>
-                            <div class="btn-group w-100 flex-wrap" role="group" aria-label="Cut Numbers">
-                                <!-- T(0) checked by default -->
-                                <input type="checkbox" class="btn-check" id="cutT" autocomplete="off" checked>
-                                <label class="btn btn-responsive btn-outline-primary" for="cutT">T/0</label>
-
-                                <!-- A(1) -->
-                                <input type="checkbox" class="btn-check" id="cutA" autocomplete="off">
-                                <label class="btn btn-responsive btn-outline-primary" for="cutA">A/1</label>
-
-                                <!-- U(2) -->
-                                <input type="checkbox" class="btn-check" id="cutU" autocomplete="off">
-                                <label class="btn btn-responsive btn-outline-primary" for="cutU">U/2</label>
-
-                                <!-- V(3) -->
-                                <input type="checkbox" class="btn-check" id="cutV" autocomplete="off">
-                                <label class="btn btn-responsive btn-outline-primary" for="cutV">V/3</label>
-
-                                <!-- E(5) -->
-                                <input type="checkbox" class="btn-check" id="cutE" autocomplete="off">
-                                <label class="btn btn-responsive btn-outline-primary" for="cutE">E/5</label>
-
-                                <!-- G(7) -->
-                                <input type="checkbox" class="btn-check" id="cutG" autocomplete="off">
-                                <label class="btn btn-responsive btn-outline-primary" for="cutG">G/7</label>
-
-                                <!-- D(8) -->
-                                <input type="checkbox" class="btn-check" id="cutD" autocomplete="off">
-                                <label class="btn btn-responsive btn-outline-primary" for="cutD">D/8</label>
-
-                                <!-- N(9) checked by default -->
-                                <input type="checkbox" class="btn-check" id="cutN" autocomplete="off" checked>
-                                <label class="btn btn-responsive btn-outline-primary" for="cutN">N/9</label>
-                            </div>
-                        </div>
-                    </div>
-
+                 "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="usOnly"
+                    id="usOnlyLabel"
+                  >
+                    <i class="fa-solid fa-circle-check me-2"></i>US Only
+                    Callsigns
+                  </label>
                 </div>
+
+                <!-- Callsign Format Options -->
+                <div class="col-12 col-md-8">
+                  <label class="form-label">Callsign Format Options</label>
+                  <div
+                    class="btn-group w-100 flex-wrap"
+                    role="group"
+                    aria-label="Callsign Type"
+                  >
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="1x1"
+                      autocomplete="off"
+                    />
+                    <label class="btn btn-outline-primary" for="1x1">1x1</label>
+
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="1x2"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label class="btn btn-outline-primary" for="1x2">1x2</label>
+
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="2x1"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label class="btn btn-outline-primary" for="2x1">2x1</label>
+
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="2x2"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label class="btn btn-outline-primary" for="2x2">2x2</label>
+
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="1x3"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label class="btn btn-outline-primary" for="1x3">1x3</label>
+
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="2x3"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label class="btn btn-outline-primary" for="2x3">2x3</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cut Numbers Row -->
+              <div class="row g-3 mt-3 align-items-end">
+                <!-- Enable Cut Numbers -->
+                <div class="col-12 col-md-4">
+                  <label class="form-label"
+                    ><span class="badge bg-success me-2">NEW!</span></label
+                  >
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="enableCutNumbers"
+                    onchange="document.getElementById('enableCutNumbersLabel').innerHTML =
+                            `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Enable Cut Numbers`;
+                            "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="enableCutNumbers"
+                    id="enableCutNumbersLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Enable Cut
+                    Numbers
+                  </label>
+                </div>
+
+                <!-- Individual Cut Number Options -->
+                <div class="col-12 col-md-8">
+                  <label class="form-label">Cut Number Options</label>
+                  <div
+                    class="btn-group w-100 flex-wrap"
+                    role="group"
+                    aria-label="Cut Numbers"
+                  >
+                    <!-- T(0) checked by default -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutT"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutT"
+                      >T/0</label
+                    >
+
+                    <!-- A(1) -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutA"
+                      autocomplete="off"
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutA"
+                      >A/1</label
+                    >
+
+                    <!-- U(2) -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutU"
+                      autocomplete="off"
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutU"
+                      >U/2</label
+                    >
+
+                    <!-- V(3) -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutV"
+                      autocomplete="off"
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutV"
+                      >V/3</label
+                    >
+
+                    <!-- E(5) -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutE"
+                      autocomplete="off"
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutE"
+                      >E/5</label
+                    >
+
+                    <!-- G(7) -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutG"
+                      autocomplete="off"
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutG"
+                      >G/7</label
+                    >
+
+                    <!-- D(8) -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutD"
+                      autocomplete="off"
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutD"
+                      >D/8</label
+                    >
+
+                    <!-- N(9) checked by default -->
+                    <input
+                      type="checkbox"
+                      class="btn-check"
+                      id="cutN"
+                      autocomplete="off"
+                      checked
+                    />
+                    <label
+                      class="btn btn-responsive btn-outline-primary"
+                      for="cutN"
+                      >N/9</label
+                    >
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
-
-    </div>
-
-    <!-- Effects -->
-    <!-- Effects -->
-    <div class="accordion-item">
+      <!-- Effects -->
+      <!-- Effects -->
+      <div class="accordion-item">
         <h2 class="accordion-header" id="headingEffects">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseEffects" aria-expanded="false" aria-controls="collapseEffects">
-                <h5>Effects Settings</h5>
-            </button>
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseEffects"
+            aria-expanded="false"
+            aria-controls="collapseEffects"
+          >
+            <h5>Effects Settings</h5>
+          </button>
         </h2>
-        <div id="collapseEffects" class="accordion-collapse collapse" aria-labelledby="headingEffects"
-             data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-                <div class="container">
-                    <div class="row g-3 align-items-end">
+        <div
+          id="collapseEffects"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingEffects"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <div class="container">
+              <div class="row g-3 align-items-end">
+                <!-- QRN (Atmospheric Noise) -->
+                <div class="col-12 col-lg-4 d-flex flex-column">
+                  <label for="qrnOff" class="form-label"
+                    >QRN (Atmospheric Noise)</label
+                  >
+                  <div class="btn-group" role="group" aria-label="QRN Levels">
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="qrn"
+                      id="qrnOff"
+                      value="off"
+                    />
+                    <label class="btn btn-outline-primary" for="qrnOff"
+                      >Off</label
+                    >
 
-                        <!-- QRN (Atmospheric Noise) -->
-                        <div class="col-12 col-lg-4 d-flex flex-column">
-                            <label for="qrnOff" class="form-label">QRN (Atmospheric Noise)</label>
-                            <div class="btn-group" role="group" aria-label="QRN Levels">
-                                <input type="radio" class="btn-check" name="qrn" id="qrnOff" value="off">
-                                <label class="btn btn-outline-primary" for="qrnOff">Off</label>
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="qrn"
+                      id="qrnNormal"
+                      value="normal"
+                      checked
+                    />
+                    <label class="btn btn-outline-primary" for="qrnNormal"
+                      >Normal</label
+                    >
 
-                                <input type="radio" class="btn-check" name="qrn" id="qrnNormal" value="normal" checked>
-                                <label class="btn btn-outline-primary" for="qrnNormal">Normal</label>
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="qrn"
+                      id="qrnModerate"
+                      value="moderate"
+                    />
+                    <label class="btn btn-outline-primary" for="qrnModerate"
+                      >Moderate</label
+                    >
 
-                                <input type="radio" class="btn-check" name="qrn" id="qrnModerate" value="moderate">
-                                <label class="btn btn-outline-primary" for="qrnModerate">Moderate</label>
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="qrn"
+                      id="qrnHeavy"
+                      value="heavy"
+                    />
+                    <label class="btn btn-outline-primary" for="qrnHeavy"
+                      >Heavy</label
+                    >
+                  </div>
+                </div>
 
-                                <input type="radio" class="btn-check" name="qrn" id="qrnHeavy" value="heavy">
-                                <label class="btn btn-outline-primary" for="qrnHeavy">Heavy</label>
-                            </div>
-                        </div>
-
-                        <!-- QSB Section (Checkbox and Slider Together) -->
-                        <div class="col-12 col-lg-8">
-                            <div class="row g-3 align-items-end">
-                                <!-- QSB Checkbox -->
-                                <div class="col-12 col-md-6 d-flex flex-column">
-                                    <input type="checkbox" class="btn-check" id="qsb" autocomplete="off"
-                                           onchange="
+                <!-- QSB Section (Checkbox and Slider Together) -->
+                <div class="col-12 col-lg-8">
+                  <div class="row g-3 align-items-end">
+                    <!-- QSB Checkbox -->
+                    <div class="col-12 col-md-6 d-flex flex-column">
+                      <input
+                        type="checkbox"
+                        class="btn-check"
+                        id="qsb"
+                        autocomplete="off"
+                        onchange="
                          document.getElementById('qsbLabel').innerHTML =
                            `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>QSB (Fading)`;
                          document.getElementById('qsbPercentage').disabled = !this.checked;
-                       ">
-                                    <label class="btn btn-outline-primary w-100" for="qsb" id="qsbLabel">
-                                        <i class="fa-regular fa-circle-xmark me-2"></i>QSB (Fading)
-                                    </label>
-                                </div>
-
-                                <!-- QSB Slider -->
-                                <div class="col-12 col-md-6 d-flex flex-column">
-                                    <label for="qsbPercentage" class="form-label">
-                                        Stations with QSB (<span id="qsbValue">50%</span>)
-                                    </label>
-                                    <input type="range" id="qsbPercentage" class="form-range mt-auto" min="0" max="100"
-                                           value="50" disabled
-                                           oninput="document.getElementById('qsbValue').textContent = this.value + '%';">
-                                </div>
-                            </div>
-                        </div>
-
+                       "
+                      />
+                      <label
+                        class="btn btn-outline-primary w-100"
+                        for="qsb"
+                        id="qsbLabel"
+                      >
+                        <i class="fa-regular fa-circle-xmark me-2"></i>QSB
+                        (Fading)
+                      </label>
                     </div>
+
+                    <!-- QSB Slider -->
+                    <div class="col-12 col-md-6 d-flex flex-column">
+                      <label for="qsbPercentage" class="form-label">
+                        Stations with QSB (<span id="qsbValue">50%</span>)
+                      </label>
+                      <input
+                        type="range"
+                        id="qsbPercentage"
+                        class="form-range mt-auto"
+                        min="0"
+                        max="100"
+                        value="50"
+                        disabled
+                        oninput="document.getElementById('qsbValue').textContent = this.value + '%';"
+                      />
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
+    <hr />
 
-</div>
-
-<hr>
-
-<!-- Control Buttons -->
-<div class="container">
-
-    <!-- Active Stations Row -->
-    <div class="row g-3">
+    <!-- Control Buttons -->
+    <div class="container">
+      <!-- Active Stations Row -->
+      <div class="row g-3">
         <div class="col-12 d-flex align-items-center">
-            <strong>Active Stations:</strong>&nbsp;<span id="activeStations">0</span>
-            <!-- Help button with icon and text -->
-            <button type="button" class="btn btn-link ms-3 d-flex align-items-center" data-bs-toggle="modal"
-                    data-bs-target="#helpModal" aria-label="Help" data-bs-toggle="tooltip" data-bs-placement="right"
-                    title="Click for help">
-                <i class="fa-solid fa-circle-question fa-lg me-1"></i> HELP
-            </button>
+          <strong>Active Stations:</strong>&nbsp;<span id="activeStations"
+            >0</span
+          >
+          <!-- Help button with icon and text -->
+          <button
+            type="button"
+            class="btn btn-link ms-3 d-flex align-items-center"
+            data-bs-toggle="modal"
+            data-bs-target="#helpModal"
+            aria-label="Help"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="Click for help"
+          >
+            <i class="fa-solid fa-circle-question fa-lg me-1"></i> HELP
+          </button>
         </div>
-    </div>
-    <hr>
+      </div>
+      <hr />
 
-
-    <!-- Mode Controls and Stop/Reset -->
-    <div class="row g-3 align-items-center">
+      <!-- Mode Controls and Stop/Reset -->
+      <div class="row g-3 align-items-center">
         <!-- Main controls: On large screens, this and the stop/reset fit on one line.
              On medium screens, these controls form the first row.
              On small screens, these will form the first and second rows. -->
         <div class="col-12 col-lg-9 d-flex flex-wrap align-items-center">
-            <!-- First row on small: CQ, Response Text Box, Send -->
-            <button id="cqButton" class="btn btn-success me-2 mb-2">CQ</button>
-            <input type="text"
-                   id="responseField"
-                   class="form-control me-2 mb-2"
-                   style="max-width:150px;"
-                   placeholder="Response"
-                   autocomplete="off"
-                   autocapitalize="characters"
-                   spellcheck="false"
-                   autocorrect="off"
-            >
-            <button id="sendButton" class="btn btn-primary me-2 mb-2">Send</button>
+          <!-- First row on small: CQ, Response Text Box, Send -->
+          <button id="cqButton" class="btn btn-success me-2 mb-2">CQ</button>
+          <input
+            type="text"
+            id="responseField"
+            class="form-control me-2 mb-2"
+            style="max-width: 150px"
+            placeholder="Response"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            autocorrect="off"
+          />
+          <button id="sendButton" class="btn btn-primary me-2 mb-2">
+            Send
+          </button>
 
-            <!-- Force a new line after sendButton on small screens -->
-            <div class="w-100 d-sm-block d-md-none"></div>
+          <!-- Force a new line after sendButton on small screens -->
+          <div class="w-100 d-sm-block d-md-none"></div>
 
-            <!-- Second row on small: infoField, infoField2, TU -->
-            <input type="text"
-                   id="infoField"
-                   class="form-control me-2 mb-2"
-                   style="display:none; max-width:150px;"
-                   placeholder=""
-                   autocomplete="off"
-                   autocapitalize="characters"
-                   spellcheck="false"
-                   autocorrect="off"
-            >
-            <input type="text"
-                   id="infoField2"
-                   class="form-control me-2 mb-2"
-                   style="display:none; max-width:150px;"
-                   placeholder=""
-                   autocomplete="off"
-                   autocapitalize="characters"
-                   spellcheck="false"
-                   autocorrect="off"
-            >
-            <button id="tuButton" class="btn btn-info mb-2" style="display:none;">TU</button>
+          <!-- Second row on small: infoField, infoField2, TU -->
+          <input
+            type="text"
+            id="infoField"
+            class="form-control me-2 mb-2"
+            style="display: none; max-width: 150px"
+            placeholder=""
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            autocorrect="off"
+          />
+          <input
+            type="text"
+            id="infoField2"
+            class="form-control me-2 mb-2"
+            style="display: none; max-width: 150px"
+            placeholder=""
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            autocorrect="off"
+          />
+          <button id="tuButton" class="btn btn-info mb-2" style="display: none">
+            TU
+          </button>
         </div>
 
         <!-- Stop & Reset: On large, same row as above.
              On medium, this becomes the second row.
              On small, this becomes the third row. -->
-        <div class="col-12 col-lg-3 d-flex justify-content-lg-end align-items-center">
-            <button id="stopButton" class="btn btn-danger me-2 mb-2">Stop</button>
-            <button id="resetButton" class="btn btn-secondary mb-2">Reset</button>
+        <div
+          class="col-12 col-lg-3 d-flex justify-content-lg-end align-items-center"
+        >
+          <button id="stopButton" class="btn btn-danger me-2 mb-2">Stop</button>
+          <button id="resetButton" class="btn btn-secondary mb-2">Reset</button>
         </div>
+      </div>
     </div>
-</div>
 
-<!-- Help Modal -->
-<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <!-- Help Modal -->
+    <div
+      class="modal fade"
+      id="helpModal"
+      tabindex="-1"
+      aria-labelledby="helpModalLabel"
+    >
+      <div
+        class="modal-dialog modal-xl modal-dialog-scrollable"
+        role="document"
+      >
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="helpModalLabel">Getting Started</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-
-                <!-- Cards for Instructions -->
-                <div class="row g-3">
-
-                    <!-- How to Cheat Card -->
-                    <div class="col-12">
-                        <div class="card border-secondary">
-                            <div class="card-header"><strong>How to "Cheat"</strong></div>
-                            <div class="card-body">
-                                <p class="card-text">If you feel like you need a little extra help to get started,
-                                    <a
-                                            href="https://help.lucid.co/hc/en-us/articles/360049395772-Troubleshooting-Open-the-JavaScript-Console"
-                                            target="_blank">open
-                                        your browser's JavaScript
-                                        console</a> to see behind the scenes information, such as which stations are
-                                    calling.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- CQ Card -->
-                    <div class="col-12 col-xl-4">
-                        <div class="card border-success h-100">
-                            <div class="card-header d-flex align-items-center justify-content-between">
-                                <div>
-                                    <button class="btn btn-success">CQ</button>
-                                </div>
-                                <div class="d-flex align-items-center flex-nowrap">
-                                    <span class="badge bg-success me-2">NEW!</span>
-                                    <kbd>Ctrl</kbd>
-                                    <span class="mx-1">+</span>
-                                    <kbd>Shift</kbd>
-                                    <span class="mx-1">+</span>
-                                    <kbd>C</kbd>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">Click "CQ" to start calling. Up to your "Max Stations" will
-                                    respond. It may start slowly, often with just one or two stations initially.</p>
-                                <p><i>If you want more stations, just call CQ again!</i></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Call Card -->
-                    <div class="col-12 col-xl-4">
-                        <div class="card border-primary h-100">
-                            <div class="card-header"><input type="text" class="form-control" style="max-width:150px;"
-                                                            placeholder="Response"></div>
-                            <div class="card-body">
-                                <p class="card-text">Enter the callsign of the station you’d like to work.</p>
-                                <ul>
-                                    <li class="mb-3">Send 'AGN', 'AGN?', or '?' to request all stations to repeat
-                                        themselves.
-                                    </li>
-                                    <li class="mb-3"><strong>Use partial matches to single out stations</strong> in a
-                                        pileup. E.g.,
-                                        for W6NYC, all of the following will get a reply back: 'W?', 'W6?', 'W6NC',
-                                        'NYC'.<br><br><i>Note that more than one station may reply if they match your
-                                            partial pattern!</i></li>
-                                    <li><span class="badge bg-success">NEW!</span>
-                                        Send "QRS" to have the last responding stations slow down by adding 6 WPM to
-                                        their Farnsworth spacing.</i>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Send Button Card -->
-                    <div class="col-12 col-xl-4">
-                        <div class="card border-primary h-100">
-                            <div class="card-header">
-                                <button class="btn btn-primary">Send</button>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">Click "Send" to transmit whatever you’ve entered in the Response
-                                    text
-                                    field. Use this to respond to a station.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Info Fields Card -->
-                    <div class="col-12 col-xl-4">
-                        <div class="card border-info h-100">
-                            <div class="card-header"><input type="text" class="form-control me-2"
-                                                            style="max-width:200px;" placeholder="Mode-Specific Info">
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">These mode-specific fields appear when you need to enter extra
-                                    details, such as a name, state, or a contest serial number. Filling these in are
-                                    completely optional before clicking "TU".</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TU Button Card -->
-                    <div class="col-12 col-xl-4">
-                        <div class="card border-info h-100">
-                            <div class="card-header">
-                                <button class="btn btn-info">TU</button>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">After completing an exchange, click "TU" to send a wrap-up, thank
-                                    you message. Each mode has a slightly different way of completing.</p>
-                                <p class="card-text">After clicking TU, new stations sometimes hop in! But, in case they
-                                    don't, you can always go back and click CQ.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Stop and Reset Card -->
-                    <div class="col-12 col-xl-4">
-                        <div class="card border-danger h-100">
-                            <div class="card-header">
-                                <button class="btn btn-danger me-2">Stop</button>
-                                <button class="btn btn-secondary">Reset</button>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text"><strong>Stop:</strong> Halts the current transmission or activity.
-                                </p>
-                                <p class="card-text"><strong>Reset:</strong> Clears all entries and starts you fresh,
-                                    ready to begin a new contact sequence.</p>
-                            </div>
-                        </div>
-                    </div>
-
-
+          <div class="modal-header">
+            <h3 class="modal-title" id="helpModalLabel">Getting Started</h3>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Cards for Instructions -->
+            <div class="row g-3">
+              <!-- How to Cheat Card -->
+              <div class="col-12">
+                <div class="card border-secondary">
+                  <div class="card-header"><strong>How to "Cheat"</strong></div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      If you feel like you need a little extra help to get
+                      started,
+                      <a
+                        href="https://help.lucid.co/hc/en-us/articles/360049395772-Troubleshooting-Open-the-JavaScript-Console"
+                        target="_blank"
+                        >open your browser's JavaScript console</a
+                      >
+                      to see behind the scenes information, such as which
+                      stations are calling.
+                    </p>
+                  </div>
                 </div>
-                <!-- End of Cards Row -->
+              </div>
 
+              <!-- CQ Card -->
+              <div class="col-12 col-xl-4">
+                <div class="card border-success h-100">
+                  <div
+                    class="card-header d-flex align-items-center justify-content-between"
+                  >
+                    <div>
+                      <button class="btn btn-success">CQ</button>
+                    </div>
+                    <div class="d-flex align-items-center flex-nowrap">
+                      <span class="badge bg-success me-2">NEW!</span>
+                      <kbd>Ctrl</kbd>
+                      <span class="mx-1">+</span>
+                      <kbd>Shift</kbd>
+                      <span class="mx-1">+</span>
+                      <kbd>C</kbd>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      Click "CQ" to start calling. Up to your "Max Stations"
+                      will respond. It may start slowly, often with just one or
+                      two stations initially.
+                    </p>
+                    <p><i>If you want more stations, just call CQ again!</i></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Call Card -->
+              <div class="col-12 col-xl-4">
+                <div class="card border-primary h-100">
+                  <div class="card-header">
+                    <input
+                      type="text"
+                      class="form-control"
+                      style="max-width: 150px"
+                      placeholder="Response"
+                    />
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      Enter the callsign of the station you’d like to work.
+                    </p>
+                    <ul>
+                      <li class="mb-3">
+                        Send 'AGN', 'AGN?', or '?' to request all stations to
+                        repeat themselves.
+                      </li>
+                      <li class="mb-3">
+                        <strong
+                          >Use partial matches to single out stations</strong
+                        >
+                        in a pileup. E.g., for W6NYC, all of the following will
+                        get a reply back: 'W?', 'W6?', 'W6NC', 'NYC'.<br /><br /><i
+                          >Note that more than one station may reply if they
+                          match your partial pattern!</i
+                        >
+                      </li>
+                      <li>
+                        <span class="badge bg-success">NEW!</span>
+                        Send "QRS" to have the last responding stations slow
+                        down by adding 6 WPM to their Farnsworth spacing.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Send Button Card -->
+              <div class="col-12 col-xl-4">
+                <div class="card border-primary h-100">
+                  <div class="card-header">
+                    <button class="btn btn-primary">Send</button>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      Click "Send" to transmit whatever you’ve entered in the
+                      Response text field. Use this to respond to a station.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Info Fields Card -->
+              <div class="col-12 col-xl-4">
+                <div class="card border-info h-100">
+                  <div class="card-header">
+                    <input
+                      type="text"
+                      class="form-control me-2"
+                      style="max-width: 200px"
+                      placeholder="Mode-Specific Info"
+                    />
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      These mode-specific fields appear when you need to enter
+                      extra details, such as a name, state, or a contest serial
+                      number. Filling these in are completely optional before
+                      clicking "TU".
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TU Button Card -->
+              <div class="col-12 col-xl-4">
+                <div class="card border-info h-100">
+                  <div class="card-header">
+                    <button class="btn btn-info">TU</button>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      After completing an exchange, click "TU" to send a
+                      wrap-up, thank you message. Each mode has a slightly
+                      different way of completing.
+                    </p>
+                    <p class="card-text">
+                      After clicking TU, new stations sometimes hop in! But, in
+                      case they don't, you can always go back and click CQ.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stop and Reset Card -->
+              <div class="col-12 col-xl-4">
+                <div class="card border-danger h-100">
+                  <div class="card-header">
+                    <button class="btn btn-danger me-2">Stop</button>
+                    <button class="btn btn-secondary">Reset</button>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      <strong>Stop:</strong> Halts the current transmission or
+                      activity.
+                    </p>
+                    <p class="card-text">
+                      <strong>Reset:</strong> Clears all entries and starts you
+                      fresh, ready to begin a new contact sequence.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+            <!-- End of Cards Row -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
+    <hr />
 
-<hr>
+    <!-- Results Table -->
+    <h3 id="modeResultsHeader">Results</h3>
+    <table class="table table-hover mb-5" id="resultsTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Callsign</th>
+          <th>WPM</th>
+          <th>Attempts</th>
+          <th>Total Time</th>
+          <th class="mode-specific-column">Additional Info</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows dynamically added -->
+      </tbody>
+    </table>
 
-<!-- Results Table -->
-<h3 id="modeResultsHeader">Results</h3>
-<table class="table table-hover mb-5" id="resultsTable">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Callsign</th>
-        <th>WPM</th>
-        <th>Attempts</th>
-        <th>Total Time</th>
-        <th class="mode-specific-column">Additional Info</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Rows dynamically added -->
-    </tbody>
-</table>
-
-<!-- Footer -->
-<footer class="bg-dark text-white text-center py-2 fixed-bottom">
-  <span>
-    Crafted with <i class="fas fa-coffee text-warning"></i> and <i class="fas fa-broadcast-tower text-primary"></i>
-    by <a href="https://www.qrz.com/db/W6NYC"><strong>W6NYC</strong></a>.
-    <span class="d-none d-md-inline">
-      Check out
-      <a href="https://github.com/sc0tfree/morsewalker" class="text-primary"> the source code</a>!
-    </span>
-  </span>
-</footer>
-
-
-</body>
-
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-2 fixed-bottom">
+      <span>
+        Crafted with <i class="fas fa-coffee text-warning"></i> and
+        <i class="fas fa-broadcast-tower text-primary"></i> by
+        <a href="https://www.qrz.com/db/W6NYC"><strong>W6NYC</strong></a
+        >.
+        <span class="d-none d-md-inline">
+          Check out
+          <a
+            href="https://github.com/sc0tfree/morsewalker"
+            class="text-primary"
+          >
+            the source code</a
+          >!
+        </span>
+      </span>
+    </footer>
+  </body>
 </html>

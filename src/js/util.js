@@ -1,6 +1,6 @@
-import {createMorsePlayer, updateAudioLock} from "./audio.js";
-import {getCallingStation} from "./stationGenerator.js";
-import {getInputs} from "./inputs.js";
+import { createMorsePlayer, updateAudioLock } from './audio.js';
+import { getCallingStation } from './stationGenerator.js';
+import { getInputs } from './inputs.js';
 
 /**
  * Compares the source and query strings based on specific fuzzy match criteria.
@@ -13,37 +13,36 @@ export function compareStrings(source, query) {
   // Check for perfect match
   if (source === query) {
     // console.log("Perfect");
-    return "perfect";
+    return 'perfect';
   }
   // Check Criterion 1 (Start of String Match)
   if (criterion1(source, query)) {
     // console.log("Partial: Criterion 1");
-    return "partial";
+    return 'partial';
   }
   // Check Criterion 2 (Middle or End of String Match)
   if (criterion2(source, query)) {
     // console.log("Partial: Criterion 2");
-    return "partial";
+    return 'partial';
   }
   // Check Criterion 3 (Off by One Character)
   if (criterion3(source, query)) {
     // console.log("Partial: Criterion 3");
-    return "partial";
+    return 'partial';
   }
   // Check Criterion 4 (Source is a Prefix of Query)
   if (criterion4(source, query)) {
     // console.log("Partial: Criterion 4");
-    return "partial";
+    return 'partial';
   }
   // Check Criterion 5 (Partial Match with Two Initial Characters Matching and One Off-by-One)
   if (criterion5(source, query)) {
     // console.log("Partial: Criterion 5");
-    return "partial";
+    return 'partial';
   }
   // If none of the criteria are met
   // console.log("None");
-  return "none";
-
+  return 'none';
 
   /**
    * Criterion 1: Start of String Match
@@ -138,7 +137,7 @@ export function compareStrings(source, query) {
           }
         }
         // Check if at least 3 characters match exactly
-        if (mismatches <= 1 && (query.length - mismatches) >= 3) {
+        if (mismatches <= 1 && query.length - mismatches >= 3) {
           return true; // Criteria met
         }
       }
@@ -301,7 +300,6 @@ export function compareStrings(source, query) {
 //     runCompareStringTestCase(testCase.source, testCase.query, testCase.expected);
 // }
 
-
 /**
  * Generates a weighted random number based on the number of stations.
  * Lower-numbered stations have higher probabilities.
@@ -318,7 +316,7 @@ export function weightedRandom(maxStations) {
 
   // Step 2: Normalize weights so they sum to 1
   let totalWeight = weights.reduce((a, b) => a + b, 0);
-  weights = weights.map(w => w / totalWeight);
+  weights = weights.map((w) => w / totalWeight);
 
   // Step 3: Generate a cumulative distribution from the weights
   let cumulative = [];
@@ -358,7 +356,6 @@ export function weightedRandom(maxStations) {
 // Run the test
 // testWeightedRandom();
 
-
 /**
  * Normalize the volume levels of a collection of station objects and create Morse players for each.
  *
@@ -390,7 +387,6 @@ export function weightedRandom(maxStations) {
  * // Each station in `normalized` now includes a `player` property.
  */
 export function normalizeStationGain(stations) {
-
   let normalizedStations = [];
 
   // Normalize the volumes
@@ -427,19 +423,24 @@ export function normalizeStationGain(stations) {
  * @param {number} audioLock - Base time offset for playback start.
  */
 export function respondWithAllStations(stations, audioLock) {
-
   let inputs = getInputs();
 
   // Ensure minWait is between 0 and 2, and maxWait is between 0 and 5
   const minDelay = Math.max(0, Math.min(inputs.minWait, 2));
   const maxDelay = Math.max(0, Math.min(inputs.maxWait, 5));
 
-  console.log("<-- Responding with stations: " + stations.map(station => station.callsign));
+  console.log(
+    '<-- Responding with stations: ' +
+      stations.map((station) => station.callsign)
+  );
   stations = normalizeStationGain(stations);
   for (let i = 0; i < stations.length; i++) {
-    const randomDelay = minDelay + (Math.random() * maxDelay);
+    const randomDelay = minDelay + Math.random() * maxDelay;
 
-    let responseTimer = stations[i].player.playSentence(stations[i].callsign, audioLock + randomDelay);
+    let responseTimer = stations[i].player.playSentence(
+      stations[i].callsign,
+      audioLock + randomDelay
+    );
     updateAudioLock(responseTimer);
   }
 }
@@ -479,13 +480,13 @@ export function addStations(stations, inputs) {
  * @param {Object} station - The station object to display.
  */
 export function printStation(station) {
-  console.log("********************************")
+  console.log('********************************');
   console.log(`Station: ${station.callsign}`);
-  console.log("********************************")
+  console.log('********************************');
   for (const key of Object.keys(station)) {
     console.log(` - ${key}: ${JSON.stringify(station[key], null, 2)},`);
   }
-  console.log("================================")
+  console.log('================================');
 }
 
 /**
@@ -499,8 +500,18 @@ export function printStation(station) {
  * @param {number} totalTime - The total time taken, displayed to two decimal places.
  * @param {string|null} [extra=null] - Optional additional information to include in a fifth cell.
  */
-export function addTableRow(tableName, index, callsign, wpm, attempts, totalTime, extra = null) {
-  const table = document.getElementById(tableName).getElementsByTagName('tbody')[0];
+export function addTableRow(
+  tableName,
+  index,
+  callsign,
+  wpm,
+  attempts,
+  totalTime,
+  extra = null
+) {
+  const table = document
+    .getElementById(tableName)
+    .getElementsByTagName('tbody')[0];
 
   // Create a new row at the top
   const newRow = table.insertRow(0);
@@ -525,7 +536,9 @@ export function addTableRow(tableName, index, callsign, wpm, attempts, totalTime
  * @param {string} tableName - The ID of the HTML table element.
  */
 export function clearTable(tableName) {
-  const tableBody = document.getElementById(tableName).getElementsByTagName('tbody')[0];
+  const tableBody = document
+    .getElementById(tableName)
+    .getElementsByTagName('tbody')[0];
 
   // Clear all rows in the table body
   while (tableBody.firstChild) {
@@ -560,9 +573,9 @@ function updateSummaryRow(tableName, extra = null) {
     return;
   }
 
-  const wpmValues = [];    // Will store WPM strings
-  const attemptsList = [];  // Will store numeric attempts
-  const timeList = [];    // Will store total times
+  const wpmValues = []; // Will store WPM strings
+  const attemptsList = []; // Will store numeric attempts
+  const timeList = []; // Will store total times
 
   for (const row of rows) {
     // WPM in cell[2], Attempts in cell[3], Time in cell[4]
@@ -586,7 +599,7 @@ function updateSummaryRow(tableName, extra = null) {
   const avgTime = sumTime / rowCount;
 
   // --- Compute average WPM (check if we have slashes)
-  const hasSlash = wpmValues.some(val => val.includes('/'));
+  const hasSlash = wpmValues.some((val) => val.includes('/'));
   let finalWpm;
 
   if (hasSlash) {
@@ -607,7 +620,7 @@ function updateSummaryRow(tableName, extra = null) {
     const avgWpm1 = sumWpm1 / rowCount;
     const avgWpm2 = sumWpm2 / rowCount;
     // Round or format as desired; here we use integers
-    finalWpm = avgWpm1.toFixed(1) + " / " + avgWpm2.toFixed(1);
+    finalWpm = avgWpm1.toFixed(1) + ' / ' + avgWpm2.toFixed(1);
   } else {
     // All are single WPM
     const sumWpm = wpmValues.reduce((sum, val) => sum + parseInt(val, 10), 0);
@@ -623,7 +636,8 @@ function updateSummaryRow(tableName, extra = null) {
   summaryRow.insertCell(0).innerHTML = ``;
   summaryRow.insertCell(1).innerHTML = `<strong>Avg</strong>`;
   summaryRow.insertCell(2).innerHTML = `<strong>${finalWpm}</strong>`;
-  summaryRow.insertCell(3).innerHTML = `<strong>${avgAttempts.toFixed(1)}</strong>`;
+  summaryRow.insertCell(3).innerHTML =
+    `<strong>${avgAttempts.toFixed(1)}</strong>`;
   summaryRow.insertCell(4).innerHTML = `<strong>${avgTime.toFixed(2)}</strong>`;
   summaryRow.insertCell(5).innerHTML = ``;
 }

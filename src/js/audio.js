@@ -1,5 +1,4 @@
-import {getInputs} from './inputs.js';
-
+import { getInputs } from './inputs.js';
 
 /**
  * Creates a Morse code audio player for a specified station.
@@ -14,7 +13,6 @@ import {getInputs} from './inputs.js';
  * @returns {Object|null} An object with methods to play Morse sequences or null if inputs are invalid.
  */
 export function createMorsePlayer(station, volumeOverride = null) {
-
   let volume = volumeOverride !== null ? volumeOverride : station.volume;
 
   const inputs = getInputs();
@@ -25,11 +23,10 @@ export function createMorsePlayer(station, volumeOverride = null) {
 
   console.log(
     `/ Initializing ${station.callsign}: ${station.frequency}Hz@${station.wpm}wpm` +
-    `${enableFarnsworth ? `/${station.farnsworthSpeed}wpm` : ''}` +
-    ` vol: ${volume.toFixed(2)}` +
-    `${station.qsb ? ` (QSB:${station.qsbDepth.toFixed(2)}A@${station.qsbFrequency.toFixed(2)}Hz)` : ''}`
+      `${enableFarnsworth ? `/${station.farnsworthSpeed}wpm` : ''}` +
+      ` vol: ${volume.toFixed(2)}` +
+      `${station.qsb ? ` (QSB:${station.qsbDepth.toFixed(2)}A@${station.qsbFrequency.toFixed(2)}Hz)` : ''}`
   );
-
 
   let context = audioContext;
 
@@ -69,43 +66,43 @@ export function createMorsePlayer(station, volumeOverride = null) {
   // Morse code mapping including prosigns
   const morseCodeMap = {
     // Letters
-    'a': '.-',
-    'b': '-...',
-    'c': '-.-.',
-    'd': '-..',
-    'e': '.',
-    'f': '..-.',
-    'g': '--.',
-    'h': '....',
-    'i': '..',
-    'j': '.---',
-    'k': '-.-',
-    'l': '.-..',
-    'm': '--',
-    'n': '-.',
-    'o': '---',
-    'p': '.--.',
-    'q': '--.-',
-    'r': '.-.',
-    's': '...',
-    't': '-',
-    'u': '..-',
-    'v': '...-',
-    'w': '.--',
-    'x': '-..-',
-    'y': '-.--',
-    'z': '--..',
+    a: '.-',
+    b: '-...',
+    c: '-.-.',
+    d: '-..',
+    e: '.',
+    f: '..-.',
+    g: '--.',
+    h: '....',
+    i: '..',
+    j: '.---',
+    k: '-.-',
+    l: '.-..',
+    m: '--',
+    n: '-.',
+    o: '---',
+    p: '.--.',
+    q: '--.-',
+    r: '.-.',
+    s: '...',
+    t: '-',
+    u: '..-',
+    v: '...-',
+    w: '.--',
+    x: '-..-',
+    y: '-.--',
+    z: '--..',
     // Numbers
-    '0': '-----',
-    '1': '.----',
-    '2': '..---',
-    '3': '...--',
-    '4': '....-',
-    '5': '.....',
-    '6': '-....',
-    '7': '--...',
-    '8': '---..',
-    '9': '----.',
+    0: '-----',
+    1: '.----',
+    2: '..---',
+    3: '...--',
+    4: '....-',
+    5: '.....',
+    6: '-....',
+    7: '--...',
+    8: '---..',
+    9: '----.',
     // Punctuation
     '.': '.-.-.-',
     ',': '--..--',
@@ -116,7 +113,7 @@ export function createMorsePlayer(station, volumeOverride = null) {
     '<ar>': '.-.-.',
     '<sk>': '...-.-',
     '<kn>': '-.--.',
-    '<bt>': '-...-'
+    '<bt>': '-...-',
   };
 
   /**
@@ -177,7 +174,9 @@ export function createMorsePlayer(station, volumeOverride = null) {
    */
   function qsbAmplitude(t) {
     if (!qsb) return volume;
-    const sineValue = Math.sin(2 * Math.PI * (t - stationStartTime) + qsbPhaseOffset);
+    const sineValue = Math.sin(
+      2 * Math.PI * (t - stationStartTime) + qsbPhaseOffset
+    );
     const fadeFactor = (sineValue + 1) / 2; // Maps sin(-1..1) to 0..1
     const qsbFactor = 1 - qsbDepth * fadeFactor;
     return volume * qsbFactor;
@@ -227,8 +226,14 @@ export function createMorsePlayer(station, volumeOverride = null) {
     const releaseFraction = 0.1;
     const maxAttackReleaseTime = 0.01; // 10 ms max
 
-    const attackTime = Math.min(duration * attackFraction, maxAttackReleaseTime);
-    const releaseTime = Math.min(duration * releaseFraction, maxAttackReleaseTime);
+    const attackTime = Math.min(
+      duration * attackFraction,
+      maxAttackReleaseTime
+    );
+    const releaseTime = Math.min(
+      duration * releaseFraction,
+      maxAttackReleaseTime
+    );
 
     // Determine the amplitude at the start of the symbol considering QSB
     // We'll sample the QSB amplitude at time + attackTime for a stable ramp target
@@ -323,7 +328,7 @@ export function createMorsePlayer(station, volumeOverride = null) {
     return time;
   }
 
-  return {playSentence, context};
+  return { playSentence, context };
 }
 
 // Audio lock
@@ -356,7 +361,6 @@ export function getAudioLock() {
   return audioContext.currentTime < audioLockUntil;
 }
 
-
 let backgroundStaticSource = null;
 let backgroundStaticContext = new AudioContext();
 let staticGain = null;
@@ -376,7 +380,7 @@ export function createBackgroundStatic() {
   if (inputs === null) return; // Do not create static if inputs are invalid
   const selectedQRN = inputs.qrn;
 
-  if (selectedQRN === "off") {
+  if (selectedQRN === 'off') {
     return; // Do not create static if "off" is selected
   }
 
@@ -393,9 +397,9 @@ export function createBackgroundStatic() {
 
   // Fetch and decode the audio file
   fetch(staticUrl)
-    .then(response => response.arrayBuffer())
-    .then(arrayBuffer => context.decodeAudioData(arrayBuffer))
-    .then(audioBuffer => {
+    .then((response) => response.arrayBuffer())
+    .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
+    .then((audioBuffer) => {
       backgroundStaticSource = context.createBufferSource();
       backgroundStaticSource.buffer = audioBuffer;
       backgroundStaticSource.loop = true;
@@ -407,9 +411,8 @@ export function createBackgroundStatic() {
       staticGain.connect(context.destination);
 
       backgroundStaticSource.start();
-
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Error loading static audio file:', error);
     });
 }
@@ -424,7 +427,7 @@ export function createBackgroundStatic() {
  */
 export function stopBackgroundStatic(noFade = false) {
   if (backgroundStaticSource) {
-    console.log("Stopping background static");
+    console.log('Stopping background static');
 
     if (staticGain) {
       const fadeTime = noFade ? 0 : 1; // Fade out over 1 second

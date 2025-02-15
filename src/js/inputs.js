@@ -30,7 +30,10 @@ function getDOMInputs() {
     mode: document.querySelector('input[name="mode"]:checked').value,
 
     // Text and number inputs
-    yourCallsign: document.getElementById('yourCallsign').value.trim().toUpperCase(),
+    yourCallsign: document
+      .getElementById('yourCallsign')
+      .value.trim()
+      .toUpperCase(),
     yourName: document.getElementById('yourName').value.trim(),
     yourState: document.getElementById('yourState').value.trim().toUpperCase(), // Convert to uppercase for consistency
     yourSpeed: parseInt(document.getElementById('yourSpeed').value, 10),
@@ -72,17 +75,15 @@ function getDOMInputs() {
       ? document.getElementById('enableCutNumbers').checked
       : false,
     cutNumbers: getSelectedCutNumbers(),
-
   };
 }
 
 // Add event listeners to clear invalid states when user types
-document.querySelectorAll('input, select, textarea').forEach(el => {
+document.querySelectorAll('input, select, textarea').forEach((el) => {
   el.addEventListener('input', () => {
     clearFieldInvalid(el.id);
   });
 });
-
 
 /**
  * Validates the collected form inputs and ensures their logical consistency.
@@ -100,40 +101,49 @@ function validateInputs(inputs) {
   clearAllInvalidStates();
 
   if (!inputs.yourCallsign) {
-    markFieldInvalid('yourCallsign', "Your callsign is required.");
+    markFieldInvalid('yourCallsign', 'Your callsign is required.');
     openAccordionSection('collapseYourStationSettings');
     isValid = false;
   }
   if (!inputs.yourName && inputs.mode === 'sst') {
-    markFieldInvalid('yourName', "Your name is required for SST mode.");
+    markFieldInvalid('yourName', 'Your name is required for SST mode.');
     openAccordionSection('collapseYourStationSettings');
     isValid = false;
   }
   if (!inputs.yourState && inputs.mode === 'sst') {
-    markFieldInvalid('yourState', "Your state is required for SST mode.");
+    markFieldInvalid('yourState', 'Your state is required for SST mode.');
     openAccordionSection('collapseYourStationSettings');
     isValid = false;
   }
   if (!inputs.yourName && inputs.mode === 'cwt') {
-    markFieldInvalid('yourName', "Your name is required for CWT mode.");
+    markFieldInvalid('yourName', 'Your name is required for CWT mode.');
     openAccordionSection('collapseYourStationSettings');
     isValid = false;
   }
 
   if (inputs.minSpeed > inputs.maxSpeed) {
-    markFieldInvalid('minSpeed', "Minimum Speed cannot be greater than Maximum Speed!");
+    markFieldInvalid(
+      'minSpeed',
+      'Minimum Speed cannot be greater than Maximum Speed!'
+    );
     openAccordionSection('collapseRespondingStationSettings');
     isValid = false;
   }
 
   if (inputs.minVolume > inputs.maxVolume) {
-    markFieldInvalid('minVolume', "Minimum Volume cannot be greater than Maximum Volume!");
+    markFieldInvalid(
+      'minVolume',
+      'Minimum Volume cannot be greater than Maximum Volume!'
+    );
     openAccordionSection('collapseRespondingStationSettings');
     isValid = false;
   }
 
   if (inputs.minSpeed > inputs.maxSpeed) {
-    markFieldInvalid('minSpeed', "Minimum Speed cannot be greater than Maximum Speed!");
+    markFieldInvalid(
+      'minSpeed',
+      'Minimum Speed cannot be greater than Maximum Speed!'
+    );
     openAccordionSection('collapseRespondingStationSettings');
     isValid = false;
   }
@@ -185,7 +195,9 @@ function clearFieldInvalid(inputId) {
  */
 export function clearAllInvalidStates() {
   // Target all elements with the .is-invalid class
-  document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+  document
+    .querySelectorAll('.is-invalid')
+    .forEach((el) => el.classList.remove('is-invalid'));
 }
 
 /**
@@ -202,12 +214,11 @@ function openAccordionSection(sectionId) {
     // Programmatically toggle the collapse
     let bsCollapse = bootstrap.Collapse.getInstance(section);
     if (!bsCollapse) {
-      bsCollapse = new bootstrap.Collapse(section, {toggle: false});
+      bsCollapse = new bootstrap.Collapse(section, { toggle: false });
     }
     bsCollapse.show();
   }
 }
-
 
 /**
  * Collects the selected callsign formats from the form.

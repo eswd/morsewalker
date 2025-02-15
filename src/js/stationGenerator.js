@@ -1,4 +1,4 @@
-import {getInputs} from "./inputs.js";
+import { getInputs } from './inputs.js';
 
 // Weighting these callsign prefixes has been a journey...
 // Originally, I weighted them based on rough analysis found here:
@@ -9,49 +9,213 @@ import {getInputs} from "./inputs.js";
 // https://github.com/sc0tfree/morsewalker/issues/29
 const US_CALLSIGN_PREFIXES_WEIGHTED = [
   // Large items
-  {value: 'K', weight: 40},  // 40%
-  {value: 'W', weight: 25},  // 25%
-  {value: 'N', weight: 20},  // 20%
+  { value: 'K', weight: 40 }, // 40%
+  { value: 'W', weight: 25 }, // 25%
+  { value: 'N', weight: 20 }, // 20%
 
   // Smaller items
-  {value: 'AA', weight: 2},   // 2%
-  {value: 'AB', weight: 2},   // 2%
-  {value: 'AC', weight: 2},   // 2%
-  {value: 'AD', weight: 1},   // 1%
-  {value: 'AE', weight: 1},   // 1%
-  {value: 'AF', weight: 1},   // 1%
-  {value: 'AG', weight: 1},   // 1%
-  {value: 'AH', weight: 1},   // 1%
-  {value: 'AI', weight: 1},   // 1%
-  {value: 'AJ', weight: 1},   // 1%
-  {value: 'AK', weight: 1},   // 1%
-  {value: 'AL', weight: 1},   // 1%
-]
+  { value: 'AA', weight: 2 }, // 2%
+  { value: 'AB', weight: 2 }, // 2%
+  { value: 'AC', weight: 2 }, // 2%
+  { value: 'AD', weight: 1 }, // 1%
+  { value: 'AE', weight: 1 }, // 1%
+  { value: 'AF', weight: 1 }, // 1%
+  { value: 'AG', weight: 1 }, // 1%
+  { value: 'AH', weight: 1 }, // 1%
+  { value: 'AI', weight: 1 }, // 1%
+  { value: 'AJ', weight: 1 }, // 1%
+  { value: 'AK', weight: 1 }, // 1%
+  { value: 'AL', weight: 1 }, // 1%
+];
 
 const NON_US_CALLSIGN_PREFIXES = [
-  '9A', 'CT', 'DL', 'E', 'EA', 'EI', 'ES', 'EU', 'F', 'G',
-  'GM', 'GW', 'HA', 'HB', 'I', 'JA', 'LA', 'LU', 'LY', 'LZ',
-  'OE', 'OH', 'OK', 'OM', 'ON', 'OZ', 'PA', 'PY', 'S', 'SM',
-  'SP', 'SV', 'UA', 'UR', 'VE', 'VK', 'YO', 'YT'
+  '9A',
+  'CT',
+  'DL',
+  'E',
+  'EA',
+  'EI',
+  'ES',
+  'EU',
+  'F',
+  'G',
+  'GM',
+  'GW',
+  'HA',
+  'HB',
+  'I',
+  'JA',
+  'LA',
+  'LU',
+  'LY',
+  'LZ',
+  'OE',
+  'OH',
+  'OK',
+  'OM',
+  'ON',
+  'OZ',
+  'PA',
+  'PY',
+  'S',
+  'SM',
+  'SP',
+  'SV',
+  'UA',
+  'UR',
+  'VE',
+  'VK',
+  'YO',
+  'YT',
 ];
 const stateAbbreviations = [
-  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+  'AL',
+  'AK',
+  'AZ',
+  'AR',
+  'CA',
+  'CO',
+  'CT',
+  'DE',
+  'FL',
+  'GA',
+  'HI',
+  'ID',
+  'IL',
+  'IN',
+  'IA',
+  'KS',
+  'KY',
+  'LA',
+  'ME',
+  'MD',
+  'MA',
+  'MI',
+  'MN',
+  'MS',
+  'MO',
+  'MT',
+  'NE',
+  'NV',
+  'NH',
+  'NJ',
+  'NM',
+  'NY',
+  'NC',
+  'ND',
+  'OH',
+  'OK',
+  'OR',
+  'PA',
+  'RI',
+  'SC',
+  'SD',
+  'TN',
+  'TX',
+  'UT',
+  'VT',
+  'VA',
+  'WA',
+  'WV',
+  'WI',
+  'WY',
 ];
 const names = [
-  "Adam", "Ahmed", "Ali", "Amanda", "Amy", "Ana", "Andrew", "Angela", "Anna", "Anthony",
-  "Aria", "Ashley", "Barbara", "Benjamin", "Brandon", "Brian", "Charles", "Christopher", "Cynthia", "Daniel",
-  "David", "Deborah", "Dennis", "Donna", "Dorothy", "Edward", "Elena", "Elizabeth", "Emily", "Eric",
-  "Fatima", "Frank", "George", "Gregory", "Heather", "Henry", "Hong", "Jack", "Jacob", "James",
-  "Jason", "Jeffrey", "Jennifer", "Jessica", "John", "Jonathan", "Joseph", "Joshua", "Justin", "Karen",
-  "Katherine", "Kathleen", "Kevin", "Kimberly", "Larry", "Laura", "Linda", "Lisa", "Maria", "Margaret",
-  "Mark", "Mary", "Matthew", "Melissa", "Michael", "Michelle", "Mohammad", "Nancy", "Nicole", "Nicholas",
-  "Noor", "Patricia", "Patrick", "Paul", "Peter", "Rebecca", "Richard", "Robert", "Ronald", "Ryan",
-  "Sandra", "Sarah", "Scott", "Shirley", "Sofia", "Stephanie", "Stephen", "Steven", "Susan", "Thomas",
-  "Timothy", "Tyler", "Wei", "William", "Yan"
+  'Adam',
+  'Ahmed',
+  'Ali',
+  'Amanda',
+  'Amy',
+  'Ana',
+  'Andrew',
+  'Angela',
+  'Anna',
+  'Anthony',
+  'Aria',
+  'Ashley',
+  'Barbara',
+  'Benjamin',
+  'Brandon',
+  'Brian',
+  'Charles',
+  'Christopher',
+  'Cynthia',
+  'Daniel',
+  'David',
+  'Deborah',
+  'Dennis',
+  'Donna',
+  'Dorothy',
+  'Edward',
+  'Elena',
+  'Elizabeth',
+  'Emily',
+  'Eric',
+  'Fatima',
+  'Frank',
+  'George',
+  'Gregory',
+  'Heather',
+  'Henry',
+  'Hong',
+  'Jack',
+  'Jacob',
+  'James',
+  'Jason',
+  'Jeffrey',
+  'Jennifer',
+  'Jessica',
+  'John',
+  'Jonathan',
+  'Joseph',
+  'Joshua',
+  'Justin',
+  'Karen',
+  'Katherine',
+  'Kathleen',
+  'Kevin',
+  'Kimberly',
+  'Larry',
+  'Laura',
+  'Linda',
+  'Lisa',
+  'Maria',
+  'Margaret',
+  'Mark',
+  'Mary',
+  'Matthew',
+  'Melissa',
+  'Michael',
+  'Michelle',
+  'Mohammad',
+  'Nancy',
+  'Nicole',
+  'Nicholas',
+  'Noor',
+  'Patricia',
+  'Patrick',
+  'Paul',
+  'Peter',
+  'Rebecca',
+  'Richard',
+  'Robert',
+  'Ronald',
+  'Ryan',
+  'Sandra',
+  'Sarah',
+  'Scott',
+  'Shirley',
+  'Sofia',
+  'Stephanie',
+  'Stephen',
+  'Steven',
+  'Susan',
+  'Thomas',
+  'Timothy',
+  'Tyler',
+  'Wei',
+  'William',
+  'Yan',
 ];
 
 /**
@@ -65,7 +229,6 @@ const names = [
  * @returns {Object|null} The user's station configuration or null if inputs are unavailable.
  */
 export function getYourStation() {
-
   let inputs = getInputs();
   if (inputs === null) return;
 
@@ -77,10 +240,9 @@ export function getYourStation() {
     name: inputs.yourName,
     state: inputs.yourState,
     player: null,
-    qsb: false
-  }
+    qsb: false,
+  };
 }
-
 
 /**
  * Generates a random calling station configuration.
@@ -94,7 +256,6 @@ export function getYourStation() {
  * @returns {Object|null} The calling station configuration or null if inputs are unavailable.
  */
 export function getCallingStation() {
-
   let inputs = getInputs();
   if (inputs === null) return;
 
@@ -102,15 +263,24 @@ export function getCallingStation() {
   let isUS = inputs.usOnly ? true : Math.random() < 0.4;
 
   return {
-    callsign: isUS ? getRandomUSCallsign(inputs.formats) : getRandomNonUSCallsign(inputs.formats),
-    wpm: Math.floor(Math.random() * (inputs.maxSpeed - inputs.minSpeed + 1)) + inputs.minSpeed,
+    callsign: isUS
+      ? getRandomUSCallsign(inputs.formats)
+      : getRandomNonUSCallsign(inputs.formats),
+    wpm:
+      Math.floor(Math.random() * (inputs.maxSpeed - inputs.minSpeed + 1)) +
+      inputs.minSpeed,
     enableFarnsworth: inputs.enableFarnsworth,
     farnsworthSpeed: inputs.farnsworthSpeed || null,
-    volume: Math.random() * (inputs.maxVolume - inputs.minVolume) + inputs.minVolume,
-    frequency: Math.floor(Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone),
+    volume:
+      Math.random() * (inputs.maxVolume - inputs.minVolume) + inputs.minVolume,
+    frequency: Math.floor(
+      Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone
+    ),
     name: randomElement(names),
-    state: isUS ? randomElement(stateAbbreviations) : "",
-    serialNumber: (Math.floor(Math.random() * 30) + 1).toString().padStart(2, "0"),
+    state: isUS ? randomElement(stateAbbreviations) : '',
+    serialNumber: (Math.floor(Math.random() * 30) + 1)
+      .toString()
+      .padStart(2, '0'),
     cwopsNumber: Math.floor(Math.random() * 4000) + 1,
     player: null,
     qsb: inputs.qsb ? Math.random() < inputs.qsbPercentage / 100 : false,
@@ -118,7 +288,7 @@ export function getCallingStation() {
     qsbFrequency: Math.random() * 0.45 + 0.05,
     // QSB depth range: 0.6 to 1.0
     qsbDepth: Math.random() * 0.4 + 0.6,
-  }
+  };
 }
 
 /**
@@ -138,7 +308,9 @@ function getRandomUSCallsign(formats) {
   // If it’s a 1× format (1x1, 1x2, 1x3), we only want one-letter prefixes
   let possiblePrefixes;
   if (format.startsWith('1x')) {
-    possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED.filter(item => item.value.length === 1);
+    possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED.filter(
+      (item) => item.value.length === 1
+    );
   } else {
     possiblePrefixes = US_CALLSIGN_PREFIXES_WEIGHTED;
   }
@@ -201,7 +373,7 @@ function getRandomNonUSCallsign(formats) {
  */
 function generateRandomLetters(length) {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  return Array.from({length}, () => randomElement(alphabet)).join('');
+  return Array.from({ length }, () => randomElement(alphabet)).join('');
 }
 
 /**
