@@ -361,6 +361,27 @@
                   />
                 </div>
 
+                <!-- Enable Continuous respons -->
+                <div class="col-12 col-md-6 col-lg">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    id="enableContinuous"
+                    autocomplete="off"
+                    onchange="
+                    document.getElementById('enableContinuousLabel').innerHTML =
+                      `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Continuous Mode`;
+                      "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="enableContinuous"
+                    id="enableContinuousLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Continuous Mode
+                  </label>
+                </div>
+
                 <!-- Min Speed -->
                 <div class="col-12 col-md-4 col-lg">
                   <label for="minSpeed" class="form-label">Min Speed</label>

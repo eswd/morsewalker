@@ -494,6 +494,7 @@ function send() {
           stn.farnsworthSpeed = Math.max(
             5,
             stn.farnsworthSpeed - farnsworthLowerBy
+
           );
         } else {
           stn.enableFarnsworth = true;
@@ -831,7 +832,7 @@ function tu() {
   responseField.focus();
 
   // Chance of a new station joining
-  if (Math.random() < 0.4) {
+  if (Math.random() < 0.4 || document.getElementById('enableContinuous').checked) {
     addStations(currentStations, inputs);
   }
 
