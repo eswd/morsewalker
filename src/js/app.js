@@ -195,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
   applyModeSettings(currentMode);
 });
 
-
 /**
  * Handles loading and saving of all fields marked with data-persist="true"
  * Automatically binds based on their ID as the storage key.
@@ -204,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupDynamicPersistence() {
   const persistElements = document.querySelectorAll('[data-persist="true"]');
 
-  persistElements.forEach(el => {
+  persistElements.forEach((el) => {
     const key = el.id;
     if (!key) return; // Skip if no ID (cannot persist)
 
@@ -219,9 +218,11 @@ function setupDynamicPersistence() {
     }
 
     // Save on change/input
-    const eventType = (el.type === 'checkbox' || el.type === 'radio') ? 'change' : 'input';
+    const eventType =
+      el.type === 'checkbox' || el.type === 'radio' ? 'change' : 'input';
     el.addEventListener(eventType, () => {
-      const valueToStore = (el.type === 'checkbox' || el.type === 'radio') ? el.checked : el.value;
+      const valueToStore =
+        el.type === 'checkbox' || el.type === 'radio' ? el.checked : el.value;
       localStorage.setItem(key, valueToStore);
     });
   });
@@ -233,7 +234,7 @@ function setupDynamicPersistence() {
 function resetDynamicPersistence() {
   const persistElements = document.querySelectorAll('[data-persist="true"]');
 
-  persistElements.forEach(el => {
+  persistElements.forEach((el) => {
     const key = el.id;
     if (!key) return;
 
@@ -261,32 +262,41 @@ function setupTogglesAndLabels() {
       controlId: 'enableContinuous',
       labelId: 'enableContinuousLabel',
       labelText: 'Continuous Mode',
-      dependents: [] // no dependent fields
+      dependents: [], // no dependent fields
     },
     {
       controlId: 'enableFarnsworth',
       labelId: 'enableFarnsworthLabel',
       labelText: 'Farnsworth',
-      dependents: ['farnsworthSpeed']
+      dependents: ['farnsworthSpeed'],
     },
     {
       controlId: 'usOnly',
       labelId: 'usOnlyLabel',
       labelText: 'US Only Callsigns',
-      dependents: []
+      dependents: [],
     },
     {
       controlId: 'qsb',
       labelId: 'qsbLabel',
       labelText: 'QSB (Fading)',
-      dependents: ['qsbPercentage']
+      dependents: ['qsbPercentage'],
     },
     {
       controlId: 'enableCutNumbers',
       labelId: 'enableCutNumbersLabel',
       labelText: 'Enable Cut Numbers',
-      dependents: ['cutT', 'cutA', 'cutU', 'cutV', 'cutE', 'cutG', 'cutD', 'cutN']
-    }
+      dependents: [
+        'cutT',
+        'cutA',
+        'cutU',
+        'cutV',
+        'cutE',
+        'cutG',
+        'cutD',
+        'cutN',
+      ],
+    },
   ];
 
   toggleConfig.forEach(({ controlId, labelId, labelText, dependents }) => {
@@ -304,7 +314,7 @@ function setupTogglesAndLabels() {
       }
 
       // Enable or disable dependent fields
-      dependents.forEach(dependentId => {
+      dependents.forEach((dependentId) => {
         const dependent = document.getElementById(dependentId);
         if (dependent) {
           dependent.disabled = !enabled;
@@ -330,19 +340,21 @@ function setupTogglesAndLabels() {
 }
 
 /**
- * Handle QRN button states after settings loading  
+ * Handle QRN button states after settings loading
  */
 function setupQRNGroup() {
   const savedQrn = localStorage.getItem('qrn');
   if (savedQrn) {
-    const qrnRadio = document.querySelector(`input[name="qrn"][value="${savedQrn}"]`);
+    const qrnRadio = document.querySelector(
+      `input[name="qrn"][value="${savedQrn}"]`
+    );
     if (qrnRadio) {
       qrnRadio.checked = true;
     }
   }
 
   const qrnRadios = document.querySelectorAll('input[name="qrn"]');
-  qrnRadios.forEach(radio => {
+  qrnRadios.forEach((radio) => {
     radio.addEventListener('change', () => {
       if (radio.checked) {
         localStorage.setItem('qrn', radio.value);
@@ -350,7 +362,6 @@ function setupQRNGroup() {
     });
   });
 }
-
 
 /**
  * Retrieves the logic configuration for the current mode.
@@ -565,7 +576,6 @@ function send() {
           stn.farnsworthSpeed = Math.max(
             5,
             stn.farnsworthSpeed - farnsworthLowerBy
-
           );
         } else {
           stn.enableFarnsworth = true;
@@ -903,7 +913,10 @@ function tu() {
   responseField.focus();
 
   // Chance of a new station joining
-  if (Math.random() < 0.4 || document.getElementById('enableContinuous').checked) {
+  if (
+    Math.random() < 0.4 ||
+    document.getElementById('enableContinuous').checked
+  ) {
     addStations(currentStations, inputs);
   }
 
