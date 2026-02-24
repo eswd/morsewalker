@@ -288,7 +288,14 @@ export function getCallingStation() {
     qsbFrequency: Math.random() * 0.45 + 0.05,
     // QSB depth range: 0.6 to 1.0
     qsbDepth: Math.random() * 0.4 + 0.6,
-    rst: '599', // Add RST for all stations (standard for CW)
+    // RST: random (readability 3-5, signal 3-9, tone always 9) or static 599
+    rst: inputs.randomRst
+      ? `${Math.floor(Math.random() * 3) + 3}${Math.floor(Math.random() * 7) + 3}9`
+      : '599',
+    // rstCw: what the station actually sends over the air (5NN when static)
+    get rstCw() {
+      return inputs.randomRst ? this.rst : '5NN';
+    },
   };
 }
 

@@ -1,0 +1,10 @@
+services:
+  node:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    # Führt npm install aus und startet danach die App
+    command: sh -c "npm install && npm audit fix && npm start"

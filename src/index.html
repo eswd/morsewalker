@@ -765,6 +765,35 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Random RST Row -->
+              <div class="row g-3 mt-3 align-items-end">
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="randomRst"
+                    onchange="
+                      document.getElementById('randomRstLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Random RST`;
+                      const _if = document.getElementById('infoField');
+                      const _mode = document.querySelector('input[name=\'mode\']:checked')?.value;
+                      if (_mode === 'pota' && _if && _if.style.display !== 'none') {
+                        _if.disabled = !this.checked;
+                        _if.value = this.checked ? '' : '599';
+                      }
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="randomRst"
+                    id="randomRstLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Random RST
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
