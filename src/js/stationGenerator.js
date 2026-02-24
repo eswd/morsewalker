@@ -296,6 +296,10 @@ export function getCallingStation() {
     get rstCw() {
       return inputs.randomRst ? this.rst : '5NN';
     },
+    // rstCw2: second send of RST with trailing 9 replaced by N (e.g. 569 → 56N)
+    get rstCw2() {
+      return this.rstCw.replace(/9$/, 'N');
+    },
   };
 }
 
