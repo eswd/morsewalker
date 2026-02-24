@@ -86,8 +86,10 @@ export const modeLogicConfig = {
     cqMessage: (yourStation, theirStation, arbitrary) =>
       `CQ POTA DE ${yourStation.callsign}`,
     yourExchange: (yourStation, theirStation, arbitrary) => `UR 5NN <BK>`,
-    theirExchange: (yourStation, theirStation, arbitrary) =>
-      `<BK> UR ${theirStation.rstCw} ${theirStation.rstCw2} ${theirStation.state} ${theirStation.state} <BK>`,
+    theirExchange: (yourStation, theirStation, arbitrary) => {
+      const greeting = ['GM', 'GA', 'GE'][Math.floor(Math.random() * 3)];
+      return `<BK> ${greeting} UR ${theirStation.rstCw} ${theirStation.rstCw2} ${theirStation.state} ${theirStation.state} <BK>`;
+    },
     yourSignoff: (yourStation, theirStation, arbitrary) =>
       `<BK> TU ${arbitrary} 73 EE`,
     theirSignoff: (yourStation, theirStation, arbitrary) => `EE`,
