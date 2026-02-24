@@ -317,9 +317,19 @@ function applyModeSettings(mode) {
   if (config.showInfoField) {
     infoField.style.display = 'inline-block';
     infoField.placeholder = config.infoFieldPlaceholder;
+    // For POTA mode, disable RST field and pre-fill 599 when randomRst is off
+    if (mode === 'pota') {
+      const randomRst = document.getElementById('randomRst')?.checked ?? false;
+      infoField.disabled = !randomRst;
+      infoField.value = randomRst ? '' : '599';
+    } else {
+      infoField.disabled = false;
+      infoField.value = '';
+    }
   } else {
     infoField.style.display = 'none';
     infoField.value = '';
+    infoField.disabled = false;
   }
 
   // Info field 2 visibility & placeholder
@@ -566,7 +576,11 @@ function send() {
         currentStationAttempts++;
 
         if (modeConfig.requiresInfoField) {
-          infoField.focus();
+          if (!infoField.disabled) {
+            infoField.focus();
+          } else if (modeConfig.requiresInfoField2) {
+            infoField2.focus();
+          }
         }
         readyForTU = true;
         activeStationIndex = matchIndex;
@@ -826,7 +840,12 @@ function tu() {
 
   const responseField = document.getElementById('responseField');
   responseField.value = '';
-  infoField.value = '';
+  // Restore 599 in RST field if randomRst is off in POTA mode
+  if (currentMode === 'pota' && !(inputs && inputs.randomRst)) {
+    infoField.value = '599';
+  } else {
+    infoField.value = '';
+  }
   infoField2.value = '';
   responseField.focus();
 

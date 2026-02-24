@@ -75,6 +75,11 @@ function getDOMInputs() {
       ? document.getElementById('enableCutNumbers').checked
       : false,
     cutNumbers: getSelectedCutNumbers(),
+
+    // Random RST
+    randomRst: document.getElementById('randomRst')
+      ? document.getElementById('randomRst').checked
+      : false,
   };
 }
 
