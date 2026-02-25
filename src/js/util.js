@@ -499,6 +499,7 @@ export function printStation(station) {
  * @param {number} attempts - The number of attempts to record.
  * @param {number} totalTime - The total time taken, displayed to two decimal places.
  * @param {string|null} [extra=null] - Optional additional information to include in a fifth cell.
+ * @param {number|null} [pileup=null] - Optional pileup size (number of callers) to include in a sixth cell.
  */
 export function addTableRow(
   tableName,
@@ -507,7 +508,8 @@ export function addTableRow(
   wpm,
   attempts,
   totalTime,
-  extra = null
+  extra = null,
+  pileup = null
 ) {
   const table = document
     .getElementById(tableName)
@@ -522,9 +524,8 @@ export function addTableRow(
   newRow.insertCell(2).textContent = wpm;
   newRow.insertCell(3).textContent = attempts;
   newRow.insertCell(4).textContent = totalTime.toFixed(2);
-  if (extra) {
-    newRow.insertCell(5).innerHTML = extra;
-  }
+  newRow.insertCell(5).textContent = pileup !== null ? pileup : '';
+  newRow.insertCell(6).innerHTML = extra ?? '';
 
   // Update the summary row at the bottom
   updateSummaryRow(tableName, extra);
@@ -640,6 +641,7 @@ function updateSummaryRow(tableName, extra = null) {
     `<strong>${avgAttempts.toFixed(1)}</strong>`;
   summaryRow.insertCell(4).innerHTML = `<strong>${avgTime.toFixed(2)}</strong>`;
   summaryRow.insertCell(5).innerHTML = ``;
+  summaryRow.insertCell(6).innerHTML = ``;
 }
 
 /**
@@ -648,5 +650,8 @@ function updateSummaryRow(tableName, extra = null) {
  * @param {number} numStations - The current count of active stations.
  */
 export function updateActiveStations(numStations) {
-  document.getElementById('activeStations').textContent = numStations;
+  const el = document.getElementById('activeStations');
+  const toggle = document.getElementById('showActiveStations');
+  el.dataset.value = numStations;
+  el.textContent = (!toggle || toggle.checked) ? numStations : '?';
 }

@@ -899,6 +899,29 @@
                     <i class="fa-regular fa-circle-xmark me-2"></i>Random RST (POTA only)
                   </label>
                 </div>
+                <!-- Show Active Stations -->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="showActiveStations"
+                    checked
+                    onchange="
+                      document.getElementById('showActiveStationsLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Show Active Stations`;
+                      const _as = document.getElementById('activeStations');
+                      if (_as) { _as.textContent = this.checked ? (_as.dataset.value ?? '0') : '?'; }
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="showActiveStations"
+                    id="showActiveStationsLabel"
+                  >
+                    <i class="fa-solid fa-circle-check me-2"></i>Show Active Stations
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -1343,6 +1366,7 @@
           <th>WPM</th>
           <th>Attempts</th>
           <th>Total Time</th>
+          <th>Active Stations</th>
           <th class="mode-specific-column">Additional Info</th>
         </tr>
       </thead>
