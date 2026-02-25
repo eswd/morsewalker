@@ -968,6 +968,14 @@ function stop() {
     currentStationAttempts = 0;
     currentStationStartTime = null;
     updateActiveStations(0);
+  } else {
+    // Multi-station modes: clear all stations so CQ starts fresh
+    currentStations = [];
+    activeStationIndex = null;
+    readyForTU = false;
+    currentStationAttempts = 0;
+    currentStationStartTime = null;
+    updateActiveStations(0);
   }
 }
 
