@@ -92,6 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
   tuButton.addEventListener('click', tu);
   resetButton.addEventListener('click', reset);
   stopButton.addEventListener('click', stop);
+
+  // Reset Settings (clears localStorage and reloads)
+  document.getElementById('confirmResetSettings').addEventListener('click', () => {
+    localStorage.clear();
+    location.reload();
+  });
   modeRadios.forEach((radio) => {
     radio.addEventListener('change', changeMode);
   });
