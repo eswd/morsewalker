@@ -875,6 +875,7 @@ function tu() {
   let infoValue2 = infoField2.value.trim();
 
   let currentStation = currentStations[activeStationIndex];
+  const pileupSize = currentStations.length;
   totalContacts++;
 
   // Compare both fields if required
@@ -946,7 +947,8 @@ function tu() {
     wpmString,
     currentStationAttempts,
     audioContext.currentTime - currentStationStartTime,
-    extraInfo
+    extraInfo,
+    pileupSize
   );
 
   // Remove the worked station
