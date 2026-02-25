@@ -55,6 +55,18 @@ function getDOMInputs() {
     usOnly: document.getElementById('usOnly')
       ? document.getElementById('usOnly').checked
       : false,
+    useLocationPrefix: document.getElementById('useLocationPrefix')
+      ? document.getElementById('useLocationPrefix').checked
+      : false,
+    locationPrefixPercentage: document.getElementById('locationPrefixPercentage')
+      ? parseInt(document.getElementById('locationPrefixPercentage').value, 10)
+      : 10,
+    useOpSuffix: document.getElementById('useOpSuffix')
+      ? document.getElementById('useOpSuffix').checked
+      : false,
+    opSuffixPercentage: document.getElementById('opSuffixPercentage')
+      ? parseInt(document.getElementById('opSuffixPercentage').value, 10)
+      : 10,
     qrn: document.querySelector('input[name="qrn"]:checked').value,
     qsb: document.getElementById('qsb').checked,
     qsbPercentage: parseInt(document.getElementById('qsbPercentage').value, 10),

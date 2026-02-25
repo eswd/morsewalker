@@ -766,8 +766,86 @@
                 </div>
               </div>
 
+              <!-- Location Prefix + Operating Indicators Row -->
+              <div class="row g-3 mt-3 align-items-end">
+                <!-- Stations with Location Prefix-->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="useLocationPrefix"
+                    onchange="
+                      document.getElementById('useLocationPrefixLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Add Country Prefix (in %)`;
+                      document.getElementById('locationPrefixPercentage').disabled = !this.checked;
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="useLocationPrefix"
+                    id="useLocationPrefixLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Add Country Prefix (in %)
+                  </label>
+                </div>
+
+                <!-- Location Prefix Probability -->
+                <div class="col-12 col-md-2">
+                  <input
+                    type="number"
+                    id="locationPrefixPercentage"
+                    name="locationPrefixPercentage"
+                    class="form-control"
+                    value="10"
+                    min="1"
+                    max="100"
+                    step="1"
+                    disabled
+                  />
+                </div>
+
+                <!-- Stations with Operating Indicators -->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="useOpSuffix"
+                    onchange="
+                      document.getElementById('useOpSuffixLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Add Operating Indicators (in %)`;
+                      document.getElementById('opSuffixPercentage').disabled = !this.checked;
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="useOpSuffix"
+                    id="useOpSuffixLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Add Operating Indicators (in %)
+                  </label>
+                </div>
+
+                <!-- Operating Indicators Probability -->
+                <div class="col-12 col-md-2">
+                  <input
+                    type="number"
+                    id="opSuffixPercentage"
+                    name="opSuffixPercentage"
+                    class="form-control"
+                    value="10"
+                    min="1"
+                    max="100"
+                    step="1"
+                    disabled
+                  />
+                </div>
+              </div>
+
               <!-- Random RST Row -->
               <div class="row g-3 mt-3 align-items-end">
+                <!-- Random RST -->
                 <div class="col-12 col-md-4">
                   <input
                     type="checkbox"

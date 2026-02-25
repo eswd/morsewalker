@@ -262,10 +262,32 @@ export function getCallingStation() {
   // determine if it's a US station
   let isUS = inputs.usOnly ? true : Math.random() < 0.4;
 
+  // Generate base callsign
+  let callsign = isUS
+    ? getRandomUSCallsign(inputs.formats)
+    : getRandomNonUSCallsign(inputs.formats);
+
+  // 10% chance of CEPT location prefix (e.g. DL/W1ABC)
+  let hasLocationPrefix = false;
+  if (inputs.useLocationPrefix && Math.random() < inputs.locationPrefixPercentage / 100) {
+    const locationPrefix = randomElement(NON_US_CALLSIGN_PREFIXES);
+    callsign = `${locationPrefix}/${callsign}`;
+    hasLocationPrefix = true;
+  }
+
+  // Chance of op suffix (/P, /M, /MM, /AM) — /P weighted at 80%, rest share 20%
+  if (inputs.useOpSuffix && Math.random() < inputs.opSuffixPercentage / 100) {
+    const suffix = weightedRandomElement([
+      { value: '/P',  weight: 80 },
+      { value: '/M',  weight: 10 },
+      { value: '/MM', weight: 5 },
+      { value: '/AM', weight: 5 },
+    ]);
+    callsign = `${callsign}${suffix}`;
+  }
+
   return {
-    callsign: isUS
-      ? getRandomUSCallsign(inputs.formats)
-      : getRandomNonUSCallsign(inputs.formats),
+    callsign: callsign,
     wpm:
       Math.floor(Math.random() * (inputs.maxSpeed - inputs.minSpeed + 1)) +
       inputs.minSpeed,
@@ -277,7 +299,7 @@ export function getCallingStation() {
       Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone
     ),
     name: randomElement(names),
-    state: isUS ? randomElement(stateAbbreviations) : '',
+    state: (isUS && !hasLocationPrefix) ? randomElement(stateAbbreviations) : '',
     serialNumber: (Math.floor(Math.random() * 30) + 1)
       .toString()
       .padStart(2, '0'),
