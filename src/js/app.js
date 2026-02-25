@@ -350,6 +350,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Random RST
   restoreCheckbox('randomRst', 'randomRstLabel', 'Random RST', null);
 
+  // Show Active Stations
+  restoreCheckbox('showActiveStations', 'showActiveStationsLabel', 'Show Active Stations', (checked) => {
+    const el = document.getElementById('activeStations');
+    if (el) el.textContent = checked ? (el.dataset.value ?? '0') : '?';
+  });
+
   // Use Location Prefix
   restoreCheckbox('useLocationPrefix', 'useLocationPrefixLabel', 'Use Location Prefix (in %)', (checked) => {
     const pct = document.getElementById('locationPrefixPercentage');
