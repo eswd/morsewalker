@@ -854,7 +854,7 @@
                     id="randomRst"
                     onchange="
                       document.getElementById('randomRstLabel').innerHTML =
-                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Random RST`;
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Random RST (POTA only)`;
                       const _if = document.getElementById('infoField');
                       const _mode = document.querySelector('input[name=\'mode\']:checked')?.value;
                       if (_mode === 'pota' && _if && _if.style.display !== 'none') {
@@ -868,7 +868,7 @@
                     for="randomRst"
                     id="randomRstLabel"
                   >
-                    <i class="fa-regular fa-circle-xmark me-2"></i>Random RST
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Random RST (POTA only)
                   </label>
                 </div>
               </div>
