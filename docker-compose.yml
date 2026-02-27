@@ -7,4 +7,4 @@ services:
     ports:
       - "8080:8080"
     # Führt npm install aus und startet danach die App
-    command: sh -c "npm install && npm audit fix && npm start"
+    command: sh -c "npm install && npm audit fix && npm run build"

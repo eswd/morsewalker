@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modes.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modes.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * modeUIConfig defines the UI-related aspects of each mode, including whether
+ * one or two info fields are displayed, their placeholders, and result headers.
+ * Additionally, it specifies what the extra column header should be.
+ */
+export const modeUIConfig = {
+  single: {
+    showTuButton: false,
+    showInfoField: false,
+    infoFieldPlaceholder: '',
+    showInfoField2: false,
+    infoField2Placeholder: '',
+    tableExtraColumn: false,
+    extraColumnHeader: '',
+    resultsHeader: 'Single Mode Results',
+  },
+  contest: {
+    showTuButton: true,
+    showInfoField: true,
+    infoFieldPlaceholder: 'Serial Number',
+    showInfoField2: false,
+    infoField2Placeholder: '',
+    tableExtraColumn: true,
+    extraColumnHeader: 'Serial Number',
+    resultsHeader: 'Contest Mode Results',
+  },
+  pota: {
+    showTuButton: true,
+    showInfoField: true,
+    infoFieldPlaceholder: 'RST',
+    showInfoField2: true,
+    infoField2Placeholder: 'State',
+    tableExtraColumn: true,
+    extraColumnHeader: 'RST / State',
+    resultsHeader: 'POTA Mode Results',
+  },
+  sst: {
+    showTuButton: true,
+    showInfoField: true,
+    infoFieldPlaceholder: 'Name',
+    showInfoField2: true,
+    infoField2Placeholder: 'State',
+    tableExtraColumn: true,
+    extraColumnHeader: 'Additional Info',
+    resultsHeader: 'SST Mode Results',
+  },
+  cwt: {
+    showTuButton: true,
+    showInfoField: true,
+    infoFieldPlaceholder: 'Name',
+    showInfoField2: true,
+    infoField2Placeholder: 'CW Ops No.',
+    tableExtraColumn: true,
+    extraColumnHeader: 'Additional Info',
+    resultsHeader: 'CWT Mode Results',
+  },
+};
+
+/**
+ * modeLogicConfig centralizes the message construction logic for various modes.
+ * Each mode’s functions define how CQ calls, exchanges, and final messages are generated,
+ * removing the need for conditional branching (e.g., if/else statements) elsewhere.
+ * Instead of embedding placeholders, these functions use template literals and accept
+ * the necessary parameters directly.
+ *
+ * The extraInfoFieldKey and extraInfoFieldKey2 properties specify which callingStation
+ * attributes are compared against the user's input during the TU step.
+ */
+
+export const modeLogicConfig = {
+  single: {
+    cqMessage: (yourStation, theirStation, arbitrary) =>
+      `CQ DE ${yourStation.callsign} K`,
+    yourExchange: (yourStation, theirStation, arbitrary) => `5NN`,
+    theirExchange: (yourStation, theirStation, arbitrary) => `R 5NN TU`,
+    yourSignoff: (yourStation, theirStation, arbitrary) => `TU EE`,
+    theirSignoff: (yourStation, theirStation, arbitrary) => `EE`,
+    requiresInfoField: false,
+    requiresInfoField2: false,
+    showTuStep: false,
+    modeName: 'Single',
+    extraInfoFieldKey: null,
+    extraInfoFieldKey2: null,
+  },
+  pota: {
+    cqMessage: (yourStation, theirStation, arbitrary) =>
+      `CQ POTA DE ${yourStation.callsign}`,
+    yourExchange: (yourStation, theirStation, arbitrary) => `UR 5NN &lt;BK>`,
+    theirExchange: (yourStation, theirStation, arbitrary) => {
+      const greeting = ['GM', 'GA', 'GE'][Math.floor(Math.random() * 3)];
+      return `&lt;BK> ${greeting} UR ${theirStation.rstCw} ${theirStation.rstCw2} ${theirStation.state} ${theirStation.state} &lt;BK>`;
+    },
+    yourSignoff: (yourStation, theirStation, arbitrary) =>
+      `&lt;BK> TU ${arbitrary} 73 EE`,
+    theirSignoff: (yourStation, theirStation, arbitrary) => `EE`,
+    requiresInfoField: true,
+    requiresInfoField2: true,
+    showTuStep: true,
+    modeName: 'POTA',
+    extraInfoFieldKey: 'rst',
+    extraInfoFieldKey2: 'state',
+  },
+  contest: {
+    cqMessage: (yourStation, theirStation, arbitrary) =>
+      `CQ TEST DE ${yourStation.callsign}`,
+    yourExchange: (yourStation, theirStation, arbitrary) => `5NN`,
+    theirExchange: (yourStation, theirStation, arbitrary) =>
+      `5NN ${theirStation.serialNumber} TU`,
+    yourSignoff: (yourStation, theirStation, arbitrary) =>
+      `TU ${yourStation.callsign}`,
+    theirSignoff: null,
+    requiresInfoField: true,
+    requiresInfoField2: false,
+    showTuStep: true,
+    modeName: 'Contest',
+    extraInfoFieldKey: 'serialNumber',
+    extraInfoFieldKey2: null,
+  },
+  sst: {
+    cqMessage: (yourStation, theirStation, arbitrary) =>
+      `CQ SST ${yourStation.callsign}`,
+    yourExchange: (yourStation, theirStation, arbitrary) =>
+      `${yourStation.name} ${yourStation.state}`,
+    theirExchange: (yourStation, theirStation, arbitrary) =>
+      `TU ${yourStation.name} ${theirStation.name} ${theirStation.state}`,
+    yourSignoff: (yourStation, theirStation, arbitrary) =>
+      `GL ${arbitrary} TU ${yourStation.callsign} SST`,
+    theirSignoff: null,
+    requiresInfoField: true,
+    requiresInfoField2: true,
+    showTuStep: true,
+    modeName: 'SST',
+    extraInfoFieldKey: 'name',
+    extraInfoFieldKey2: 'state',
+  },
+  cwt: {
+    cqMessage: (yourStation, theirStation, arbitrary) =>
+      `CQ CWT ${yourStation.callsign}`,
+    yourExchange: (yourStation, theirStation, arbitrary) =>
+      `${yourStation.name} CWA`,
+    theirExchange: (yourStation, theirStation, arbitrary) =>
+      `${theirStation.name} ${theirStation.cwopsNumber} TU`,
+    yourSignoff: (yourStation, theirStation, arbitrary) =>
+      `TU ${yourStation.callsign}`,
+    theirSignoff: null,
+    requiresInfoField: true,
+    requiresInfoField2: true,
+    showTuStep: true,
+    modeName: 'CWT',
+    extraInfoFieldKey: 'name',
+    extraInfoFieldKey2: 'cwopsNumber',
+  },
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addStations">addStations</a></li><li><a href="global.html#addTableRow">addTableRow</a></li><li><a href="global.html#applyModeSettings">applyModeSettings</a></li><li><a href="global.html#changeMode">changeMode</a></li><li><a href="global.html#clearAllInvalidStates">clearAllInvalidStates</a></li><li><a href="global.html#clearFieldInvalid">clearFieldInvalid</a></li><li><a href="global.html#clearTable">clearTable</a></li><li><a href="global.html#compareExtraInfo">compareExtraInfo</a></li><li><a href="global.html#compareStrings">compareStrings</a></li><li><a href="global.html#cq">cq</a></li><li><a href="global.html#createBackgroundStatic">createBackgroundStatic</a></li><li><a href="global.html#createMorsePlayer">createMorsePlayer</a></li><li><a href="global.html#currentMode">currentMode</a></li><li><a href="global.html#generateRandomLetters">generateRandomLetters</a></li><li><a href="global.html#getAudioLock">getAudioLock</a></li><li><a href="global.html#getCallingStation">getCallingStation</a></li><li><a href="global.html#getDOMInputs">getDOMInputs</a></li><li><a href="global.html#getInputs">getInputs</a></li><li><a href="global.html#getModeConfig">getModeConfig</a></li><li><a href="global.html#getRandomNonUSCallsign">getRandomNonUSCallsign</a></li><li><a href="global.html#getRandomUSCallsign">getRandomUSCallsign</a></li><li><a href="global.html#getSelectedCutNumbers">getSelectedCutNumbers</a></li><li><a href="global.html#getSelectedFormats">getSelectedFormats</a></li><li><a href="global.html#getYourStation">getYourStation</a></li><li><a href="global.html#isBackgroundStaticPlaying">isBackgroundStaticPlaying</a></li><li><a href="global.html#markFieldInvalid">markFieldInvalid</a></li><li><a href="global.html#modeLogicConfig">modeLogicConfig</a></li><li><a href="global.html#modeUIConfig">modeUIConfig</a></li><li><a href="global.html#nextSingleStation">nextSingleStation</a></li><li><a href="global.html#normalizeStationGain">normalizeStationGain</a></li><li><a href="global.html#openAccordionSection">openAccordionSection</a></li><li><a href="global.html#printStation">printStation</a></li><li><a href="global.html#randomDigit">randomDigit</a></li><li><a href="global.html#randomElement">randomElement</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGameState">resetGameState</a></li><li><a href="global.html#respondWithAllStations">respondWithAllStations</a></li><li><a href="global.html#send">send</a></li><li><a href="global.html#stop">stop</a></li><li><a href="global.html#stopAllAudio">stopAllAudio</a></li><li><a href="global.html#stopBackgroundStatic">stopBackgroundStatic</a></li><li><a href="global.html#tu">tu</a></li><li><a href="global.html#updateActiveStations">updateActiveStations</a></li><li><a href="global.html#updateAudioLock">updateAudioLock</a></li><li><a href="global.html#updateStaticIntensity">updateStaticIntensity</a></li><li><a href="global.html#updateSummaryRow">updateSummaryRow</a></li><li><a href="global.html#validateInputs">validateInputs</a></li><li><a href="global.html#weightedRandom">weightedRandom</a></li><li><a href="global.html#weightedRandomElement">weightedRandomElement</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Feb 27 2026 13:42:53 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
