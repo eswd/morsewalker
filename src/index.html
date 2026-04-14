@@ -191,6 +191,34 @@
           >
         </div>
       </div>
+
+      <!-- Reset Settings button -->
+      <button
+        class="btn btn-outline-danger btn-sm ms-sm-3 mt-2 mt-sm-0"
+        data-bs-toggle="modal"
+        data-bs-target="#resetSettingsModal"
+      >
+        <i class="fa-solid fa-rotate-left me-1"></i>Reset Settings
+      </button>
+    </div>
+
+    <!-- Reset Settings Confirmation Modal -->
+    <div class="modal fade" id="resetSettingsModal" tabindex="-1" aria-labelledby="resetSettingsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="resetSettingsModalLabel">Reset Settings</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to reset all settings to their defaults? This cannot be undone.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmResetSettings">Reset</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <hr />
@@ -765,6 +793,136 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Location Prefix + Operating Indicators Row -->
+              <div class="row g-3 mt-3 align-items-end">
+                <!-- Stations with Location Prefix-->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="useLocationPrefix"
+                    onchange="
+                      document.getElementById('useLocationPrefixLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Add Country Prefix (in %)`;
+                      document.getElementById('locationPrefixPercentage').disabled = !this.checked;
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="useLocationPrefix"
+                    id="useLocationPrefixLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Add Country Prefix (in %)
+                  </label>
+                </div>
+
+                <!-- Location Prefix Probability -->
+                <div class="col-12 col-md-2">
+                  <input
+                    type="number"
+                    id="locationPrefixPercentage"
+                    name="locationPrefixPercentage"
+                    class="form-control"
+                    value="10"
+                    min="1"
+                    max="100"
+                    step="1"
+                    disabled
+                  />
+                </div>
+
+                <!-- Stations with Operating Indicators -->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="useOpSuffix"
+                    onchange="
+                      document.getElementById('useOpSuffixLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Add Operating Indicators (in %)`;
+                      document.getElementById('opSuffixPercentage').disabled = !this.checked;
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="useOpSuffix"
+                    id="useOpSuffixLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Add Operating Indicators (in %)
+                  </label>
+                </div>
+
+                <!-- Operating Indicators Probability -->
+                <div class="col-12 col-md-2">
+                  <input
+                    type="number"
+                    id="opSuffixPercentage"
+                    name="opSuffixPercentage"
+                    class="form-control"
+                    value="10"
+                    min="1"
+                    max="100"
+                    step="1"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <!-- Random RST Row -->
+              <div class="row g-3 mt-3 align-items-end">
+                <!-- Random RST -->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="randomRst"
+                    onchange="
+                      document.getElementById('randomRstLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Random RST (POTA only)`;
+                      const _if = document.getElementById('infoField');
+                      const _mode = document.querySelector('input[name=\'mode\']:checked')?.value;
+                      if (_mode === 'pota' && _if && _if.style.display !== 'none') {
+                        _if.disabled = !this.checked;
+                        _if.value = this.checked ? '' : '599';
+                      }
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="randomRst"
+                    id="randomRstLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Random RST (POTA only)
+                  </label>
+                </div>
+                <!-- Show Active Stations -->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    autocomplete="off"
+                    id="showActiveStations"
+                    checked
+                    onchange="
+                      document.getElementById('showActiveStationsLabel').innerHTML =
+                        `<i class='${this.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark'} me-2'></i>Show Active Stations`;
+                      const _as = document.getElementById('activeStations');
+                      if (_as) { _as.textContent = this.checked ? (_as.dataset.value ?? '0') : '?'; }
+                    "
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="showActiveStations"
+                    id="showActiveStationsLabel"
+                  >
+                    <i class="fa-solid fa-circle-check me-2"></i>Show Active Stations
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1208,6 +1366,7 @@
           <th>WPM</th>
           <th>Attempts</th>
           <th>Total Time</th>
+          <th>Active Stations</th>
           <th class="mode-specific-column">Additional Info</th>
         </tr>
       </thead>

@@ -262,10 +262,32 @@ export function getCallingStation() {
   // determine if it's a US station
   let isUS = inputs.usOnly ? true : Math.random() < 0.4;
 
+  // Generate base callsign
+  let callsign = isUS
+    ? getRandomUSCallsign(inputs.formats)
+    : getRandomNonUSCallsign(inputs.formats);
+
+  // 10% chance of CEPT location prefix (e.g. DL/W1ABC)
+  let hasLocationPrefix = false;
+  if (inputs.useLocationPrefix && Math.random() < inputs.locationPrefixPercentage / 100) {
+    const locationPrefix = randomElement(NON_US_CALLSIGN_PREFIXES);
+    callsign = `${locationPrefix}/${callsign}`;
+    hasLocationPrefix = true;
+  }
+
+  // Chance of op suffix (/P, /M, /MM, /AM) — /P weighted at 80%, rest share 20%
+  if (inputs.useOpSuffix && Math.random() < inputs.opSuffixPercentage / 100) {
+    const suffix = weightedRandomElement([
+      { value: '/P',  weight: 80 },
+      { value: '/M',  weight: 10 },
+      { value: '/MM', weight: 5 },
+      { value: '/AM', weight: 5 },
+    ]);
+    callsign = `${callsign}${suffix}`;
+  }
+
   return {
-    callsign: isUS
-      ? getRandomUSCallsign(inputs.formats)
-      : getRandomNonUSCallsign(inputs.formats),
+    callsign: callsign,
     wpm:
       Math.floor(Math.random() * (inputs.maxSpeed - inputs.minSpeed + 1)) +
       inputs.minSpeed,
@@ -277,7 +299,7 @@ export function getCallingStation() {
       Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone
     ),
     name: randomElement(names),
-    state: isUS ? randomElement(stateAbbreviations) : '',
+    state: (isUS && !hasLocationPrefix) ? randomElement(stateAbbreviations) : '',
     serialNumber: (Math.floor(Math.random() * 30) + 1)
       .toString()
       .padStart(2, '0'),
@@ -288,6 +310,18 @@ export function getCallingStation() {
     qsbFrequency: Math.random() * 0.45 + 0.05,
     // QSB depth range: 0.6 to 1.0
     qsbDepth: Math.random() * 0.4 + 0.6,
+    // RST: random (readability 3-5, signal 3-9, tone always 9) or static 599
+    rst: inputs.randomRst
+      ? `${Math.floor(Math.random() * 3) + 3}${Math.floor(Math.random() * 7) + 3}9`
+      : '599',
+    // rstCw: what the station actually sends over the air (5NN when static)
+    get rstCw() {
+      return inputs.randomRst ? this.rst : '5NN';
+    },
+    // rstCw2: second send of RST with trailing 9 replaced by N (e.g. 569 → 56N)
+    get rstCw2() {
+      return this.rstCw.replace(/9$/, 'N');
+    },
   };
 }
 
