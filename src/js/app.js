@@ -92,6 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
   tuButton.addEventListener('click', tu);
   resetButton.addEventListener('click', reset);
   stopButton.addEventListener('click', stop);
+
+  // Reset Settings (clears localStorage and reloads)
+  document.getElementById('confirmResetSettings').addEventListener('click', () => {
+    localStorage.clear();
+    location.reload();
+  });
   modeRadios.forEach((radio) => {
     radio.addEventListener('change', changeMode);
   });
@@ -244,6 +250,124 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem(keys.yourVolume, yourVolume.value);
   });
 
+  // ── Responding Station Settings: save/restore all remaining fields ──
+
+  // Helper: restore a number input
+  function restoreNumber(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = localStorage.getItem(id);
+    if (val !== null) el.value = val;
+    el.addEventListener('input', () => localStorage.setItem(id, el.value));
+  }
+
+  // Helper: restore a checkbox, update its btn-check label icon, then run a callback
+  function restoreCheckbox(id, labelId, labelText, onRestored) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const saved = localStorage.getItem(id);
+    if (saved !== null) el.checked = saved === 'true';
+    // Update toggle label icon to match restored state
+    if (labelId) {
+      const lbl = document.getElementById(labelId);
+      if (lbl) {
+        const icon = el.checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark';
+        lbl.innerHTML = `<i class='${icon} me-2'></i>${labelText}`;
+      }
+    }
+    if (onRestored) onRestored(el.checked);
+    el.addEventListener('change', () => {
+      localStorage.setItem(id, el.checked);
+      if (onRestored) onRestored(el.checked);
+    });
+  }
+
+  // Number inputs
+  ['maxStations', 'minSpeed', 'maxSpeed', 'farnsworthSpeed',
+   'minTone', 'maxTone', 'minVolume', 'maxVolume',
+   'minWait', 'maxWait', 'qsbPercentage',
+   'locationPrefixPercentage', 'opSuffixPercentage'].forEach(restoreNumber);
+
+  // Update QSB percentage display after restoring
+  const qsbValueSpan = document.getElementById('qsbValue');
+  if (qsbValueSpan) qsbValueSpan.textContent = document.getElementById('qsbPercentage').value + '%';
+
+  // Farnsworth
+  restoreCheckbox('enableFarnsworth', 'enableFarnsworthLabel', 'Farnsworth', (checked) => {
+    farnsworthSpeedInput.disabled = !checked;
+  });
+
+  // US Only
+  restoreCheckbox('usOnly', 'usOnlyLabel', 'US Only Callsigns', null);
+
+  // Callsign formats
+  ['1x1', '1x2', '1x3', '2x1', '2x2', '2x3'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const saved = localStorage.getItem('format_' + id);
+    if (saved !== null) el.checked = saved === 'true';
+    el.addEventListener('change', () => localStorage.setItem('format_' + id, el.checked));
+  });
+
+  // Cut Numbers
+  restoreCheckbox('enableCutNumbers', 'enableCutNumbersLabel', 'Enable Cut Numbers', (checked) => {
+    cutNumberIds.forEach((id) => {
+      const cb = document.getElementById(id);
+      if (cb) cb.disabled = !checked;
+    });
+  });
+  cutNumberIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const saved = localStorage.getItem('cut_' + id);
+    if (saved !== null) el.checked = saved === 'true';
+    el.addEventListener('change', () => localStorage.setItem('cut_' + id, el.checked));
+  });
+
+  // QSB
+  restoreCheckbox('qsb', null, null, (checked) => {
+    qsbPercentage.disabled = !checked;
+    const span = document.getElementById('qsbValue');
+    if (span) span.textContent = qsbPercentage.value + '%';
+    // Update QSB label
+    const lbl = document.getElementById('qsbLabel');
+    if (lbl) {
+      const icon = checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark';
+      lbl.innerHTML = `<i class='${icon} me-2'></i>QSB (Fading)`;
+    }
+  });
+
+  // QRN radio buttons
+  const qrnRadios = document.querySelectorAll('input[name="qrn"]');
+  const savedQrn = localStorage.getItem('qrn');
+  if (savedQrn !== null) {
+    qrnRadios.forEach((r) => { if (r.value === savedQrn) r.checked = true; });
+  }
+  qrnRadios.forEach((r) => {
+    r.addEventListener('change', () => localStorage.setItem('qrn', r.value));
+  });
+
+  // Random RST
+  restoreCheckbox('randomRst', 'randomRstLabel', 'Random RST', null);
+
+  // Show Active Stations
+  restoreCheckbox('showActiveStations', 'showActiveStationsLabel', 'Show Active Stations', (checked) => {
+    const el = document.getElementById('activeStations');
+    if (el) el.textContent = checked ? (el.dataset.value ?? '0') : '?';
+  });
+
+  // Use Location Prefix
+  restoreCheckbox('useLocationPrefix', 'useLocationPrefixLabel', 'Use Location Prefix (in %)', (checked) => {
+    const pct = document.getElementById('locationPrefixPercentage');
+    if (pct) pct.disabled = !checked;
+  });
+
+  // Operating Indicators
+  restoreCheckbox('useOpSuffix', 'useOpSuffixLabel', 'Operating Indicators (in %)', (checked) => {
+    const pct = document.getElementById('opSuffixPercentage');
+    if (pct) pct.disabled = !checked;
+  });
+
   // Handle QRN intensity changes
   const qrnRadioButtons = document.querySelectorAll('input[name="qrn"]');
   qrnRadioButtons.forEach((radio) => {
@@ -317,9 +441,19 @@ function applyModeSettings(mode) {
   if (config.showInfoField) {
     infoField.style.display = 'inline-block';
     infoField.placeholder = config.infoFieldPlaceholder;
+    // For POTA mode, disable RST field and pre-fill 599 when randomRst is off
+    if (mode === 'pota') {
+      const randomRst = document.getElementById('randomRst')?.checked ?? false;
+      infoField.disabled = !randomRst;
+      infoField.value = randomRst ? '' : '599';
+    } else {
+      infoField.disabled = false;
+      infoField.value = '';
+    }
   } else {
     infoField.style.display = 'none';
     infoField.value = '';
+    infoField.disabled = false;
   }
 
   // Info field 2 visibility & placeholder
@@ -566,7 +700,11 @@ function send() {
         currentStationAttempts++;
 
         if (modeConfig.requiresInfoField) {
-          infoField.focus();
+          if (!infoField.disabled) {
+            infoField.focus();
+          } else if (modeConfig.requiresInfoField2) {
+            infoField2.focus();
+          }
         }
         readyForTU = true;
         activeStationIndex = matchIndex;
@@ -743,6 +881,7 @@ function tu() {
   let infoValue2 = infoField2.value.trim();
 
   let currentStation = currentStations[activeStationIndex];
+  const pileupSize = currentStations.length;
   totalContacts++;
 
   // Compare both fields if required
@@ -765,7 +904,7 @@ function tu() {
   if (currentMode === 'sst') {
     arbitrary = infoValue1; // name
   } else if (currentMode === 'pota') {
-    arbitrary = infoValue1; //state
+    arbitrary = infoValue2; // state (now second field)
   }
 
   let yourSignoffMessage = modeConfig.yourSignoff(
@@ -814,7 +953,8 @@ function tu() {
     wpmString,
     currentStationAttempts,
     audioContext.currentTime - currentStationStartTime,
-    extraInfo
+    extraInfo,
+    pileupSize
   );
 
   // Remove the worked station
@@ -826,7 +966,12 @@ function tu() {
 
   const responseField = document.getElementById('responseField');
   responseField.value = '';
-  infoField.value = '';
+  // Restore 599 in RST field if randomRst is off in POTA mode
+  if (currentMode === 'pota' && !(inputs && inputs.randomRst)) {
+    infoField.value = '599';
+  } else {
+    infoField.value = '';
+  }
   infoField2.value = '';
   responseField.focus();
 
@@ -946,6 +1091,14 @@ function stop() {
   // If the mode is single, reset the current station as well
   if (currentMode === 'single') {
     currentStation = null;
+    currentStationAttempts = 0;
+    currentStationStartTime = null;
+    updateActiveStations(0);
+  } else {
+    // Multi-station modes: clear all stations so CQ starts fresh
+    currentStations = [];
+    activeStationIndex = null;
+    readyForTU = false;
     currentStationAttempts = 0;
     currentStationStartTime = null;
     updateActiveStations(0);
