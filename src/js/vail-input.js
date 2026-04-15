@@ -4,18 +4,17 @@
  * Bridges the Vail adapter (MIDI input) to MorseWalker's response fields.
  * Borrows keyer, sidetone, and decoder logic from vail-master — no rewrite needed.
  *
- * Pipeline:
- *   Physical key/paddle
- *     → MIDI Note On/Off  (inputs.mjs MIDI class)
- *     → KeyerWrapper      (intercepts for visual indicators)
- *     → Keyer             (keyers.mjs — straight, iambic B, bug, etc.)
- *     → MorseWalkerTransmitter.BeginTx / EndTx
- *     → Sidetone          (outputs.mjs AudioOutput)
- *     → VailDecoder       (decoder.mjs + morse-pro-decoder-adaptive.mjs)
- *     → appendDecoded()   → active response field + test output box
+ * Two operating modes, matching how vail-master works:
+ *
+ *   Pass-through (straight / cootie, adapter mode 1):
+ *     Paddle → MIDI Note 1/2 → Key(0/1) → KeyerWrapper → StraightKeyer → TX
+ *
+ *   Adapter-keyed (bug, iambic, etc., adapter mode > 1):
+ *     Paddle → adapter runs keyer → MIDI Note 0 → Straight() → TX directly
+ *     (browser keyer is bypassed; adapter hardware does the timing)
  */
 
-import { Keyers } from './keyers.mjs';
+import { Keyers, Numbers } from './keyers.mjs';
 import { MIDI } from './inputs.mjs';
 import { AudioOutput } from './outputs.mjs';
 import { VailDecoder } from './decoder.mjs';
@@ -132,8 +131,15 @@ class MorseWalkerTransmitter {
 // - Can be deactivated so stale MIDI listeners become harmless after disable().
 
 class KeyerWrapper {
-  constructor(realKeyer) {
+  /**
+   * @param {object} realKeyer        - keyers.mjs keyer instance
+   * @param {object} transmitter      - MorseWalkerTransmitter instance
+   * @param {boolean} adapterIsKeying - true when adapter mode > 1 (adapter runs keyer)
+   */
+  constructor(realKeyer, transmitter, adapterIsKeying) {
     this.realKeyer = realKeyer;
+    this.transmitter = transmitter;
+    this.adapterIsKeying = adapterIsKeying;
     this.active = true;
   }
 
@@ -144,12 +150,22 @@ class KeyerWrapper {
     this.realKeyer.Key(key, pressed);
   }
 
-  // MIDI class calls Straight() for raw straight-key events (note 0) and for
-  // adapter-keyed output (modes > 1). We map it to key 0 on the real keyer.
+  // MIDI class calls Straight() for Note 0 (raw straight key) and for all
+  // adapter-keyed output (modes > 1 — adapter ran the keyer itself).
+  //
+  // When the adapter is keying (mode > 1): route directly to TX so we don't
+  // double-key through the browser's iambic/bug logic.
+  // When pass-through (mode 1): treat as key 0 on the straight keyer.
   Straight(pressed) {
     if (!this.active) return;
-    setIndicator('vailDitIndicator', pressed);
-    this.realKeyer.Key(0, pressed);
+    if (this.adapterIsKeying) {
+      // Adapter produced this element; just start/stop TX.
+      if (pressed) this.transmitter.BeginTx();
+      else this.transmitter.EndTx();
+    } else {
+      setIndicator('vailDitIndicator', pressed);
+      this.realKeyer.Key(0, pressed);
+    }
   }
 
   SetDitDuration(d) {
@@ -219,12 +235,16 @@ export function enable(keyerModeName = 'iambicb') {
   const realKeyer = new KeyerClass(transmitter);
   realKeyer.SetDitDuration(1200 / getWpm());
 
-  keyerWrapper = new KeyerWrapper(realKeyer);
+  // Use the adapter's native keyer mode number (matches what vail-master does).
+  // Mode 1 (straight/cootie): adapter sends raw Note 1/2 paddle events — browser
+  //   keyer handles timing.
+  // Mode > 1 (bug, iambic, etc.): adapter runs keyer internally, sends Note 0
+  //   for each element — browser routes Straight() directly to TX.
+  const adapterMode = Numbers[keyerModeName] ?? 1;
+  keyerWrapper = new KeyerWrapper(realKeyer, transmitter, adapterMode > 1);
 
-  // Always use adapter pass-through mode (1) so the browser runs the keyer.
-  // The adapter sends raw paddle events; the browser's keyer class does the rest.
   midiInput = new MIDI(keyerWrapper, updateMidiStatus);
-  midiInput.SetKeyerMode(1);
+  midiInput.SetKeyerMode(adapterMode);
   midiInput.SetDitDuration(1200 / getWpm());
 
   enabled = true;
