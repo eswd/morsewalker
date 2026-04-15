@@ -55,7 +55,7 @@ function getActiveInputField() {
       return el;
     }
   }
-  return document.getElementById('responseField');
+  return null; // only type when a response field is explicitly focused
 }
 
 // ── Visual indicators ─────────────────────────────────────────────────────────
@@ -145,8 +145,6 @@ class KeyerWrapper {
 
   Key(key, pressed) {
     if (!this.active) return;
-    if (key === 0) setIndicator('vailDitIndicator', pressed);
-    if (key === 1) setIndicator('vailDahIndicator', pressed);
     this.realKeyer.Key(key, pressed);
   }
 
@@ -163,7 +161,6 @@ class KeyerWrapper {
       if (pressed) this.transmitter.BeginTx();
       else this.transmitter.EndTx();
     } else {
-      setIndicator('vailDitIndicator', pressed);
       this.realKeyer.Key(0, pressed);
     }
   }
@@ -287,8 +284,6 @@ export function disable() {
   txStartTime = null;
 
   // Reset all indicators
-  setIndicator('vailDitIndicator', false);
-  setIndicator('vailDahIndicator', false);
   setIndicator('vailTxIndicator', false);
 
   const statusEl = document.getElementById('vailMidiStatus');
