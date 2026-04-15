@@ -33,8 +33,8 @@ let txStartTime = null;
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 
 function getWpm() {
-  const el = document.getElementById('yourSpeed');
-  return el ? Math.max(1, parseInt(el.value, 10) || 20) : 20;
+  const el = document.getElementById('vailSpeed');
+  return el ? Math.max(1, parseInt(el.value, 10) || 14) : 14;
 }
 
 function getSidetoneFreq() {
@@ -229,7 +229,7 @@ export function enable(keyerModeName = 'iambicb') {
 
   enabled = true;
 
-  document.getElementById('yourSpeed')?.addEventListener('input', onSpeedChange);
+  document.getElementById('vailSpeed')?.addEventListener('input', onSpeedChange);
   document.getElementById('yourSidetone')?.addEventListener('input', onSidetoneChange);
   document.getElementById('yourVolume')?.addEventListener('input', onVolumeChange);
 }
@@ -240,7 +240,7 @@ export function enable(keyerModeName = 'iambicb') {
 export function disable() {
   if (!enabled) return;
 
-  document.getElementById('yourSpeed')?.removeEventListener('input', onSpeedChange);
+  document.getElementById('vailSpeed')?.removeEventListener('input', onSpeedChange);
   document.getElementById('yourSidetone')?.removeEventListener('input', onSidetoneChange);
   document.getElementById('yourVolume')?.removeEventListener('input', onVolumeChange);
 

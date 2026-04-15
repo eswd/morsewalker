@@ -403,19 +403,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const enableVailCheckbox = document.getElementById('enableVail');
   const vailKeyerModeSelect = document.getElementById('vailKeyerMode');
+  const vailSpeedInput = document.getElementById('vailSpeed');
   const vailClearButton = document.getElementById('vailClearOutput');
 
   // Restore saved settings
   const savedVailEnabled = localStorage.getItem('vailEnabled') === 'true';
   const savedVailMode = localStorage.getItem('vailKeyerMode') || 'iambicb';
+  const savedVailSpeed = localStorage.getItem('vailSpeed');
 
   vailKeyerModeSelect.value = savedVailMode;
+  if (savedVailSpeed !== null) vailSpeedInput.value = savedVailSpeed;
 
   if (savedVailEnabled) {
     enableVailCheckbox.checked = true;
     document.getElementById('enableVailLabel').innerHTML =
       `<i class='fa-solid fa-circle-check me-2'></i>Enable Vail Adapter`;
     vailKeyerModeSelect.disabled = false;
+    vailSpeedInput.disabled = false;
     vailClearButton.disabled = false;
     vailEnable(savedVailMode);
   }
@@ -427,12 +431,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('enableVailLabel').innerHTML =
       `<i class='${icon} me-2'></i>Enable Vail Adapter`;
     vailKeyerModeSelect.disabled = !checked;
+    vailSpeedInput.disabled = !checked;
     vailClearButton.disabled = !checked;
     if (checked) {
       vailEnable(vailKeyerModeSelect.value);
     } else {
       vailDisable();
     }
+  });
+
+  vailSpeedInput.addEventListener('input', () => {
+    localStorage.setItem('vailSpeed', vailSpeedInput.value);
   });
 
   vailKeyerModeSelect.addEventListener('change', () => {

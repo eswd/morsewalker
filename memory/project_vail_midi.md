@@ -79,8 +79,17 @@ New integration layer:
 `vail-input.js` — MorseWalkerTransmitter + KeyerWrapper + public API (enable/disable/changeKeyerMode)
 
 ### Files modified
-- `src/index.html` — new "Vail Adapter (MIDI Input)" accordion item between Your Station Settings and Responding Station Settings
+- `src/index.html` — new "Vail Adapter (MIDI Input)" accordion item (between Your Station Settings and Responding Station Settings) with: enable toggle, keyer mode dropdown, MIDI status badge, keying speed input, DIT/DAH/TX indicators, decoded test output field, clear button
 - `src/js/app.js` — import from vail-input.js + localStorage restore/save + event wiring
+- `src/css/style.css` — no changes needed (Bootstrap classes handle indicators)
+
+### Speed settings (split — fully independent)
+| Field | ID | Default | Controls |
+|---|---|---|---|
+| Playback Speed (WPM) | `yourSpeed` | 16 | How fast YOUR station's audio plays (CQ, exchange, TU) |
+| Keying Speed (WPM)   | `vailSpeed` | 14 | Vail keyer dit duration + MIDI adapter + decoder WPM |
+
+Both saved to localStorage. `vailSpeed` input is enabled/disabled together with the rest of the Vail controls.
 
 ### Key implementation notes
 - KeyerWrapper sits between MIDI class and real keyer; handles Straight() (not in keyers.mjs) by mapping to Key(0, ...)
@@ -88,13 +97,13 @@ New integration layer:
 - Always uses adapter pass-through mode (SetKeyerMode(1)) so browser runs keyer logic
 - Own AudioContext for sidetone — unaffected by morsewalker's stopAllAudio()
 - Decoded text goes to vailTestOutput field AND the currently focused response field
+- Sidetone uses existing yourSidetone (Hz) and yourVolume fields
 
 ### Next steps when user returns
 1. User tests with `docker compose up` → `http://localhost:8080`
 2. Fix any build/runtime errors found during testing
-3. Then: decide on sidetone settings (reuse yourSidetone/yourVolume — agreed, but verify feel)
-4. Then: Phase 2 — Option B (key CQ to trigger CQ button, auto-submit on word gap, key TU)
-5. Then: Error correction idea from user
+3. Phase 2 — Option B (key CQ to trigger CQ button, auto-submit on word gap, key TU)
+4. Error correction idea from user (their own idea, deferred)
 
 **Why:** User wants to practice CW contesting with a real key/paddle, not just typing. This matches how real CW operation works.
 **How to apply:** All files are in place. On resuming, first check test results, then fix issues, then proceed to Phase 2.

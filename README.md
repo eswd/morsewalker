@@ -38,6 +38,44 @@ multiple stations to play simultaneously without any significant performance deg
 
 View the JSDocs at https://morsewalker.com/docs.
 
+## Vail Adapter (MIDI Input)
+
+MorseWalker supports keying via the [Vail Adapter](https://github.com/Vail-CW)
+USB MIDI device (and compatible devices such as the N6ARA TinyMIDI adapter).
+Connect a straight key or iambic paddle to key your responses directly,
+rather than typing.
+
+Enable the Vail adapter in the **Vail Adapter (MIDI Input)** settings section:
+- Select keyer mode: Straight Key, Iambic B (default), Iambic A, Iambic, Bug,
+  E-Bug, Ultimatic, Single Dot, Key-Ahead
+- Set an independent **Keying Speed (WPM)**, separate from the Playback Speed
+- Monitor MIDI connection status and live DIT / DAH / TX indicators
+- Verify your sending in the decoded-text test field
+
+Decoded characters are appended to whichever response field is currently focused.
+
+## Credits
+
+- **[Morse Runner](https://www.dxatlas.com/MorseRunner/)** by VE3NEA —
+  the original inspiration for MorseWalker.
+
+- **[Vail Master](https://github.com/Vail-CW/vail-master)** /
+  **[Vail Repeater](https://github.com/Vail-CW/vail-repeater)** by the Vail-CW project —
+  keyer logic (straight, iambic A/B, bug, ultimatic, and more), MIDI input handling,
+  sidetone audio output, and Morse decoder pipeline
+  (`keyers.mjs`, `inputs.mjs`, `outputs.mjs`, `audio.mjs`, `time.mjs`, `decoder.mjs`).
+
+- **morse-pro** by Stephen C. Phillips (steve@scphillips.com) —
+  Morse dictionary, PARIS timing, and adaptive decoder
+  (`morse-pro.mjs`, `morse-pro-wpm.mjs`, `morse-pro-decoder.mjs`,
+  `morse-pro-decoder-adaptive.mjs`).
+  © 2018 Stephen C. Phillips. Licensed under
+  [EUPL v1.2](https://joinup.ec.europa.eu/community/eupl/).
+  These files retain their original license.
+
+MorseWalker is a fork of the original
+[morsewalker](https://github.com/sc0tfree/morsewalker) by Henry Stiles (W6NYC).
+
 ## Local Development
 
 ### Prerequisites
