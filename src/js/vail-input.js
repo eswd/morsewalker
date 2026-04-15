@@ -1,0 +1,292 @@
+/**
+ * Vail Adapter integration for MorseWalker.
+ *
+ * Bridges the Vail adapter (MIDI input) to MorseWalker's response fields.
+ * Borrows keyer, sidetone, and decoder logic from vail-master — no rewrite needed.
+ *
+ * Pipeline:
+ *   Physical key/paddle
+ *     → MIDI Note On/Off  (inputs.mjs MIDI class)
+ *     → KeyerWrapper      (intercepts for visual indicators)
+ *     → Keyer             (keyers.mjs — straight, iambic B, bug, etc.)
+ *     → MorseWalkerTransmitter.BeginTx / EndTx
+ *     → Sidetone          (outputs.mjs AudioOutput)
+ *     → VailDecoder       (decoder.mjs + morse-pro-decoder-adaptive.mjs)
+ *     → appendDecoded()   → active response field + test output box
+ */
+
+import { Keyers } from './keyers.mjs';
+import { MIDI } from './inputs.mjs';
+import { AudioOutput } from './outputs.mjs';
+import { VailDecoder } from './decoder.mjs';
+
+// ── Module state ──────────────────────────────────────────────────────────────
+
+let audioCtx = null;
+let audioOutput = null;
+let decoder = null;
+let keyerWrapper = null;   // KeyerWrapper instance (exposed to MIDI class)
+let midiInput = null;
+let enabled = false;
+let txStartTime = null;
+
+// ── DOM helpers ───────────────────────────────────────────────────────────────
+
+function getWpm() {
+  const el = document.getElementById('yourSpeed');
+  return el ? Math.max(1, parseInt(el.value, 10) || 20) : 20;
+}
+
+function getSidetoneFreq() {
+  const el = document.getElementById('yourSidetone');
+  return el ? Math.max(50, parseInt(el.value, 10) || 600) : 600;
+}
+
+function getSidetoneVolume() {
+  const el = document.getElementById('yourVolume');
+  return el ? Math.min(100, Math.max(0, parseInt(el.value, 10) || 70)) / 100 : 0.7;
+}
+
+function getActiveInputField() {
+  const focused = document.activeElement;
+  const ids = ['responseField', 'infoField', 'infoField2'];
+  for (const id of ids) {
+    const el = document.getElementById(id);
+    if (el && el === focused && !el.disabled && el.style.display !== 'none') {
+      return el;
+    }
+  }
+  return document.getElementById('responseField');
+}
+
+// ── Visual indicators ─────────────────────────────────────────────────────────
+
+function setIndicator(id, active, activeClass = 'bg-primary') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('bg-secondary', 'bg-primary', 'bg-success');
+  el.classList.add(active ? activeClass : 'bg-secondary');
+}
+
+function updateMidiStatus(statusText) {
+  const el = document.getElementById('vailMidiStatus');
+  if (!el) return;
+  if (!statusText || statusText === 'No MIDI') {
+    el.textContent = 'No MIDI device found';
+    el.className = 'badge bg-warning text-dark';
+  } else {
+    el.textContent = statusText;
+    el.className = 'badge bg-success';
+  }
+}
+
+// ── Decoded text output ───────────────────────────────────────────────────────
+
+function appendDecoded(text) {
+  // Always show in the test output field inside the accordion
+  const testOutput = document.getElementById('vailTestOutput');
+  if (testOutput) {
+    testOutput.value += text;
+  }
+
+  // Also append to whichever response field is currently active
+  const field = getActiveInputField();
+  if (field) {
+    field.value += text;
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+// ── Transmitter ───────────────────────────────────────────────────────────────
+//
+// Implements the Transmitter interface expected by keyers.mjs.
+// Called by the keyer on every element start/end.
+
+class MorseWalkerTransmitter {
+  BeginTx() {
+    txStartTime = Date.now();
+    setIndicator('vailTxIndicator', true, 'bg-success');
+    if (audioOutput) audioOutput.Buzz();
+  }
+
+  EndTx() {
+    if (audioOutput) audioOutput.Silence();
+    setIndicator('vailTxIndicator', false);
+
+    if (txStartTime !== null) {
+      const duration = Date.now() - txStartTime;
+      const start = txStartTime;
+      txStartTime = null;
+      if (decoder && duration > 0) {
+        decoder.addTone(duration, start);
+      }
+    }
+  }
+}
+
+// ── Keyer wrapper ─────────────────────────────────────────────────────────────
+//
+// Sits between the MIDI class and the real keyer.
+// - Updates visual dit/dah indicators on every key event.
+// - Provides Straight() which the MIDI class calls for note 0 and adapter-keyed output.
+// - Can be deactivated so stale MIDI listeners become harmless after disable().
+
+class KeyerWrapper {
+  constructor(realKeyer) {
+    this.realKeyer = realKeyer;
+    this.active = true;
+  }
+
+  Key(key, pressed) {
+    if (!this.active) return;
+    if (key === 0) setIndicator('vailDitIndicator', pressed);
+    if (key === 1) setIndicator('vailDahIndicator', pressed);
+    this.realKeyer.Key(key, pressed);
+  }
+
+  // MIDI class calls Straight() for raw straight-key events (note 0) and for
+  // adapter-keyed output (modes > 1). We map it to key 0 on the real keyer.
+  Straight(pressed) {
+    if (!this.active) return;
+    setIndicator('vailDitIndicator', pressed);
+    this.realKeyer.Key(0, pressed);
+  }
+
+  SetDitDuration(d) {
+    if (this.realKeyer) this.realKeyer.SetDitDuration(d);
+  }
+
+  Reset() {
+    if (this.realKeyer) this.realKeyer.Reset();
+  }
+
+  Release() {
+    if (this.realKeyer && this.realKeyer.Release) this.realKeyer.Release();
+  }
+
+  deactivate() {
+    this.active = false;
+    if (this.realKeyer) this.realKeyer.Reset();
+  }
+}
+
+// ── Setting change handlers ───────────────────────────────────────────────────
+
+function onSpeedChange() {
+  const wpm = getWpm();
+  const ditDuration = 1200 / wpm;
+  if (keyerWrapper) keyerWrapper.SetDitDuration(ditDuration);
+  if (midiInput) midiInput.SetDitDuration(ditDuration);
+  if (decoder) decoder.setWPM(wpm);
+}
+
+function onSidetoneChange() {
+  if (audioOutput) audioOutput.SetFrequency(getSidetoneFreq());
+}
+
+function onVolumeChange() {
+  if (audioOutput) audioOutput.SetVolume(getSidetoneVolume());
+}
+
+// ── Public API ────────────────────────────────────────────────────────────────
+
+/**
+ * Enable the Vail adapter with the given keyer mode.
+ * If already enabled, restarts cleanly with the new mode.
+ *
+ * @param {string} keyerModeName - Key into Keyers map (e.g. 'iambicb', 'straight')
+ */
+export function enable(keyerModeName = 'iambicb') {
+  if (enabled) disable();
+
+  // Own AudioContext for sidetone — unaffected by morsewalker's stopAllAudio()
+  audioCtx = new AudioContext();
+  audioCtx.resume();
+
+  audioOutput = new AudioOutput(audioCtx, {
+    frequency: getSidetoneFreq(),
+    volume: getSidetoneVolume(),
+    feedbackEnabled: false,
+  });
+
+  decoder = new VailDecoder(
+    (text) => appendDecoded(text),
+    getWpm()
+  );
+
+  const transmitter = new MorseWalkerTransmitter();
+  const KeyerClass = Keyers[keyerModeName] ?? Keyers['iambicb'];
+  const realKeyer = new KeyerClass(transmitter);
+  realKeyer.SetDitDuration(1200 / getWpm());
+
+  keyerWrapper = new KeyerWrapper(realKeyer);
+
+  // Always use adapter pass-through mode (1) so the browser runs the keyer.
+  // The adapter sends raw paddle events; the browser's keyer class does the rest.
+  midiInput = new MIDI(keyerWrapper, updateMidiStatus);
+  midiInput.SetKeyerMode(1);
+  midiInput.SetDitDuration(1200 / getWpm());
+
+  enabled = true;
+
+  document.getElementById('yourSpeed')?.addEventListener('input', onSpeedChange);
+  document.getElementById('yourSidetone')?.addEventListener('input', onSidetoneChange);
+  document.getElementById('yourVolume')?.addEventListener('input', onVolumeChange);
+}
+
+/**
+ * Disable the Vail adapter and clean up all resources.
+ */
+export function disable() {
+  if (!enabled) return;
+
+  document.getElementById('yourSpeed')?.removeEventListener('input', onSpeedChange);
+  document.getElementById('yourSidetone')?.removeEventListener('input', onSidetoneChange);
+  document.getElementById('yourVolume')?.removeEventListener('input', onVolumeChange);
+
+  // Deactivate wrapper so any lingering MIDI callbacks become no-ops
+  if (keyerWrapper) {
+    keyerWrapper.deactivate();
+    keyerWrapper.Release();
+    keyerWrapper = null;
+  }
+
+  if (audioOutput) {
+    audioOutput.Panic();
+    audioOutput = null;
+  }
+
+  if (audioCtx) {
+    audioCtx.close();
+    audioCtx = null;
+  }
+
+  decoder = null;
+  midiInput = null;
+  enabled = false;
+  txStartTime = null;
+
+  // Reset all indicators
+  setIndicator('vailDitIndicator', false);
+  setIndicator('vailDahIndicator', false);
+  setIndicator('vailTxIndicator', false);
+
+  const statusEl = document.getElementById('vailMidiStatus');
+  if (statusEl) {
+    statusEl.textContent = 'Disabled';
+    statusEl.className = 'badge bg-secondary';
+  }
+}
+
+/**
+ * Switch keyer mode while staying enabled.
+ * @param {string} mode
+ */
+export function changeKeyerMode(mode) {
+  if (enabled) enable(mode);
+}
+
+/** @returns {boolean} */
+export function isEnabled() {
+  return enabled;
+}

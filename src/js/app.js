@@ -32,6 +32,7 @@ import {
 import { getYourStation, getCallingStation } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
 import { modeLogicConfig, modeUIConfig } from './modes.js';
+import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode } from './vail-input.js';
 
 /**
  * Application state variables.
@@ -397,6 +398,56 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Failed to send CloudFlare stats.');
     });
   }
+
+  // ── Vail Adapter (MIDI Input) ────────────────────────────────────────────────
+
+  const enableVailCheckbox = document.getElementById('enableVail');
+  const vailKeyerModeSelect = document.getElementById('vailKeyerMode');
+  const vailClearButton = document.getElementById('vailClearOutput');
+
+  // Restore saved settings
+  const savedVailEnabled = localStorage.getItem('vailEnabled') === 'true';
+  const savedVailMode = localStorage.getItem('vailKeyerMode') || 'iambicb';
+
+  vailKeyerModeSelect.value = savedVailMode;
+
+  if (savedVailEnabled) {
+    enableVailCheckbox.checked = true;
+    document.getElementById('enableVailLabel').innerHTML =
+      `<i class='fa-solid fa-circle-check me-2'></i>Enable Vail Adapter`;
+    vailKeyerModeSelect.disabled = false;
+    vailClearButton.disabled = false;
+    vailEnable(savedVailMode);
+  }
+
+  enableVailCheckbox.addEventListener('change', () => {
+    const checked = enableVailCheckbox.checked;
+    localStorage.setItem('vailEnabled', checked);
+    const icon = checked ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle-xmark';
+    document.getElementById('enableVailLabel').innerHTML =
+      `<i class='${icon} me-2'></i>Enable Vail Adapter`;
+    vailKeyerModeSelect.disabled = !checked;
+    vailClearButton.disabled = !checked;
+    if (checked) {
+      vailEnable(vailKeyerModeSelect.value);
+    } else {
+      vailDisable();
+    }
+  });
+
+  vailKeyerModeSelect.addEventListener('change', () => {
+    localStorage.setItem('vailKeyerMode', vailKeyerModeSelect.value);
+    if (enableVailCheckbox.checked) {
+      vailChangeMode(vailKeyerModeSelect.value);
+    }
+  });
+
+  vailClearButton.addEventListener('click', () => {
+    const el = document.getElementById('vailTestOutput');
+    if (el) el.value = '';
+  });
+
+  // ── End Vail Adapter ─────────────────────────────────────────────────────────
 
   // Reset state to ensure no leftover stations when loading
   resetGameState();

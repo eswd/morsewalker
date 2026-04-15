@@ -1,0 +1,568 @@
+/**
+ * A number of keyers.
+ *
+ * The document "All About Squeeze-Keying" by Karl Fischer, DJ5IL, was
+ * absolutely instrumental in correctly (I hope) implementing everything more
+ * advanced than the bug keyer.
+ *
+ * Copied from Vail Repeater for use in Vail Master.
+ */
+
+import * as time from "./time.mjs"
+
+/** Silent period between dits and dash */
+const PAUSE = -1
+/** Length of a dit */
+const DIT = 1
+/** Length of a dah */
+const DAH = 3
+
+/**
+ * Queue Set: A Set you can shift and pop.
+ *
+ * Performance of this implementation may be bad for large sets.
+ */
+class QSet extends Set {
+    shift() {
+        let r = [...this].shift()
+        this.delete(r)
+        return r
+    }
+
+    pop() {
+        let r = [...this].pop()
+        this.delete(r)
+        return r
+    }
+}
+
+/**
+ * Definition of a transmitter type.
+ *
+ * The VailClient class implements this.
+ */
+class Transmitter {
+    /** Begin transmitting */
+    BeginTx() {}
+
+    /** End transmitting */
+    EndTx() {}
+}
+
+/**
+ * A straight keyer.
+ *
+ * This is one or more relays wired in parallel. Each relay has an associated
+ * input key. You press any key, and it starts transmitting until all keys are
+ * released.
+*/
+class StraightKeyer {
+    /**
+     * @param {Transmitter} output Transmitter object
+     */
+    constructor(output) {
+        this.output = output
+        this.Reset()
+    }
+
+    /**
+     * Returns a list of names for keys supported by this keyer.
+     *
+     * @returns {Array.<string>} A list of key names
+     */
+     KeyNames() {
+        return ["Key"]
+    }
+
+    /**
+     * Reset state and stop all transmissions.
+     */
+     Reset() {
+        this.output.EndTx()
+        this.txRelays = []
+        this.physicalKeysPressed = [] // Track actual physical key state (not relay pulses)
+        this.maxTxDuration = 10 * time.Second // Max 10 seconds continuous transmission
+        this.txStartTime = null
+        this.keyingStartTime = null
+        if (this.txSafetyTimeout) {
+            clearTimeout(this.txSafetyTimeout)
+            this.txSafetyTimeout = null
+        }
+        if (this.keyingSafetyTimeout) {
+            clearTimeout(this.keyingSafetyTimeout)
+            this.keyingSafetyTimeout = null
+        }
+    }
+
+    /**
+     * Set the duration of dit.
+     *
+     * @param {Duration} d New dit duration
+     */
+     SetDitDuration(d) {
+        this.ditDuration = d
+    }
+
+    /**
+     * Clean up all timers, etc.
+     */
+     Release() {
+        if (this.txSafetyTimeout) {
+            clearTimeout(this.txSafetyTimeout)
+            this.txSafetyTimeout = null
+        }
+        if (this.keyingSafetyTimeout) {
+            clearTimeout(this.keyingSafetyTimeout)
+            this.keyingSafetyTimeout = null
+        }
+    }
+
+    /**
+     * Returns the state of a single transmit relay.
+     *
+     * If n is not provided, return the state of all relays wired in parallel.
+     *
+     * @param {number} n Relay number
+     * @returns {bool} True if relay is closed
+     */
+     TxClosed(n=null) {
+        if (n == null) {
+            return this.txRelays.some(Boolean)
+        }
+        return this.txRelays[n]
+    }
+
+    /**
+     * Track physical key press/release for safety timeout
+     * This is separate from Tx() because keyers like Bug pulse rapidly
+     *
+     * @param {number} key Key number
+     * @param {bool} pressed True if key is pressed
+     */
+    TrackPhysicalKey(key, pressed) {
+        this.physicalKeysPressed[key] = pressed
+
+        if (pressed) {
+            // A physical key is pressed
+            if (!this.keyingStartTime) {
+                // First key pressed, start the safety timeout
+                this.keyingStartTime = Date.now()
+                this.keyingSafetyTimeout = setTimeout(() => {
+                    console.warn("Stuck key detected - force releasing and disabling break-in")
+                    // Force release all physical keys
+                    for (let i = 0; i < this.physicalKeysPressed.length; i++) {
+                        this.physicalKeysPressed[i] = false
+                    }
+                    // Force release all relays
+                    for (let i = 0; i < this.txRelays.length; i++) {
+                        this.txRelays[i] = false
+                    }
+                    this.output.EndTx()
+
+                    // Disable break-in and notify user
+                    if (this.output.DisableBreakInForStuckKey) {
+                        this.output.DisableBreakInForStuckKey()
+                    }
+
+                    this.keyingStartTime = null
+                    this.keyingSafetyTimeout = null
+                }, this.maxTxDuration)
+            }
+        } else {
+            // A physical key is released - check if all keys are now released
+            if (!this.physicalKeysPressed.some(Boolean)) {
+                // All physical keys released, clear the keying timeout
+                if (this.keyingSafetyTimeout) {
+                    clearTimeout(this.keyingSafetyTimeout)
+                    this.keyingSafetyTimeout = null
+                }
+                this.keyingStartTime = null
+            }
+        }
+    }
+
+    /**
+     * Close a transmit relay.
+     *
+     * In most of these keyers, you have multiple things that can transmit. In
+     * the circuit, they'd all be wired together in parallel. We instead keep
+     * track of relay state here, and start or stop transmitting based on the
+     * logical of of all relays.
+     *
+     * @param {number} n Relay number
+     * @param {bool} closed True if relay should be closed
+     */
+    Tx(n, closed) {
+        let wasClosed = this.TxClosed()
+        this.txRelays[n] = closed
+        let nowClosed = this.TxClosed()
+
+        if (wasClosed != nowClosed) {
+            if (nowClosed) {
+                // Starting transmission
+                this.output.BeginTx()
+                this.txStartTime = Date.now()
+            } else {
+                // Ending transmission
+                this.output.EndTx()
+                this.txStartTime = null
+            }
+        }
+    }
+
+    /**
+     * React to a key being pressed.
+     *
+     * @param {number} key Which key was pressed
+     * @param {bool} pressed True if the key was pressed
+     */
+     Key(key, pressed) {
+         this.TrackPhysicalKey(key, pressed)
+         this.Tx(key, pressed)
+    }
+}
+
+/**
+ *  A "Cootie" or "Double Speed Key" is just two straight keys in parallel.
+ */
+class CootieKeyer extends StraightKeyer {
+    KeyNames() {
+        return ["Key", "Key"]
+    }
+}
+
+/**
+ * A Vibroplex "Bug".
+ *
+ * Left key send dits over and over until you let go.
+ * Right key works just like a stright key.
+ */
+class BugKeyer extends StraightKeyer {
+    KeyNames() {
+        return ["Dit ", "Key"]
+    }
+
+    Reset() {
+        super.Reset()
+        this.SetDitDuration(100 * time.Millisecond)
+        if (this.pulseTimer) {
+            clearInterval(this.pulseTimer)
+            this.pulseTimer = null
+        }
+        this.keyPressed = [false, false]
+    }
+
+    Key(key, pressed) {
+        this.keyPressed[key] = pressed
+        // Track physical key for safety timeout
+        this.TrackPhysicalKey(key, pressed)
+        if (key == 0) {
+            this.beginPulsing()
+        } else {
+            // For key 1, also call parent's Tx logic
+            this.Tx(key, pressed)
+        }
+    }
+
+    /**
+     * Begin a pulse if it hasn't already begun
+     */
+    beginPulsing() {
+        if (!this.pulseTimer) {
+            this.pulse()
+        }
+    }
+
+    pulse() {
+        if (this.TxClosed(0)) {
+            // If we were transmitting, pause
+            this.Tx(0, false)
+        } else if (this.keyPressed[0]) {
+            // If the key was pressed, transmit
+            this.Tx(0, true)
+        } else {
+            // If the key wasn't pressed, stop pulsing
+            this.pulseTimer = null
+            return
+        }
+        this.pulseTimer = setTimeout(() => this.pulse(), this.ditDuration)
+    }
+}
+
+/**
+ * Electronic Bug Keyer
+ *
+ * Repeats both dits and dahs, ensuring proper pauses.
+ *
+ * I think the original ElBug Keyers did not have two paddles, so I've taken the
+ * liberty of making it so that whatever you pressed last is what gets repeated,
+ * similar to a modern computer keyboard.
+ */
+class ElBugKeyer extends BugKeyer {
+    KeyNames() {
+        return ["Dit ", "Dah"]
+    }
+
+    Reset() {
+        super.Reset()
+        this.nextRepeat = -1 // What to send next, if we're repeating
+    }
+
+    Key(key, pressed) {
+        this.keyPressed[key] = pressed
+        // Track physical key for safety timeout
+        this.TrackPhysicalKey(key, pressed)
+        if (pressed) {
+            this.nextRepeat = key
+        } else {
+            this.nextRepeat = this.keyPressed.findIndex(Boolean)
+        }
+        this.beginPulsing()
+    }
+
+    /**
+     * Computes transmission duration for a given key.
+     *
+     * @param {number} key Key to calculate
+     * @returns {Duration} Duration of transmission
+     */
+    keyDuration(key) {
+        switch (key) {
+            case 0:
+                return DIT * this.ditDuration
+            case 1:
+                return DAH * this.ditDuration
+        }
+        return 0
+    }
+
+    /**
+     * Calculates the key to auto-transmit next.
+     *
+     * If there is nothing to send, returns -1.
+     *
+     * @returns {number} Key to transmit
+     */
+    nextTx() {
+        if (!this.keyPressed.some(Boolean)) {
+            return -1
+        }
+        return this.nextRepeat
+    }
+
+    pulse() {
+        let nextPulse = 0
+
+        if (this.TxClosed(0)) {
+            // Pause if we're currently transmitting
+            nextPulse = this.ditDuration
+            this.Tx(0, false)
+        } else {
+            let next = this.nextTx()
+            if (next >= 0) {
+                nextPulse = this.keyDuration(next)
+                this.Tx(0, true)
+            }
+        }
+
+        if (nextPulse) {
+            this.pulseTimer = setTimeout(() => this.pulse(), nextPulse)
+        } else {
+            this.pulseTimer = null
+        }
+    }
+}
+
+/**
+ * Ultimatic Keyer.
+ *
+ * If you know what an Iambic keyer does, this works similarly, but doesn't go
+ * back and forth when both keys are held.
+ */
+class UltimaticKeyer extends ElBugKeyer {
+    Reset() {
+        super.Reset()
+        this.queue = new QSet()
+    }
+
+    Key(key, pressed) {
+        if (pressed) {
+            this.queue.add(key)
+        }
+        super.Key(key, pressed)
+    }
+
+    nextTx() {
+        let key = this.queue.shift()
+        if (key != null) {
+            return key
+        }
+        return super.nextTx()
+    }
+}
+
+/**
+ * Single dot memory keyer.
+ *
+ * If you tap dit while a dah is sending, it queues up a dit to send, but
+ * reverts back to dah until the dah key is released or the dit key is pressed
+ * again. In other words, if the dah is held, it only pay attention to the edge
+ * on dit.
+ */
+class SingleDotKeyer extends ElBugKeyer {
+    Reset() {
+        super.Reset()
+        this.queue = new QSet()
+    }
+
+    Key(key, pressed) {
+        if (pressed && (key == 0)) {
+            this.queue.add(key)
+        }
+        super.Key(key, pressed)
+    }
+
+    nextTx() {
+        let key = this.queue.shift()
+        if (key != null) {
+            return key
+        }
+        for (let key of [1, 0]) {
+            if (this.keyPressed[key]) {
+                return key
+            }
+        }
+        return -1
+    }
+}
+
+/**
+ * "Plain" Iambic keyer.
+ */
+class IambicKeyer extends ElBugKeyer {
+    nextTx() {
+        let next = super.nextTx()
+        if (this.keyPressed.every(Boolean)) {
+            this.nextRepeat = 1 - this.nextRepeat
+        }
+        return next
+    }
+}
+
+class IambicAKeyer extends IambicKeyer {
+    Reset() {
+        super.Reset()
+        this.queue = new QSet()
+    }
+
+    Key(key, pressed) {
+        if (pressed && (key == 0)) {
+            this.queue.add(key)
+        }
+        super.Key(key, pressed)
+    }
+
+    nextTx() {
+        let next = super.nextTx()
+        let key = this.queue.shift()
+        if (key != null) {
+            return key
+        }
+        return next
+    }
+}
+
+/**
+ * "Iambic B"
+ *
+ * I have gotten a lot of helpful feedback on this one!
+ *
+ * Quoting DJ5IL:
+ *
+ *   > if anytime during generation of an element the
+ *   > opposite lever was pressed, generate one extra
+ *   > alternate element.
+ */
+class IambicBKeyer extends IambicKeyer {
+    Reset() {
+        super.Reset()
+        this.queue = new QSet()
+    }
+
+    Key(key, pressed) {
+        if (pressed && (this.sending != key)) {
+            this.queue.add(key)
+        }
+        super.Key(key, pressed)
+    }
+
+    nextTx() {
+        for (let key of [0,1]) {
+            if (this.keyPressed[key]) {
+                this.queue.add(key)
+            }
+        }
+        let next = this.queue.shift()
+        this.sending = next
+        if (next == null) {
+            return -1
+        }
+        return next
+    }
+}
+
+class KeyaheadKeyer extends ElBugKeyer {
+    Reset() {
+        super.Reset()
+        this.queue = []
+    }
+
+    Key(key, pressed) {
+        if (pressed) {
+            this.queue.push(key)
+        }
+        super.Key(key, pressed)
+    }
+
+    nextTx() {
+        let next = this.queue.shift()
+        if (next != null) {
+            return next
+        }
+        return super.nextTx()
+    }
+}
+
+
+/**
+ * A dictionary of all available keyers
+ */
+const Keyers = {
+    straight: StraightKeyer,
+    cootie: CootieKeyer,
+    bug: BugKeyer,
+    elbug: ElBugKeyer,
+    singledot: SingleDotKeyer,
+    ultimatic: UltimaticKeyer,
+    iambic: IambicKeyer,
+    iambica: IambicAKeyer,
+    iambicb: IambicBKeyer,
+    keyahead: KeyaheadKeyer,
+}
+
+const Numbers = {
+    straight: 1,
+    cootie: 1,
+    bug: 2,
+    elbug: 3,
+    singledot: 4,
+    ultimatic: 5,
+    iambic: 6,
+    iambica: 7,
+    iambicb: 8,
+    keyahead: 9,
+}
+
+export {
+    Keyers, Numbers,
+}

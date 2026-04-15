@@ -347,6 +347,110 @@
         </div>
       </div>
 
+      <!-- Vail Adapter (MIDI Input) -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingVail">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseVail"
+            aria-expanded="false"
+            aria-controls="collapseVail"
+          >
+            <h5>Vail Adapter (MIDI Input)</h5>
+          </button>
+        </h2>
+        <div
+          id="collapseVail"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingVail"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <div class="container">
+
+              <!-- Row 1: Enable toggle + Keyer mode + MIDI status -->
+              <div class="row g-3 align-items-end">
+                <!-- Enable toggle -->
+                <div class="col-12 col-md-4">
+                  <input
+                    type="checkbox"
+                    class="btn-check"
+                    id="enableVail"
+                    autocomplete="off"
+                  />
+                  <label
+                    class="btn btn-outline-primary w-100"
+                    for="enableVail"
+                    id="enableVailLabel"
+                  >
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Enable Vail Adapter
+                  </label>
+                </div>
+
+                <!-- Keyer mode -->
+                <div class="col-12 col-md-4">
+                  <label for="vailKeyerMode" class="form-label">Keyer Mode</label>
+                  <select id="vailKeyerMode" class="form-select" disabled>
+                    <option value="straight">Straight Key</option>
+                    <option value="iambicb" selected>Iambic B (recommended)</option>
+                    <option value="iambica">Iambic A</option>
+                    <option value="iambic">Iambic</option>
+                    <option value="bug">Bug</option>
+                    <option value="elbug">E-Bug</option>
+                    <option value="singledot">Single Dot</option>
+                    <option value="ultimatic">Ultimatic</option>
+                    <option value="keyahead">Key-Ahead</option>
+                  </select>
+                </div>
+
+                <!-- MIDI status -->
+                <div class="col-12 col-md-4 d-flex flex-column justify-content-end">
+                  <label class="form-label">MIDI Status</label>
+                  <span id="vailMidiStatus" class="badge bg-secondary py-2 fs-6">
+                    Disabled
+                  </span>
+                </div>
+              </div>
+
+              <!-- Row 2: Key indicators -->
+              <div class="row g-3 mt-3">
+                <div class="col-12">
+                  <label class="form-label">Key Indicators</label>
+                  <div class="d-flex gap-3">
+                    <span id="vailDitIndicator" class="badge bg-secondary px-4 py-2 fs-6">DIT</span>
+                    <span id="vailDahIndicator" class="badge bg-secondary px-4 py-2 fs-6">DAH</span>
+                    <span id="vailTxIndicator"  class="badge bg-secondary px-4 py-2 fs-6">TX</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 3: Decoded test output -->
+              <div class="row g-3 mt-3 align-items-end">
+                <div class="col-12 col-md-10">
+                  <label for="vailTestOutput" class="form-label">Decoded Test Output</label>
+                  <input
+                    type="text"
+                    id="vailTestOutput"
+                    class="form-control font-monospace"
+                    readonly
+                    placeholder="Key something to test — decoded characters appear here"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="col-12 col-md-2">
+                  <button id="vailClearOutput" class="btn btn-outline-secondary w-100" disabled>
+                    Clear
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Responding Station Settings -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingRespondingStationSettings">
