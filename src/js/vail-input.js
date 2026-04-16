@@ -119,7 +119,7 @@ function appendDecoded(text) {
     // Check for K/BK send commands first, then clean up buffer
     const completedWord = wordBuffer.toUpperCase();
     wordBuffer = '';
-    if (commandHandler && (completedWord === 'K' || completedWord === 'BK')) {
+    if (commandHandler && (completedWord === 'K' || completedWord === '<BK>')) {
       const field = getActiveInputField();
       if (field) {
         field.value = field.value.slice(0, -completedWord.length);
@@ -161,11 +161,11 @@ function appendDecoded(text) {
   // K/BK: start a timer — fire send if no more characters arrive within one word gap.
   // This avoids false triggers when K/BK appears inside a callsign (e.g. K5ABC).
   const wUpper = wordBuffer.toUpperCase();
-  if (commandHandler && (wUpper === 'K' || wUpper === 'BK')) {
+  if (commandHandler && (wUpper === 'K' || wUpper === '<BK>')) {
     if (kbkTimer) clearTimeout(kbkTimer);
     kbkTimer = setTimeout(() => {
       kbkTimer = null;
-      if (wordBuffer.toUpperCase() === 'K' || wordBuffer.toUpperCase() === 'BK') {
+      if (wordBuffer.toUpperCase() === 'K' || wordBuffer.toUpperCase() === '<BK>') {
         const f = getActiveInputField();
         if (f) {
           f.value = f.value.slice(0, -wordBuffer.length);
