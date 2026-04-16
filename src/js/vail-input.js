@@ -99,6 +99,7 @@ function checkAndFireCommand(word) {
   if (!commandHandler) return null;
   const w = word.toUpperCase();
   const yourCallsign = (document.getElementById('yourCallsign')?.value || '').toUpperCase().trim();
+  if (w === 'EEEE') { commandHandler('error'); return 'strip'; }
   if (w === 'CQ') { commandHandler('cq'); return 'strip'; }
   if (w === 'QRT' || (yourCallsign && w === yourCallsign + 'QRT')) { commandHandler('stop'); return 'strip'; }
   if (w === 'TU') { commandHandler('tu'); return 'strip'; }

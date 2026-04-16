@@ -413,6 +413,16 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (cmd === 'stop') stop();
     else if (cmd === 'send') send();
     else if (cmd === 'tu') tu();
+    else if (cmd === 'error') {
+      for (const id of ['responseField', 'infoField', 'infoField2']) {
+        const el = document.getElementById(id);
+        if (el && el === document.activeElement && !el.disabled) {
+          el.value = '';
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          break;
+        }
+      }
+    }
   });
 
   // Restore saved settings
