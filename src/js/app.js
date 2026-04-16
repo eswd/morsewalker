@@ -32,7 +32,7 @@ import {
 import { getYourStation, getCallingStation } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
 import { modeLogicConfig, modeUIConfig } from './modes.js';
-import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode } from './vail-input.js';
+import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode, isEnabled as vailIsEnabled } from './vail-input.js';
 
 /**
  * Application state variables.
@@ -647,7 +647,7 @@ function send() {
   const infoField = document.getElementById('infoField');
   const infoField2 = document.getElementById('infoField2');
 
-  let responseFieldText = responseField.value.trim().toUpperCase();
+  let responseFieldText = responseField.value.replace(/\s+/g, '').toUpperCase();
 
   // Prevent sending if responseField text box is empty
   if (responseFieldText === '') {
@@ -780,11 +780,13 @@ function send() {
       respondWithAllStations(partialMatchStations, yourResponseTimer);
       lastRespondingStations = partialMatchStations;
       currentStationAttempts++;
+      if (vailIsEnabled()) { responseField.value = ''; responseField.focus(); }
       return;
     }
 
     // No matches at all
     currentStationAttempts++;
+    if (vailIsEnabled()) { responseField.value = ''; responseField.focus(); }
   } else {
     // Single mode
     if (currentStation === null) return;
@@ -910,6 +912,7 @@ function send() {
         yourResponseTimer + Math.random() + 0.25
       );
       updateAudioLock(theirResponseTimer);
+      if (vailIsEnabled()) { responseField.value = ''; responseField.focus(); }
       return;
     }
 
@@ -920,6 +923,7 @@ function send() {
       yourResponseTimer + Math.random() + 0.25
     );
     updateAudioLock(theirResponseTimer);
+    if (vailIsEnabled()) { responseField.value = ''; responseField.focus(); }
   }
 }
 
@@ -937,8 +941,8 @@ function tu() {
 
   const infoField = document.getElementById('infoField');
   const infoField2 = document.getElementById('infoField2');
-  let infoValue1 = infoField.value.trim();
-  let infoValue2 = infoField2.value.trim();
+  let infoValue1 = infoField.value.replace(/\s+/g, '');
+  let infoValue2 = infoField2.value.replace(/\s+/g, '');
 
   let currentStation = currentStations[activeStationIndex];
   const pileupSize = currentStations.length;
@@ -1086,7 +1090,7 @@ function compareExtraInfo(fieldKey, userInput, callingStation) {
 
   // For string-based fields (e.g. name, state), force them to string
   let upperExpectedValue = String(expectedValue).toUpperCase();
-  userInput = (userInput || '').toUpperCase().trim();
+  userInput = (userInput || '').replace(/\s+/g, '').toUpperCase();
 
   // Special rule: if both are empty => "N/A"
   if (upperExpectedValue === '') {

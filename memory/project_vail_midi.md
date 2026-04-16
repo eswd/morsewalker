@@ -18,7 +18,7 @@ Borrow the relevant, already-complete files from `/home/felw/env/mw_redoing/vail
 `vail-input.js` — MorseWalkerTransmitter + KeyerWrapper + public API (enable/disable/changeKeyerMode)
 
 ## Files modified
-- `src/index.html` — new "Vail Adapter (MIDI Input)" accordion item with: enable toggle, keyer mode dropdown, MIDI status badge, keying speed input, DIT/DAH/TX indicators, decoded test output field, clear button
+- `src/index.html` — new "Vail Adapter (MIDI Input)" accordion item with: enable toggle, keyer mode dropdown, MIDI status badge, keying speed input, TX indicator (DIT/DAH removed), decoded test output field, clear button
 - `src/js/app.js` — import from vail-input.js + localStorage restore/save + event wiring
 - `README.md` — Vail Adapter section + Credits section (Vail-CW, Stephen C. Phillips)
 
@@ -32,20 +32,30 @@ Borrow the relevant, already-complete files from `/home/felw/env/mw_redoing/vail
 Matches exactly how vail-master works (discovered by reading main.mjs):
 
 - **Pass-through (mode 1 — straight/cootie):** Adapter sends raw Note 1/2 paddle events. Browser StraightKeyer handles timing. KeyerWrapper.Straight() → Key(0, ...) → keyer → TX.
-- **Adapter-keyed (mode > 1 — bug, iambic, etc.):** Adapter runs keyer internally, sends Note 0 for each element. KeyerWrapper.Straight() routes directly to transmitter.BeginTx()/EndTx() — bypasses browser keyer. DIT/DAH indicators don't separately light in this mode; only TX indicator.
+- **Adapter-keyed (mode > 1 — bug, iambic, etc.):** Adapter runs keyer internally, sends Note 0 for each element. KeyerWrapper.Straight() routes directly to transmitter.BeginTx()/EndTx() — bypasses browser keyer. Only TX indicator lights; DIT/DAH indicators removed.
 
 The `Numbers` dict in keyers.mjs maps mode names to adapter mode numbers (e.g. iambicb → 8).
+
+## Key design decisions (all final)
+- **DIT/DAH indicators:** Removed — not useful since adapter-keyed modes only produce TX events
+- **TX indicator:** Single badge showing when key is down
+- **Response field behaviour:** Decoded text is only appended when a response field (responseField, infoField, infoField2) is explicitly focused. If nothing is focused, decoded text goes to the test output box only.
+- **Sidetone:** reuse morsewalker's existing `yourSidetone` (Hz) and `yourVolume` fields
+- **Settings saved to localStorage:** enable toggle, keyer mode, vailSpeed
+- **Accordion placement:** after "Your Station Settings", before "Responding Station Settings"
+- **Only MIDI class instantiated** from inputs.mjs — Keyboard class NOT used (conflicts with Enter=Send)
 
 ## Bug fixed: iambic "dits on both sides"
 **Root cause:** We were hardcoding `SetKeyerMode(1)`. In practice, mode 1 on the Vail adapter collapses both paddle sides into Note 0 (Straight() calls), so the dah paddle also gave dits. Modes > 1 make the adapter run the keyer and send Note 0 for all elements.
 **Fix:** `enable()` now calls `midiInput.SetKeyerMode(Numbers[keyerModeName])`. KeyerWrapper.Straight() routes directly to TX when adapterIsKeying=true.
 
-## Implementation status: Phase 1 COMPLETE (awaiting retest after iambic bug fix)
+## Implementation status: Phase 1 COMPLETE (awaiting retest)
+User testing via `docker compose up` → `http://localhost:8080`
 
-### Next steps
-1. User retests with `docker compose up` → `http://localhost:8080` — iambic B should now work
+## Next steps
+1. User retests — iambic B should now work correctly
 2. Phase 2 — Option B (key CQ to trigger CQ button, auto-submit on word gap, key TU)
-3. Error correction idea from user (their own idea, deferred)
+3. Error correction (user's idea, deferred): detect EEEE (4+ E's, with or without a small break) or HH (8 dits continuous) in decoded input → clear the active response field. Both forms are valid on-band error signals.
 
 **Why:** User wants to practice CW contesting with a real key/paddle, not just typing. This matches how real CW operation works.
 **How to apply:** All files are in place. On resuming, first check test results, then fix issues, then proceed to Phase 2.
