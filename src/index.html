@@ -1498,10 +1498,15 @@
                         <strong>Key CQ:</strong> Sending <kbd>CQ</kbd> triggers the CQ button.
                       </li>
                       <li class="mb-2">
-                        <strong>Key Send:</strong> After keying a callsign or exchange, send
-                        <kbd>K</kbd>, <kbd>BK</kbd>, <kbd>?</kbd>, <kbd>AGN</kbd>, or <kbd>QRS</kbd> as a standalone word (with a short pause before it) to trigger Send.
-                        <kbd>TU</kbd> triggers the TU button.
-                        Note: any accidental word gap (space) immediately before <kbd>K</kbd> or <kbd>BK</kbd> will also trigger Send, so be aware this is not perfectly fool-proof.
+                        <strong>Key Send:</strong> The following trigger the Send button — no need to touch the keyboard:
+                        <ul class="mt-1">
+                          <li><kbd>K</kbd> — standard hand-over after sending a callsign or exchange ("over to you").</li>
+                          <li><kbd>BK</kbd> (sent as prosign, no character gap) — "break", same effect as <kbd>K</kbd>.</li>
+                          <li><kbd>?</kbd> or <kbd>AGN</kbd> — request a repeat; the word stays in the field so the station can see what you are asking about.</li>
+                          <li><kbd>QRS</kbd> — ask the station to slow down; stays in the field so the app can apply the speed reduction.</li>
+                        </ul>
+                        <kbd>TU</kbd> triggers the TU button instead.
+                        Note: an accidental word gap immediately before <kbd>K</kbd> or <kbd>BK</kbd> will also trigger Send.
                       </li>
                       <li class="mb-2">
                         <strong>Auto-send on word gap:</strong> Optionally enable in the Vail settings —
