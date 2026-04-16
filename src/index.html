@@ -414,7 +414,7 @@
                 </div>
               </div>
 
-              <!-- Row 2: Keying speed -->
+              <!-- Row 2: Keying speed + auto-send -->
               <div class="row g-3 mt-3 align-items-end">
                 <div class="col-12 col-md-4">
                   <label for="vailSpeed" class="form-label">Keying Speed (WPM)</label>
@@ -428,6 +428,14 @@
                     step="1"
                     disabled
                   />
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-end">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="vailAutoSend" disabled />
+                    <label class="form-check-label" for="vailAutoSend">
+                      Auto-send on word gap
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -1487,10 +1495,20 @@
                         so you can key the correct callsign without touching the keyboard.
                       </li>
                       <li class="mb-2">
-                        <strong>Key CQ:</strong> Sending <kbd>CQ</kbd> triggers the CQ button — no need to reach for the mouse.
+                        <strong>Key CQ:</strong> Sending <kbd>CQ</kbd> triggers the CQ button.
+                      </li>
+                      <li class="mb-2">
+                        <strong>Key Send:</strong> After keying a callsign or exchange, send
+                        <kbd>K</kbd>, <kbd>BK</kbd>, <kbd>?</kbd>, <kbd>AGN</kbd>, or <kbd>QRS</kbd> as a standalone word (with a short pause before it) to trigger Send.
+                        <kbd>TU</kbd> triggers the TU button.
+                        Note: any accidental word gap (space) immediately before <kbd>K</kbd> or <kbd>BK</kbd> will also trigger Send, so be aware this is not perfectly fool-proof.
+                      </li>
+                      <li class="mb-2">
+                        <strong>Auto-send on word gap:</strong> Optionally enable in the Vail settings —
+                        Send fires automatically after ~1.5 seconds of silence. Off by default.
                       </li>
                       <li>
-                        <strong>Key Stop:</strong> Sending <kbd>QRT</kbd>, or your callsign immediately followed by <kbd>QRT</kbd>, triggers the Stop button.
+                        <strong>Key Stop:</strong> Sending <kbd>QRT</kbd> or your callsign followed by <kbd>QRT</kbd> triggers the Stop button.
                       </li>
                     </ul>
                   </div>

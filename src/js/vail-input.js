@@ -28,8 +28,17 @@ let keyerWrapper = null;   // KeyerWrapper instance (exposed to MIDI class)
 let midiInput = null;
 let enabled = false;
 let txStartTime = null;
-let commandHandler = null; // set by setCommandHandler()
-let wordBuffer = '';       // accumulates decoded chars between word gaps
+let commandHandler = null;    // set by setCommandHandler()
+let wordBuffer = '';          // accumulates decoded chars between word gaps
+let wordGapAutoSend = false;  // set by setWordGapAutoSend()
+let autoSendTimer = null;
+let kbkTimer = null;
+const WORD_GAP_TIMEOUT_MS = 1500;
+
+function getWordGapMs() {
+  const wpm = parseInt(document.getElementById('vailSpeed')?.value, 10) || 20;
+  return Math.round(8400 / wpm) + 150; // one word gap at current speed + small buffer
+}
 
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 
@@ -83,19 +92,18 @@ function updateMidiStatus(statusText) {
 
 // ── Command detection ─────────────────────────────────────────────────────────
 
+// Returns 'strip' (command fired, remove trigger chars from field),
+//         'keep'  (command fired, leave field as-is),
+//         null    (no command matched).
 function checkAndFireCommand(word) {
-  if (!commandHandler) return false;
+  if (!commandHandler) return null;
   const w = word.toUpperCase();
   const yourCallsign = (document.getElementById('yourCallsign')?.value || '').toUpperCase().trim();
-  if (w === 'CQ') {
-    commandHandler('cq');
-    return true;
-  }
-  if (w === 'QRT' || (yourCallsign && w === yourCallsign + 'QRT')) {
-    commandHandler('stop');
-    return true;
-  }
-  return false;
+  if (w === 'CQ') { commandHandler('cq'); return 'strip'; }
+  if (w === 'QRT' || (yourCallsign && w === yourCallsign + 'QRT')) { commandHandler('stop'); return 'strip'; }
+  if (w === 'TU') { commandHandler('tu'); return 'strip'; }
+  if (w === 'AGN' || w === 'QRS' || w.endsWith('?')) { commandHandler('send'); return 'keep'; }
+  return null;
 }
 
 // ── Decoded text output ───────────────────────────────────────────────────────
@@ -106,8 +114,21 @@ function appendDecoded(text) {
   if (testOutput) testOutput.value += text;
 
   if (text === ' ') {
-    // Word gap: reset buffer (commands already fire per-character, this just cleans up)
+    // Word gap: cancel K/BK timer (we'll handle it here instead)
+    if (kbkTimer) { clearTimeout(kbkTimer); kbkTimer = null; }
+    // Check for K/BK send commands first, then clean up buffer
+    const completedWord = wordBuffer.toUpperCase();
     wordBuffer = '';
+    if (commandHandler && (completedWord === 'K' || completedWord === 'BK')) {
+      const field = getActiveInputField();
+      if (field) {
+        field.value = field.value.slice(0, -completedWord.length);
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      if (autoSendTimer) { clearTimeout(autoSendTimer); autoSendTimer = null; }
+      commandHandler('send');
+      return;
+    }
     const field = getActiveInputField();
     if (field) {
       field.value += ' ';
@@ -127,10 +148,47 @@ function appendDecoded(text) {
   }
 
   // Check command after every character — fires as soon as the word is complete,
-  // without needing to wait for a word gap (which only arrives when the next tone starts)
-  if (checkAndFireCommand(wordBuffer)) {
-    if (field) field.value = field.value.slice(0, -wordBuffer.length);
+  // without needing to wait for a word gap
+  const cmdResult = checkAndFireCommand(wordBuffer);
+  if (cmdResult) {
+    if (cmdResult === 'strip' && field) field.value = field.value.slice(0, -wordBuffer.length);
     wordBuffer = '';
+    if (autoSendTimer) { clearTimeout(autoSendTimer); autoSendTimer = null; }
+    if (kbkTimer) { clearTimeout(kbkTimer); kbkTimer = null; }
+    return;
+  }
+
+  // K/BK: start a timer — fire send if no more characters arrive within one word gap.
+  // This avoids false triggers when K/BK appears inside a callsign (e.g. K5ABC).
+  const wUpper = wordBuffer.toUpperCase();
+  if (commandHandler && (wUpper === 'K' || wUpper === 'BK')) {
+    if (kbkTimer) clearTimeout(kbkTimer);
+    kbkTimer = setTimeout(() => {
+      kbkTimer = null;
+      if (wordBuffer.toUpperCase() === 'K' || wordBuffer.toUpperCase() === 'BK') {
+        const f = getActiveInputField();
+        if (f) {
+          f.value = f.value.slice(0, -wordBuffer.length);
+          f.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (autoSendTimer) { clearTimeout(autoSendTimer); autoSendTimer = null; }
+        wordBuffer = '';
+        commandHandler('send');
+      }
+    }, getWordGapMs());
+  } else if (kbkTimer) {
+    clearTimeout(kbkTimer);
+    kbkTimer = null;
+  }
+
+  // Auto-send on word gap: reset timer after each decoded character
+  if (wordGapAutoSend && commandHandler && field) {
+    if (autoSendTimer) clearTimeout(autoSendTimer);
+    autoSendTimer = setTimeout(() => {
+      autoSendTimer = null;
+      wordBuffer = '';
+      commandHandler('send');
+    }, WORD_GAP_TIMEOUT_MS);
   }
 }
 
@@ -320,6 +378,9 @@ export function disable() {
   midiInput = null;
   enabled = false;
   txStartTime = null;
+  wordBuffer = '';
+  if (autoSendTimer) { clearTimeout(autoSendTimer); autoSendTimer = null; }
+  if (kbkTimer) { clearTimeout(kbkTimer); kbkTimer = null; }
 
   // Reset all indicators
   setIndicator('vailTxIndicator', false);
@@ -341,11 +402,23 @@ export function changeKeyerMode(mode) {
 
 /**
  * Register a handler for decoded Morse commands.
- * Called with 'cq' or 'stop' when the corresponding command is keyed.
+ * Called with 'cq', 'stop', 'send', or 'tu' when the corresponding command is keyed.
  * @param {function} fn
  */
 export function setCommandHandler(fn) {
   commandHandler = fn;
+}
+
+/**
+ * Enable or disable auto-send after a word gap silence.
+ * @param {boolean} enabled
+ */
+export function setWordGapAutoSend(enabled) {
+  wordGapAutoSend = enabled;
+  if (!enabled && autoSendTimer) {
+    clearTimeout(autoSendTimer);
+    autoSendTimer = null;
+  }
 }
 
 /** @returns {boolean} */

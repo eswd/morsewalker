@@ -32,7 +32,7 @@ import {
 import { getYourStation, getCallingStation } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
 import { modeLogicConfig, modeUIConfig } from './modes.js';
-import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode, isEnabled as vailIsEnabled, setCommandHandler as vailSetCommandHandler } from './vail-input.js';
+import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode, isEnabled as vailIsEnabled, setCommandHandler as vailSetCommandHandler, setWordGapAutoSend as vailSetWordGapAutoSend } from './vail-input.js';
 
 /**
  * Application state variables.
@@ -405,20 +405,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const vailKeyerModeSelect = document.getElementById('vailKeyerMode');
   const vailSpeedInput = document.getElementById('vailSpeed');
   const vailClearButton = document.getElementById('vailClearOutput');
+  const vailAutoSendCheckbox = document.getElementById('vailAutoSend');
 
-  // Wire up Morse command shortcuts (CQ → cq button, SK/QRT → stop button)
+  // Wire up Morse command shortcuts
   vailSetCommandHandler((cmd) => {
     if (cmd === 'cq') cq();
     else if (cmd === 'stop') stop();
+    else if (cmd === 'send') send();
+    else if (cmd === 'tu') tu();
   });
 
   // Restore saved settings
   const savedVailEnabled = localStorage.getItem('vailEnabled') === 'true';
   const savedVailMode = localStorage.getItem('vailKeyerMode') || 'iambicb';
   const savedVailSpeed = localStorage.getItem('vailSpeed');
+  const savedVailAutoSend = localStorage.getItem('vailAutoSend') === 'true';
 
   vailKeyerModeSelect.value = savedVailMode;
   if (savedVailSpeed !== null) vailSpeedInput.value = savedVailSpeed;
+  vailAutoSendCheckbox.checked = savedVailAutoSend;
+  vailSetWordGapAutoSend(savedVailAutoSend);
 
   if (savedVailEnabled) {
     enableVailCheckbox.checked = true;
@@ -427,6 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
     vailKeyerModeSelect.disabled = false;
     vailSpeedInput.disabled = false;
     vailClearButton.disabled = false;
+    vailAutoSendCheckbox.disabled = false;
     vailEnable(savedVailMode);
   }
 
@@ -439,11 +446,17 @@ document.addEventListener('DOMContentLoaded', () => {
     vailKeyerModeSelect.disabled = !checked;
     vailSpeedInput.disabled = !checked;
     vailClearButton.disabled = !checked;
+    vailAutoSendCheckbox.disabled = !checked;
     if (checked) {
       vailEnable(vailKeyerModeSelect.value);
     } else {
       vailDisable();
     }
+  });
+
+  vailAutoSendCheckbox.addEventListener('change', () => {
+    localStorage.setItem('vailAutoSend', vailAutoSendCheckbox.checked);
+    vailSetWordGapAutoSend(vailAutoSendCheckbox.checked);
   });
 
   vailSpeedInput.addEventListener('input', () => {
