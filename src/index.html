@@ -1457,6 +1457,46 @@
                   </div>
                 </div>
               </div>
+              <!-- Vail Adapter Card -->
+              <div class="col-12">
+                <div class="card border-warning h-100">
+                  <div class="card-header"><strong>Vail Adapter (MIDI Key / Paddle Input)</strong></div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      If you have a <strong>Vail adapter</strong> (a USB MIDI device for straight keys or paddles),
+                      you can key Morse directly instead of typing. Enable it in the
+                      <strong>Vail Adapter (MIDI Input)</strong> accordion section.
+                    </p>
+                    <ul>
+                      <li class="mb-2">
+                        <strong>Keyer mode:</strong> Choose between Straight/Cootie, Bug, Iambic A, Iambic B, and others.
+                        The mode is sent directly to the adapter — the adapter handles timing for keyed modes.
+                      </li>
+                      <li class="mb-2">
+                        <strong>Keying speed (WPM):</strong> Controls the dit length on the adapter and decoder speed.
+                        This is independent from the playback speed of your simulated station.
+                      </li>
+                      <li class="mb-2">
+                        <strong>Where decoded text goes:</strong> Whatever field is focused
+                        (Response, or a mode-specific info field) receives the decoded characters.
+                        If no field is focused, text goes to the test output box in the Vail section only.
+                      </li>
+                      <li class="mb-2">
+                        <strong>Auto-clear on resend:</strong> When a station repeats their callsign
+                        (because your response didn't match), the Response field clears automatically
+                        so you can key the correct callsign without touching the keyboard.
+                      </li>
+                      <li class="mb-2">
+                        <strong>Key CQ:</strong> Sending <kbd>CQ</kbd> triggers the CQ button — no need to reach for the mouse.
+                      </li>
+                      <li>
+                        <strong>Key Stop:</strong> Sending <kbd>QRT</kbd>, or your callsign immediately followed by <kbd>QRT</kbd>, triggers the Stop button.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
             </div>
             <!-- End of Cards Row -->
           </div>

@@ -32,7 +32,7 @@ import {
 import { getYourStation, getCallingStation } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
 import { modeLogicConfig, modeUIConfig } from './modes.js';
-import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode, isEnabled as vailIsEnabled } from './vail-input.js';
+import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode, isEnabled as vailIsEnabled, setCommandHandler as vailSetCommandHandler } from './vail-input.js';
 
 /**
  * Application state variables.
@@ -405,6 +405,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const vailKeyerModeSelect = document.getElementById('vailKeyerMode');
   const vailSpeedInput = document.getElementById('vailSpeed');
   const vailClearButton = document.getElementById('vailClearOutput');
+
+  // Wire up Morse command shortcuts (CQ → cq button, SK/QRT → stop button)
+  vailSetCommandHandler((cmd) => {
+    if (cmd === 'cq') cq();
+    else if (cmd === 'stop') stop();
+  });
 
   // Restore saved settings
   const savedVailEnabled = localStorage.getItem('vailEnabled') === 'true';

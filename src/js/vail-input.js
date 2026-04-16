@@ -28,6 +28,8 @@ let keyerWrapper = null;   // KeyerWrapper instance (exposed to MIDI class)
 let midiInput = null;
 let enabled = false;
 let txStartTime = null;
+let commandHandler = null; // set by setCommandHandler()
+let wordBuffer = '';       // accumulates decoded chars between word gaps
 
 // ── DOM helpers ───────────────────────────────────────────────────────────────
 
@@ -79,20 +81,56 @@ function updateMidiStatus(statusText) {
   }
 }
 
+// ── Command detection ─────────────────────────────────────────────────────────
+
+function checkAndFireCommand(word) {
+  if (!commandHandler) return false;
+  const w = word.toUpperCase();
+  const yourCallsign = (document.getElementById('yourCallsign')?.value || '').toUpperCase().trim();
+  if (w === 'CQ') {
+    commandHandler('cq');
+    return true;
+  }
+  if (w === 'QRT' || (yourCallsign && w === yourCallsign + 'QRT')) {
+    commandHandler('stop');
+    return true;
+  }
+  return false;
+}
+
 // ── Decoded text output ───────────────────────────────────────────────────────
 
 function appendDecoded(text) {
   // Always show in the test output field inside the accordion
   const testOutput = document.getElementById('vailTestOutput');
-  if (testOutput) {
-    testOutput.value += text;
+  if (testOutput) testOutput.value += text;
+
+  if (text === ' ') {
+    // Word gap: reset buffer (commands already fire per-character, this just cleans up)
+    wordBuffer = '';
+    const field = getActiveInputField();
+    if (field) {
+      field.value += ' ';
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    return;
   }
 
-  // Also append to whichever response field is currently active
+  // Non-space character
+  wordBuffer += text;
+
+  // Append to whichever response field is currently active
   const field = getActiveInputField();
   if (field) {
     field.value += text;
     field.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  // Check command after every character — fires as soon as the word is complete,
+  // without needing to wait for a word gap (which only arrives when the next tone starts)
+  if (checkAndFireCommand(wordBuffer)) {
+    if (field) field.value = field.value.slice(0, -wordBuffer.length);
+    wordBuffer = '';
   }
 }
 
@@ -299,6 +337,15 @@ export function disable() {
  */
 export function changeKeyerMode(mode) {
   if (enabled) enable(mode);
+}
+
+/**
+ * Register a handler for decoded Morse commands.
+ * Called with 'cq' or 'stop' when the corresponding command is keyed.
+ * @param {function} fn
+ */
+export function setCommandHandler(fn) {
+  commandHandler = fn;
 }
 
 /** @returns {boolean} */
