@@ -115,12 +115,12 @@ function appendDecoded(text) {
   if (testOutput) testOutput.value += text;
 
   if (text === ' ') {
-    // Word gap: cancel K/BK timer (we'll handle it here instead)
+    // Word gap: cancel KN/BK timer (we'll handle it here instead)
     if (kbkTimer) { clearTimeout(kbkTimer); kbkTimer = null; }
-    // Check for K/BK send commands first, then clean up buffer
+    // Check for KN/BK send commands first, then clean up buffer
     const completedWord = wordBuffer.toUpperCase();
     wordBuffer = '';
-    if (commandHandler && (completedWord === 'K' || completedWord === '<BK>')) {
+    if (commandHandler && (completedWord === '<KN>' || completedWord === '<BK>')) {
       const field = getActiveInputField();
       if (field) {
         field.value = field.value.slice(0, -completedWord.length);
@@ -159,14 +159,13 @@ function appendDecoded(text) {
     return;
   }
 
-  // K/BK: start a timer — fire send if no more characters arrive within one word gap.
-  // This avoids false triggers when K/BK appears inside a callsign (e.g. K5ABC).
+  // KN/BK prosigns: start a timer — fire send if no more characters arrive within one word gap.
   const wUpper = wordBuffer.toUpperCase();
-  if (commandHandler && (wUpper === 'K' || wUpper === '<BK>')) {
+  if (commandHandler && (wUpper === '<KN>' || wUpper === '<BK>')) {
     if (kbkTimer) clearTimeout(kbkTimer);
     kbkTimer = setTimeout(() => {
       kbkTimer = null;
-      if (wordBuffer.toUpperCase() === 'K' || wordBuffer.toUpperCase() === '<BK>') {
+      if (wordBuffer.toUpperCase() === '<KN>' || wordBuffer.toUpperCase() === '<BK>') {
         const f = getActiveInputField();
         if (f) {
           f.value = f.value.slice(0, -wordBuffer.length);
