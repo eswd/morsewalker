@@ -1,0 +1,55 @@
+{
+  "short_name": "Morse Walker",
+  "name": "Morse Walker - Walk Before You Run",
+  "icons": [
+    {
+      "src": "img/morsewalker-48px.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "img/morsewalker-72px.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "img/morsewalker-96px.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "img/morsewalker-144px.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "img/morsewalker-192px.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/morsewalker-256px.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "img/morsewalker-384px.png",
+      "type": "image/png",
+      "sizes": "384x384"
+    },
+    {
+      "src": "img/morsewalker-512px.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "img/morsewalker-logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#fafafa",
+  "theme_color": "#fafafa",
+  "display": "standalone"
+}

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: morse-pro.mjs</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: morse-pro.mjs</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*!
+This code is © Copyright Stephen C. Phillips, 2018.
+Email: steve@scphillips.com
+*/
+/*
+Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+You may not use this work except in compliance with the Licence.
+You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/community/eupl/
+Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the Licence for the specific language governing permissions and limitations under the Licence.
+*/
+
+/**
+ * Basic methods to translate Morse code.
+ */
+
+if (typeof(String.prototype.trim) === "undefined") {
+    String.prototype.trim = function() {
+        return String(this).replace(/^\s+|\s+$/g, '');
+    };
+}
+
+var text2morseH = {
+    'A': ".-",
+    'B': "-...",
+    'C': "-.-.",
+    'D': "-..",
+    'E': ".",
+    'F': "..-.",
+    'G': "--.",
+    'H': "....",
+    'I': "..",
+    'J': ".---",
+    'K': "-.-",
+    'L': ".-..",
+    'M': "--",
+    'N': "-.",
+    'O': "---",
+    'P': ".--.",
+    'Q': "--.-",
+    'R': ".-.",
+    'S': "...",
+    'T': "-",
+    'U': "..-",
+    'V': "...-",
+    'W': ".--",
+    'X': "-..-",
+    'Y': "-.--",
+    'Z': "--..",
+    '1': ".----",
+    '2': "..---",
+    '3': "...--",
+    '4': "....-",
+    '5': ".....",
+    '6': "-....",
+    '7': "--...",
+    '8': "---..",
+    '9': "----.",
+    '0': "-----",
+    '.': ".-.-.-",
+    ',': "--..--",
+    ':': "---...",
+    '?': "..--..",
+    '\'': ".----.",
+    '-': "-....-",
+    '/': "-..-.",
+    '(': "-.--.",
+    ')': "-.--.-",
+    '"': ".-..-.",
+    '@': ".--.-.",
+    '=': "-...-",
+    '&amp;': ".-...",
+    '+': ".-.-.",
+    '!': "-.-.--",
+    ' ': "/" //Not morse but helps translation
+};
+var morse2textH = {};
+var prosign2morseH = {
+    '&lt;AA>': '.-.-',
+    '&lt;AR>': '.-.-.',
+    '&lt;AS>': '.-...',
+    '&lt;BK>': '-...-.-',
+    '&lt;BT>': '-...-', // also &lt;TV>
+    '&lt;CL>': '-.-..-..',
+    '&lt;CT>': '-.-.-',
+    '&lt;DO>': '-..---',
+    '&lt;KN>': '-.--.',
+    '&lt;SK>': '...-.-', // also &lt;VA>
+    '&lt;VA>': '...-.-',
+    '&lt;SN>': '...-.', // also &lt;VE>
+    '&lt;VE>': '...-.',
+    '&lt;SOS>': '...---...'
+};
+var morsepro2textH = {};
+var text2morseproH = {};
+for (var text in text2morseH) {
+    text2morseproH[text] = text2morseH[text];
+    morse2textH[text2morseH[text]] = text;
+    morsepro2textH[text2morseH[text]] = text;
+}
+for (var sign in prosign2morseH) {
+    text2morseproH[sign] = prosign2morseH[sign];
+    morsepro2textH[prosign2morseH[sign]] = sign;
+}
+
+var tidyText = function(text) {
+    text = text.toUpperCase();
+    text = text.trim();
+    text = text.replace(/\s+/g, ' ');
+    return text;
+};
+
+/**
+ * Translate text to morse in '..- .. / --' form.
+ * If something in the text is untranslatable then it is surrounded by hash-signs ('#') and a hash is placed in the morse.
+ * @param {string} text - alphanumeric message
+ * @param {boolean} useProsigns - true if prosigns are to be used (default is true)
+ * @return {{message: string, morse: string, hasError: boolean}}
+ */
+export function text2morse(text, useProsigns = true) {
+    text = tidyText(text);
+    var ret = {
+        morse: "",
+        message: "",
+        hasError: false
+    };
+    if (text === "") {
+        return ret;
+    }
+
+    var tokens = [];
+    var prosign;
+    var token_length;
+    while (text.length > 0) {
+        token_length = 1;
+        if (useProsigns) {
+            prosign = text.match(/^&lt;...?>/); // array of matches
+            if (prosign) {
+                token_length = prosign[0].length;
+            }
+        }
+        tokens.push(text.slice(0, token_length));
+        text = text.slice(token_length, text.length);
+    }
+    var dict;
+    if (useProsigns) {
+        dict = text2morseproH;
+    } else {
+        dict = text2morseH;
+    }
+    var i, c, t;
+    for (i = 0; i &lt; tokens.length; i++) {
+        t = tokens[i];
+        c = dict[t];
+        if (c === undefined) {
+            ret.message += "#" + t + "#";
+            ret.morse += "# ";
+            ret.hasError = true;
+        } else {
+            ret.message += t;
+            ret.morse += c + " ";
+        }
+    }
+    ret.morse = ret.morse.slice(0, ret.morse.length - 1);
+    return ret;
+}
+
+/**
+ * Translate text to morse in 'Di-di-dah dah' form.
+ * @param {string} text - alphanumeric message
+ * @param {boolean} useProsigns - true if prosigns are to be used (default is true)
+ * @return {string}
+ */
+export function text2ditdah(text, useProsigns) {
+    // TODO: deal with errors in the translation
+    var ditdah = text2morse(text, useProsigns).morse + ' '; // get the dots and dashes
+    ditdah = ditdah.replace(/\./g, 'di~').replace(/\-/g, 'dah~'); // do the basic job
+    ditdah = ditdah.replace(/~/g, '-'); // replace placeholder with dash
+    ditdah = ditdah.replace(/\- /g, ' '); // remove trailing dashes
+    ditdah = ditdah.replace(/di /g, 'dit '); // use 'dit' at end of letter
+    ditdah = ditdah.replace(/ \/ /g, ', '); // do punctuation
+    ditdah = ditdah.replace(/^d/, 'D'); // do capitalisation
+    ditdah = ditdah.replace(/ $/, ''); // remove the space we added
+    ditdah = ditdah.replace(/([th])$/, '$1.'); // add full-stop if there is anything there
+    return ditdah;
+}
+
+/**
+ * Canonicalise morse text.
+ * Canonical form matches [.-/ ]*, has single spaces between characters, has words separated by ' / ', and has no spaces at the start or end.
+ * A single '/' may be returned by this function.
+ * @param {string} morse - Morse code matching [.-_/| ]*
+ * @return {string} Morse code in canonical form matching [.-/ ]*
+ */
+var tidyMorse = function(morse) {
+    morse = morse.replace(/\|/g, "/"); // unify the word separator
+    morse = morse.replace(/\//g, " / "); // make sure word separators are spaced out
+    morse = morse.replace(/\s+/g, " "); // squash multiple spaces into single spaces
+    morse = morse.replace(/(\/ )+\//g, "/"); // squash multiple word separators
+    morse = morse.replace(/_/g, "-"); // unify the dash character
+    morse = morse.replace(/^\s+/, "");  // remove initial whitespace
+    morse = morse.replace(/\s+$/, "");  // remove trailing whitespace
+    return morse;
+};
+
+/**
+ * Translate morse to text. Canonicalise the morse first.
+ * If something in the morse is untranslatable then it is surrounded by hash-signs ('#') and a hash is placed in the text.
+ * @param {string} morse - morse message using [.-_/| ] characters
+ * @param {boolean} useProsigns - true if prosigns are to be used (default is true)
+ * @return {{message: string, morse: string, hasError: boolean}}
+ */
+export function morse2text(morse, useProsigns = true) {
+    morse = tidyMorse(morse);
+    var ret = {
+        morse: "",
+        message: "",
+        hasError: false
+    };
+    if (morse === "") {
+        return ret;
+    }
+
+    var tokens = morse.split(" ");
+    var dict;
+    if (useProsigns) {
+        dict = morsepro2textH;
+    } else {
+        dict = morse2textH;
+    }
+    var c, t;
+    for (var i = 0; i &lt; tokens.length; i++) {
+        t = tokens[i];
+        c = dict[t];
+        if (c === undefined) {
+            ret.morse += "#" + t + "# ";
+            ret.message += "#";
+            ret.hasError = true;
+        } else {
+            ret.morse += t + " ";
+            ret.message += c;
+        }
+    }
+    ret.morse = ret.morse.slice(0, ret.morse.length - 1);
+    return ret;
+}
+
+/**
+ * Determine whether a string is most likely morse code.
+ * @param {string} input - the text
+ * @return {boolean} - true if the string only has Morse characters in after executing tidyMorse
+ */
+export function looksLikeMorse(input) {
+    input = tidyMorse(input);
+    return (input.match(/^[/.-][ /.-]*$/) !== null);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AudioOutput.html">AudioOutput</a></li><li><a href="AudioSource.html">AudioSource</a></li><li><a href="BugKeyer.html">BugKeyer</a></li><li><a href="CootieKeyer.html">CootieKeyer</a></li><li><a href="ElBugKeyer.html">ElBugKeyer</a></li><li><a href="FeedbackSounds.html">FeedbackSounds</a></li><li><a href="IambicBKeyer.html">IambicBKeyer</a></li><li><a href="IambicKeyer.html">IambicKeyer</a></li><li><a href="Input.html">Input</a></li><li><a href="KeyerWrapper.html">KeyerWrapper</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="QSet.html">QSet</a></li><li><a href="SidetoneBuzzer.html">SidetoneBuzzer</a></li><li><a href="SingleDotKeyer.html">SingleDotKeyer</a></li><li><a href="StraightKeyer.html">StraightKeyer</a></li><li><a href="Transmitter.html">Transmitter</a></li><li><a href="UltimaticKeyer.html">UltimaticKeyer</a></li><li><a href="VailDecoder.html">VailDecoder</a></li><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AudioContextTime">AudioContextTime</a></li><li><a href="global.html#DAH">DAH</a></li><li><a href="global.html#DIT">DIT</a></li><li><a href="global.html#DITS_PER_WORD">DITS_PER_WORD</a></li><li><a href="global.html#Hour">Hour</a></li><li><a href="global.html#Keyers">Keyers</a></li><li><a href="global.html#MS_IN_MINUTE">MS_IN_MINUTE</a></li><li><a href="global.html#Millisecond">Millisecond</a></li><li><a href="global.html#Minute">Minute</a></li><li><a href="global.html#OscillatorRampDuration">OscillatorRampDuration</a></li><li><a href="global.html#PAUSE">PAUSE</a></li><li><a href="global.html#SPACES_IN_PARIS">SPACES_IN_PARIS</a></li><li><a href="global.html#Second">Second</a></li><li><a href="global.html#addStations">addStations</a></li><li><a href="global.html#addTableRow">addTableRow</a></li><li><a href="global.html#addTiming">addTiming</a></li><li><a href="global.html#applyModeSettings">applyModeSettings</a></li><li><a href="global.html#changeKeyerMode">changeKeyerMode</a></li><li><a href="global.html#changeMode">changeMode</a></li><li><a href="global.html#charSpace">charSpace</a></li><li><a href="global.html#clearAllInvalidStates">clearAllInvalidStates</a></li><li><a href="global.html#clearFieldInvalid">clearFieldInvalid</a></li><li><a href="global.html#clearTable">clearTable</a></li><li><a href="global.html#compareExtraInfo">compareExtraInfo</a></li><li><a href="global.html#compareStrings">compareStrings</a></li><li><a href="global.html#cq">cq</a></li><li><a href="global.html#createBackgroundStatic">createBackgroundStatic</a></li><li><a href="global.html#createMorsePlayer">createMorsePlayer</a></li><li><a href="global.html#currentMode">currentMode</a></li><li><a href="global.html#dahLength">dahLength</a></li><li><a href="global.html#dahSpaces">dahSpaces</a></li><li><a href="global.html#dahs">dahs</a></li><li><a href="global.html#disable">disable</a></li><li><a href="global.html#ditLen">ditLen</a></li><li><a href="global.html#ditLength">ditLength</a></li><li><a href="global.html#ditSpace">ditSpace</a></li><li><a href="global.html#ditSpaces">ditSpaces</a></li><li><a href="global.html#dits">dits</a></li><li><a href="global.html#enable">enable</a></li><li><a href="global.html#fditLen">fditLen</a></li><li><a href="global.html#fditLength">fditLength</a></li><li><a href="global.html#flush">flush</a></li><li><a href="global.html#fwpm">fwpm</a></li><li><a href="global.html#generateRandomLetters">generateRandomLetters</a></li><li><a href="global.html#getAudioLock">getAudioLock</a></li><li><a href="global.html#getCallingStation">getCallingStation</a></li><li><a href="global.html#getDOMInputs">getDOMInputs</a></li><li><a href="global.html#getInputs">getInputs</a></li><li><a href="global.html#getModeConfig">getModeConfig</a></li><li><a href="global.html#getRandomNonUSCallsign">getRandomNonUSCallsign</a></li><li><a href="global.html#getRandomUSCallsign">getRandomUSCallsign</a></li><li><a href="global.html#getSelectedCutNumbers">getSelectedCutNumbers</a></li><li><a href="global.html#getSelectedFormats">getSelectedFormats</a></li><li><a href="global.html#getYourStation">getYourStation</a></li><li><a href="global.html#isBackgroundStaticPlaying">isBackgroundStaticPlaying</a></li><li><a href="global.html#isEnabled">isEnabled</a></li><li><a href="global.html#looksLikeMorse">looksLikeMorse</a></li><li><a href="global.html#markFieldInvalid">markFieldInvalid</a></li><li><a href="global.html#modeLogicConfig">modeLogicConfig</a></li><li><a href="global.html#modeUIConfig">modeUIConfig</a></li><li><a href="global.html#morse2text">morse2text</a></li><li><a href="global.html#nextSingleStation">nextSingleStation</a></li><li><a href="global.html#normalizeStationGain">normalizeStationGain</a></li><li><a href="global.html#openAccordionSection">openAccordionSection</a></li><li><a href="global.html#printStation">printStation</a></li><li><a href="global.html#randomDigit">randomDigit</a></li><li><a href="global.html#randomElement">randomElement</a></li><li><a href="global.html#ratio">ratio</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGameState">resetGameState</a></li><li><a href="global.html#respondWithAllStations">respondWithAllStations</a></li><li><a href="global.html#send">send</a></li><li><a href="global.html#setCommandHandler">setCommandHandler</a></li><li><a href="global.html#setWordGapAutoSend">setWordGapAutoSend</a></li><li><a href="global.html#spaces">spaces</a></li><li><a href="global.html#stop">stop</a></li><li><a href="global.html#stopAllAudio">stopAllAudio</a></li><li><a href="global.html#stopBackgroundStatic">stopBackgroundStatic</a></li><li><a href="global.html#text2ditdah">text2ditdah</a></li><li><a href="global.html#text2morse">text2morse</a></li><li><a href="global.html#tidyMorse">tidyMorse</a></li><li><a href="global.html#tu">tu</a></li><li><a href="global.html#updateActiveStations">updateActiveStations</a></li><li><a href="global.html#updateAudioLock">updateAudioLock</a></li><li><a href="global.html#updateStaticIntensity">updateStaticIntensity</a></li><li><a href="global.html#updateSummaryRow">updateSummaryRow</a></li><li><a href="global.html#validateInputs">validateInputs</a></li><li><a href="global.html#weightedRandom">weightedRandom</a></li><li><a href="global.html#weightedRandomElement">weightedRandomElement</a></li><li><a href="global.html#wordSpace">wordSpace</a></li><li><a href="global.html#wpm">wpm</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sun Apr 19 2026 12:50:34 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

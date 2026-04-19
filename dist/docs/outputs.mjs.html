@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: outputs.mjs</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: outputs.mjs</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Audio output for Vail Master
+ * Simplified version of Vail Repeater's outputs.mjs - sidetone only
+ */
+
+import {AudioSource, AudioContextTime} from "./audio.mjs"
+import * as time from "./time.mjs"
+
+const DEFAULT_FREQ = 550  // Default sidetone frequency (Hz)
+
+/** The amount of time it should take an oscillator to ramp to and from zero gain
+ *
+ * @constant {Duration}
+ */
+const OscillatorRampDuration = 5 * time.Millisecond
+
+
+class Oscillator extends AudioSource {
+    /**
+     * Create a new oscillator, and encase it in a Gain for control.
+     *
+     * @param {AudioContext} context Audio context
+     * @param {number} frequency Oscillator frequency (Hz)
+     * @param {number} maxGain Maximum gain (volume) of this oscillator (0.0 - 1.0)
+     * @param {string} type Oscillator type
+     */
+    constructor(context, frequency, maxGain = 0.5, type = "sine") {
+        super(context)
+        this.maxGain = maxGain
+
+        // Start quiet
+        this.masterGain.gain.value = 0
+
+        this.osc = new OscillatorNode(this.context)
+        this.osc.type = type
+        this.osc.connect(this.masterGain)
+        this.setFrequency(frequency)
+        this.osc.start()
+    }
+
+    /**
+     * Set oscillator frequency
+     *
+     * @param {Number} frequency New frequency (Hz)
+     */
+    setFrequency(frequency) {
+        this.osc.frequency.value = frequency
+    }
+
+    /**
+     * Set gain to some value at a given time.
+     *
+     * @param {number} target Target gain
+     * @param {Date} when Time this should start
+     * @param {Duration} timeConstant Duration of ramp to target gain
+     */
+    async setTargetAtTime(target, when, timeConstant = OscillatorRampDuration) {
+        await this.context.resume()
+        this.masterGain.gain.setTargetAtTime(
+            target,
+            AudioContextTime(this.context, when),
+            timeConstant / time.Second,
+        )
+    }
+
+    /**
+     * Make sound at a given time.
+     *
+     * @param {Number} when When to start making noise
+     * @param {Number} timeConstant How long to ramp up
+     * @returns {Promise}
+     */
+    SoundAt(when = 0, timeConstant = OscillatorRampDuration) {
+        return this.setTargetAtTime(this.maxGain, when, timeConstant)
+    }
+
+    /**
+     * Shut up at a given time.
+     *
+     * @param {Number} when When to stop making noise
+     * @param {Number} timeConstant How long to ramp down
+     * @returns {Promise}
+     */
+    HushAt(when = 0, timeConstant = OscillatorRampDuration) {
+        return this.setTargetAtTime(0, when, timeConstant)
+    }
+}
+
+
+/**
+ * Simple sidetone buzzer for practice
+ */
+class SidetoneBuzzer extends AudioSource {
+    constructor(context, frequency = DEFAULT_FREQ, maxGain = 0.5) {
+        super(context)
+
+        this.osc = new Oscillator(this.context, frequency, maxGain)
+        this.osc.connect(this.masterGain)
+    }
+
+    /**
+     * Set sidetone frequency
+     *
+     * @param {Number} frequency Frequency in Hz
+     */
+    SetFrequency(frequency) {
+        this.osc.setFrequency(frequency)
+    }
+
+    /**
+     * Begin buzzing
+     *
+     * @param {number} when Time to begin, in ms (0=now)
+     */
+    async Buzz(when = 0) {
+        this.osc.SoundAt(when)
+    }
+
+    /**
+     * Stop buzzing
+     *
+     * @param {number} when Time to end, in ms (0=now)
+     */
+    async Silence(when = 0) {
+        this.osc.HushAt(when)
+    }
+
+    /**
+     * Buzz for a duration
+     *
+     * @param {number} when Time to begin, in ms (0=now)
+     * @param {number} duration Duration of buzz (ms)
+     */
+    BuzzDuration(when, duration) {
+        this.Buzz(when)
+        this.Silence(when + duration)
+    }
+}
+
+
+/**
+ * Optional feedback sounds (success/error)
+ */
+class FeedbackSounds extends AudioSource {
+    constructor(context, maxGain = 0.3) {
+        super(context)
+        this.maxGain = maxGain
+
+        // Success: two-tone ascending
+        this.successOsc1 = new Oscillator(this.context, 523, maxGain) // C5
+        this.successOsc2 = new Oscillator(this.context, 659, maxGain) // E5
+
+        // Error: descending
+        this.errorOsc = new Oscillator(this.context, 220, maxGain) // A3
+
+        this.successOsc1.connect(this.masterGain)
+        this.successOsc2.connect(this.masterGain)
+        this.errorOsc.connect(this.masterGain)
+    }
+
+    /**
+     * Play success sound
+     */
+    async PlaySuccess() {
+        const now = Date.now()
+        this.successOsc1.SoundAt(now)
+        this.successOsc1.HushAt(now + 100 * time.Millisecond)
+        this.successOsc2.SoundAt(now + 100 * time.Millisecond)
+        this.successOsc2.HushAt(now + 200 * time.Millisecond)
+    }
+
+    /**
+     * Play error sound
+     */
+    async PlayError() {
+        const now = Date.now()
+        this.errorOsc.SoundAt(now)
+        this.errorOsc.HushAt(now + 200 * time.Millisecond)
+    }
+}
+
+
+/**
+ * Audio output collection for Vail Master
+ */
+class AudioOutput extends AudioSource {
+    /**
+     * @param {AudioContext} context Audio Context
+     * @param {Object} options Configuration options
+     */
+    constructor(context, options = {}) {
+        super(context)
+
+        const {
+            frequency = DEFAULT_FREQ,
+            volume = 0.5,
+            feedbackEnabled = true
+        } = options
+
+        // Main sidetone
+        this.sidetone = new SidetoneBuzzer(this.context, frequency, volume)
+        this.sidetone.connect(this.masterGain)
+
+        // Feedback sounds (optional)
+        this.feedback = new FeedbackSounds(this.context, volume * 0.6)
+        this.feedback.connect(this.masterGain)
+        this.feedbackEnabled = feedbackEnabled
+
+        // Connect to destination
+        this.masterGain.connect(this.context.destination)
+    }
+
+    /**
+     * Set the sidetone frequency
+     *
+     * @param {number} frequency Frequency in Hz
+     */
+    SetFrequency(frequency) {
+        this.sidetone.SetFrequency(frequency)
+    }
+
+    /**
+     * Set the master volume
+     *
+     * @param {number} volume Volume (0.0 - 1.0)
+     */
+    SetVolume(volume) {
+        this.masterGain.gain.value = volume
+    }
+
+    /**
+     * Enable/disable feedback sounds
+     *
+     * @param {boolean} enabled True to enable feedback sounds
+     */
+    SetFeedbackEnabled(enabled) {
+        this.feedbackEnabled = enabled
+    }
+
+    /**
+     * Begin sidetone
+     *
+     * @param {number} when Time to begin (0=now)
+     */
+    Buzz(when = 0) {
+        this.sidetone.Buzz(when)
+    }
+
+    /**
+     * End sidetone
+     *
+     * @param {number} when Time to end (0=now)
+     */
+    Silence(when = 0) {
+        this.sidetone.Silence(when)
+    }
+
+    /**
+     * Buzz for a duration
+     *
+     * @param {number} when Time to begin
+     * @param {number} duration Duration in ms
+     */
+    BuzzDuration(when, duration) {
+        this.sidetone.BuzzDuration(when, duration)
+    }
+
+    /**
+     * Stop all sounds immediately
+     */
+    Panic() {
+        this.Silence()
+    }
+
+    /**
+     * Play success feedback
+     */
+    PlaySuccess() {
+        if (this.feedbackEnabled) {
+            this.feedback.PlaySuccess()
+        }
+    }
+
+    /**
+     * Play error feedback
+     */
+    PlayError() {
+        if (this.feedbackEnabled) {
+            this.feedback.PlayError()
+        }
+    }
+}
+
+export { AudioOutput, DEFAULT_FREQ }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AudioOutput.html">AudioOutput</a></li><li><a href="AudioSource.html">AudioSource</a></li><li><a href="BugKeyer.html">BugKeyer</a></li><li><a href="CootieKeyer.html">CootieKeyer</a></li><li><a href="ElBugKeyer.html">ElBugKeyer</a></li><li><a href="FeedbackSounds.html">FeedbackSounds</a></li><li><a href="IambicBKeyer.html">IambicBKeyer</a></li><li><a href="IambicKeyer.html">IambicKeyer</a></li><li><a href="Input.html">Input</a></li><li><a href="KeyerWrapper.html">KeyerWrapper</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="QSet.html">QSet</a></li><li><a href="SidetoneBuzzer.html">SidetoneBuzzer</a></li><li><a href="SingleDotKeyer.html">SingleDotKeyer</a></li><li><a href="StraightKeyer.html">StraightKeyer</a></li><li><a href="Transmitter.html">Transmitter</a></li><li><a href="UltimaticKeyer.html">UltimaticKeyer</a></li><li><a href="VailDecoder.html">VailDecoder</a></li><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AudioContextTime">AudioContextTime</a></li><li><a href="global.html#DAH">DAH</a></li><li><a href="global.html#DIT">DIT</a></li><li><a href="global.html#DITS_PER_WORD">DITS_PER_WORD</a></li><li><a href="global.html#Hour">Hour</a></li><li><a href="global.html#Keyers">Keyers</a></li><li><a href="global.html#MS_IN_MINUTE">MS_IN_MINUTE</a></li><li><a href="global.html#Millisecond">Millisecond</a></li><li><a href="global.html#Minute">Minute</a></li><li><a href="global.html#OscillatorRampDuration">OscillatorRampDuration</a></li><li><a href="global.html#PAUSE">PAUSE</a></li><li><a href="global.html#SPACES_IN_PARIS">SPACES_IN_PARIS</a></li><li><a href="global.html#Second">Second</a></li><li><a href="global.html#addStations">addStations</a></li><li><a href="global.html#addTableRow">addTableRow</a></li><li><a href="global.html#addTiming">addTiming</a></li><li><a href="global.html#applyModeSettings">applyModeSettings</a></li><li><a href="global.html#changeKeyerMode">changeKeyerMode</a></li><li><a href="global.html#changeMode">changeMode</a></li><li><a href="global.html#charSpace">charSpace</a></li><li><a href="global.html#clearAllInvalidStates">clearAllInvalidStates</a></li><li><a href="global.html#clearFieldInvalid">clearFieldInvalid</a></li><li><a href="global.html#clearTable">clearTable</a></li><li><a href="global.html#compareExtraInfo">compareExtraInfo</a></li><li><a href="global.html#compareStrings">compareStrings</a></li><li><a href="global.html#cq">cq</a></li><li><a href="global.html#createBackgroundStatic">createBackgroundStatic</a></li><li><a href="global.html#createMorsePlayer">createMorsePlayer</a></li><li><a href="global.html#currentMode">currentMode</a></li><li><a href="global.html#dahLength">dahLength</a></li><li><a href="global.html#dahSpaces">dahSpaces</a></li><li><a href="global.html#dahs">dahs</a></li><li><a href="global.html#disable">disable</a></li><li><a href="global.html#ditLen">ditLen</a></li><li><a href="global.html#ditLength">ditLength</a></li><li><a href="global.html#ditSpace">ditSpace</a></li><li><a href="global.html#ditSpaces">ditSpaces</a></li><li><a href="global.html#dits">dits</a></li><li><a href="global.html#enable">enable</a></li><li><a href="global.html#fditLen">fditLen</a></li><li><a href="global.html#fditLength">fditLength</a></li><li><a href="global.html#flush">flush</a></li><li><a href="global.html#fwpm">fwpm</a></li><li><a href="global.html#generateRandomLetters">generateRandomLetters</a></li><li><a href="global.html#getAudioLock">getAudioLock</a></li><li><a href="global.html#getCallingStation">getCallingStation</a></li><li><a href="global.html#getDOMInputs">getDOMInputs</a></li><li><a href="global.html#getInputs">getInputs</a></li><li><a href="global.html#getModeConfig">getModeConfig</a></li><li><a href="global.html#getRandomNonUSCallsign">getRandomNonUSCallsign</a></li><li><a href="global.html#getRandomUSCallsign">getRandomUSCallsign</a></li><li><a href="global.html#getSelectedCutNumbers">getSelectedCutNumbers</a></li><li><a href="global.html#getSelectedFormats">getSelectedFormats</a></li><li><a href="global.html#getYourStation">getYourStation</a></li><li><a href="global.html#isBackgroundStaticPlaying">isBackgroundStaticPlaying</a></li><li><a href="global.html#isEnabled">isEnabled</a></li><li><a href="global.html#looksLikeMorse">looksLikeMorse</a></li><li><a href="global.html#markFieldInvalid">markFieldInvalid</a></li><li><a href="global.html#modeLogicConfig">modeLogicConfig</a></li><li><a href="global.html#modeUIConfig">modeUIConfig</a></li><li><a href="global.html#morse2text">morse2text</a></li><li><a href="global.html#nextSingleStation">nextSingleStation</a></li><li><a href="global.html#normalizeStationGain">normalizeStationGain</a></li><li><a href="global.html#openAccordionSection">openAccordionSection</a></li><li><a href="global.html#printStation">printStation</a></li><li><a href="global.html#randomDigit">randomDigit</a></li><li><a href="global.html#randomElement">randomElement</a></li><li><a href="global.html#ratio">ratio</a></li><li><a href="global.html#reset">reset</a></li><li><a href="global.html#resetGameState">resetGameState</a></li><li><a href="global.html#respondWithAllStations">respondWithAllStations</a></li><li><a href="global.html#send">send</a></li><li><a href="global.html#setCommandHandler">setCommandHandler</a></li><li><a href="global.html#setWordGapAutoSend">setWordGapAutoSend</a></li><li><a href="global.html#spaces">spaces</a></li><li><a href="global.html#stop">stop</a></li><li><a href="global.html#stopAllAudio">stopAllAudio</a></li><li><a href="global.html#stopBackgroundStatic">stopBackgroundStatic</a></li><li><a href="global.html#text2ditdah">text2ditdah</a></li><li><a href="global.html#text2morse">text2morse</a></li><li><a href="global.html#tidyMorse">tidyMorse</a></li><li><a href="global.html#tu">tu</a></li><li><a href="global.html#updateActiveStations">updateActiveStations</a></li><li><a href="global.html#updateAudioLock">updateAudioLock</a></li><li><a href="global.html#updateStaticIntensity">updateStaticIntensity</a></li><li><a href="global.html#updateSummaryRow">updateSummaryRow</a></li><li><a href="global.html#validateInputs">validateInputs</a></li><li><a href="global.html#weightedRandom">weightedRandom</a></li><li><a href="global.html#weightedRandomElement">weightedRandomElement</a></li><li><a href="global.html#wordSpace">wordSpace</a></li><li><a href="global.html#wpm">wpm</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sun Apr 19 2026 12:50:34 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
