@@ -103,6 +103,7 @@ function checkAndFireCommand(word) {
   if (w === 'CQ') { commandHandler('cq'); return 'strip'; }
   if (w === 'QRT' || (yourCallsign && w === yourCallsign + 'QRT')) { commandHandler('stop'); return 'strip'; }
   if (w === 'TU') { commandHandler('tu'); return 'strip'; }
+  if (w === 'K') { commandHandler('k'); return 'keep'; }
   if (w === 'AGN' || w === 'QRS' || w.endsWith('?')) { commandHandler('send'); return 'keep'; }
   return null;
 }

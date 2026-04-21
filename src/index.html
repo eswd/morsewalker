@@ -166,6 +166,20 @@
             type="radio"
             class="btn-check"
             name="mode"
+            id="modePotaActivator"
+            value="potaActivator"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modePotaActivator"
+            >POTA (Vail)</label
+          >
+
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
             id="modeCwt"
             value="cwt"
             autocomplete="off"
@@ -1210,6 +1224,21 @@
       </div>
       <hr />
 
+      <!-- POTA (Vail) exchange reference card -->
+      <div id="potaActivatorHelp" style="display:none" class="alert alert-info py-2 px-3 mb-3">
+        <strong>POTA Exchange Flow:</strong>
+        <table class="table table-sm table-borderless mb-0 mt-1 small">
+          <tbody>
+            <tr><td class="text-nowrap fw-bold">You key:</td><td><code>CQ CQ POTA DE {YOURCALL} K</code></td></tr>
+            <tr><td class="text-nowrap text-muted">Hunters:</td><td><code>{CALLSIGN} {CALLSIGN} …</code></td></tr>
+            <tr><td class="text-nowrap fw-bold">You key:</td><td><code>{HUNTERCALL} GM/GA/GE UR 5NN 5NN &lt;BK&gt;</code></td></tr>
+            <tr><td class="text-nowrap text-muted">Hunter:</td><td><code>&lt;BK&gt; TU UR {RST} {RST} {STATE} &lt;BK&gt;</code></td></tr>
+            <tr><td class="text-nowrap fw-bold">You key:</td><td><code>&lt;BK&gt; TU ES 73 {YOURCALL} dit dit</code> → then click <strong>TU</strong></td></tr>
+            <tr><td class="text-nowrap text-muted">Hunter:</td><td><code>dit dit</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- Mode Controls and Stop/Reset -->
       <div class="row g-3 align-items-center">
         <!-- Main controls: On large screens, this and the stop/reset fit on one line.
@@ -1235,6 +1264,19 @@
 
           <!-- Force a new line after sendButton on small screens -->
           <div class="w-100 d-sm-block d-md-none"></div>
+
+          <!-- potaActivator only: callsign log field (keyboard) -->
+          <input
+            type="text"
+            id="potaLogCallsign"
+            class="form-control me-2 mb-2"
+            style="display: none; max-width: 150px"
+            placeholder="Callsign heard"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            autocorrect="off"
+          />
 
           <!-- Second row on small: infoField, infoField2, TU -->
           <input

@@ -54,6 +54,16 @@ export const modeUIConfig = {
     extraColumnHeader: 'Additional Info',
     resultsHeader: 'CWT Mode Results',
   },
+  potaActivator: {
+    showTuButton: false,
+    showInfoField: true,
+    infoFieldPlaceholder: 'RST Received',
+    showInfoField2: true,
+    infoField2Placeholder: 'State',
+    tableExtraColumn: true,
+    extraColumnHeader: 'Call / RST / State',
+    resultsHeader: 'POTA Activator (Vail) Results',
+  },
 };
 
 /**
@@ -149,5 +159,18 @@ export const modeLogicConfig = {
     modeName: 'CWT',
     extraInfoFieldKey: 'name',
     extraInfoFieldKey2: 'cwopsNumber',
+  },
+  potaActivator: {
+    cqMessage: () => '',
+    yourExchange: () => '',
+    theirExchange: () => '',
+    yourSignoff: () => '',
+    theirSignoff: null,
+    requiresInfoField: true,
+    requiresInfoField2: true,
+    showTuStep: true,
+    modeName: 'POTA Activator (Vail)',
+    extraInfoFieldKey: 'rst',
+    extraInfoFieldKey2: 'state',
   },
 };

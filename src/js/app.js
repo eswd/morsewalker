@@ -33,6 +33,7 @@ import { getYourStation, getCallingStation } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
 import { modeLogicConfig, modeUIConfig } from './modes.js';
 import { enable as vailEnable, disable as vailDisable, changeKeyerMode as vailChangeMode, isEnabled as vailIsEnabled, setCommandHandler as vailSetCommandHandler, setWordGapAutoSend as vailSetWordGapAutoSend } from './vail-input.js';
+import { handleCommand as potaActivatorHandleCommand, reset as potaActivatorReset, goOnAir as potaActivatorGoOnAir } from './pota-activator.js';
 
 /**
  * Application state variables.
@@ -409,7 +410,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Wire up Morse command shortcuts
   vailSetCommandHandler((cmd) => {
+    if (currentMode === 'potaActivator') {
+      const text = document.getElementById('responseField').value;
+      if (cmd === 'stop') { stop(); return; }
+      potaActivatorHandleCommand(cmd, text);
+      return;
+    }
     if (cmd === 'cq') cq();
+    else if (cmd === 'k') { /* standalone K ignored in non-potaActivator modes */ }
     else if (cmd === 'stop') stop();
     else if (cmd === 'send') send();
     else if (cmd === 'tu') tu();
@@ -522,6 +530,37 @@ function applyModeSettings(mode) {
   const infoField2 = document.getElementById('infoField2');
   const resultsTable = document.getElementById('resultsTable');
   const modeResultsHeader = document.getElementById('modeResultsHeader');
+  const cqButton = document.getElementById('cqButton');
+  const sendButton = document.getElementById('sendButton');
+  const responseField = document.getElementById('responseField');
+  const potaLogCallsign = document.getElementById('potaLogCallsign');
+
+  const isPotaVail = mode === 'potaActivator';
+
+  // POTA (Vail) help card
+  const potaHelp = document.getElementById('potaActivatorHelp');
+  if (potaHelp) potaHelp.style.display = isPotaVail ? 'block' : 'none';
+
+  // CQ button label
+  cqButton.textContent = isPotaVail ? 'Start' : 'CQ';
+
+  // Send button: hidden in potaActivator (Vail <BK> handles it)
+  sendButton.style.display = isPotaVail ? 'none' : 'inline-block';
+
+  // responseField: wide decoded display in potaActivator, normal otherwise
+  if (isPotaVail) {
+    responseField.style.maxWidth = '400px';
+    responseField.placeholder = 'Decoded CW output…';
+  } else {
+    responseField.style.maxWidth = '150px';
+    responseField.placeholder = 'Response';
+  }
+
+  // potaLogCallsign: shown only in potaActivator
+  if (potaLogCallsign) {
+    potaLogCallsign.style.display = isPotaVail ? 'inline-block' : 'none';
+    potaLogCallsign.value = '';
+  }
 
   // TU button visibility
   tuButton.style.display = config.showTuButton ? 'inline-block' : 'none';
@@ -578,7 +617,19 @@ function applyModeSettings(mode) {
  * Resets variables related to stations, attempts, and contacts. Clears the results
  * table, disables the CQ button, stops all audio, and reinitializes the response field.
  */
+function resetPotaActivatorButton() {
+  if (currentMode !== 'potaActivator') return;
+  const cqButton = document.getElementById('cqButton');
+  cqButton.textContent = 'Start';
+  cqButton.classList.remove('btn-danger');
+  cqButton.classList.add('btn-success');
+  cqButton.disabled = false;
+}
+
 function resetGameState() {
+  resetPotaActivatorButton();
+  potaActivatorReset();
+
   currentStations = [];
   currentStation = null;
   activeStationIndex = null;
@@ -622,6 +673,17 @@ function changeMode() {
  * - Plays the CQ message using the user's station configuration.
  */
 function cq() {
+  if (currentMode === 'potaActivator') {
+    const cqButton = document.getElementById('cqButton');
+    cqButton.textContent = 'On Air';
+    cqButton.classList.remove('btn-success');
+    cqButton.classList.add('btn-danger');
+    cqButton.disabled = true;
+    potaActivatorGoOnAir();
+    document.getElementById('responseField').focus();
+    return;
+  }
+
   if (getAudioLock()) return;
 
   const modeConfig = getModeConfig();
@@ -670,6 +732,12 @@ function cq() {
  * mode's configuration. Adjusts the game state for each scenario.
  */
 function send() {
+  if (currentMode === 'potaActivator') {
+    const text = document.getElementById('responseField').value;
+    potaActivatorHandleCommand('send', text);
+    return;
+  }
+
   if (getAudioLock()) return;
   const modeConfig = getModeConfig();
   const responseField = document.getElementById('responseField');
@@ -964,6 +1032,11 @@ function send() {
  * Plays the user's and station's sign-off messages.
  */
 function tu() {
+  if (currentMode === 'potaActivator') {
+    potaActivatorHandleCommand('tu', '');
+    return;
+  }
+
   if (getAudioLock()) return;
   const modeConfig = getModeConfig();
   if (!modeConfig.showTuStep || !readyForTU) return;
@@ -1180,6 +1253,12 @@ function stop() {
   stopAllAudio();
   const cqButton = document.getElementById('cqButton');
   cqButton.disabled = false;
+
+  if (currentMode === 'potaActivator') {
+    resetPotaActivatorButton();
+    potaActivatorReset();
+    return;
+  }
 
   // If the mode is single, reset the current station as well
   if (currentMode === 'single') {
