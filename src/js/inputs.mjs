@@ -164,7 +164,7 @@ export class MIDI extends Input{
             output.send([0xB0, 0x00, 0x00])
 
             // MIDI only supports 7-bit values, so we have to divide dit duration by two
-            output.send([0xB0, 0x01, this.ditDuration/2])
+            output.send([0xB0, 0x01, Math.min(127, Math.round(this.ditDuration/2))])
 
             // Send keyer mode
             output.send([0xC0, this.keyerMode])

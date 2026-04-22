@@ -413,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentMode === 'potaActivator') {
       const text = document.getElementById('responseField').value;
       if (cmd === 'stop') { stop(); return; }
+      if (cmd === 'tu') return; // TU must be clicked, not keyed
       potaActivatorHandleCommand(cmd, text);
       return;
     }
@@ -533,6 +534,7 @@ function applyModeSettings(mode) {
   const cqButton = document.getElementById('cqButton');
   const sendButton = document.getElementById('sendButton');
   const responseField = document.getElementById('responseField');
+  const potaCallsignGroup = document.getElementById('potaCallsignGroup');
   const potaLogCallsign = document.getElementById('potaLogCallsign');
 
   const isPotaVail = mode === 'potaActivator';
@@ -556,9 +558,9 @@ function applyModeSettings(mode) {
     responseField.placeholder = 'Response';
   }
 
-  // potaLogCallsign: shown only in potaActivator
-  if (potaLogCallsign) {
-    potaLogCallsign.style.display = isPotaVail ? 'inline-block' : 'none';
+  // potaCallsignGroup: shown only in potaActivator
+  if (potaCallsignGroup) {
+    potaCallsignGroup.style.display = isPotaVail ? 'flex' : 'none';
     potaLogCallsign.value = '';
   }
 
@@ -674,6 +676,7 @@ function changeMode() {
  */
 function cq() {
   if (currentMode === 'potaActivator') {
+    if (getInputs() === null) return;
     const cqButton = document.getElementById('cqButton');
     cqButton.textContent = 'On Air';
     cqButton.classList.remove('btn-success');

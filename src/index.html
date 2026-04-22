@@ -437,7 +437,7 @@
                     id="vailSpeed"
                     class="form-control"
                     value="14"
-                    min="1"
+                    min="5"
                     max="100"
                     step="1"
                     disabled
@@ -1265,18 +1265,21 @@
           <!-- Force a new line after sendButton on small screens -->
           <div class="w-100 d-sm-block d-md-none"></div>
 
-          <!-- potaActivator only: callsign log field (keyboard) -->
-          <input
-            type="text"
-            id="potaLogCallsign"
-            class="form-control me-2 mb-2"
-            style="display: none; max-width: 150px"
-            placeholder="Callsign heard"
-            autocomplete="off"
-            autocapitalize="characters"
-            spellcheck="false"
-            autocorrect="off"
-          />
+          <!-- potaActivator only: callsign log field + match indicator -->
+          <div id="potaCallsignGroup" class="d-flex align-items-center me-2 mb-2" style="display: none !important">
+            <input
+              type="text"
+              id="potaLogCallsign"
+              class="form-control"
+              style="max-width: 150px"
+              placeholder="Callsign heard"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              autocorrect="off"
+            />
+            <span id="potaCallsignIndicator" class="ms-2" style="display: none; font-size: 1.2em"></span>
+          </div>
 
           <!-- Second row on small: infoField, infoField2, TU -->
           <input
